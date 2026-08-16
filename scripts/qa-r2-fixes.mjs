@@ -158,6 +158,53 @@ try {
     await page.close();
   }
 
+  // Requested interaction invariant: entering text may enable submission, but
+  // the send button must not visually jump from a dim control to a filled disc.
+  for (const [theme, tag] of [['浅色', 'light'], ['深色', 'dark']]) {
+    const { page, errors } = await openPage(browser, { w: 1440, h: 900, focus: false });
+    await setTheme(page, theme);
+    const input = page.locator('.uV2eYG_input:visible').last();
+    const button = page.locator('.uV2eYG_primary:visible').last();
+    const read = () => button.evaluate((element) => {
+      const style = getComputedStyle(element);
+      return {
+        disabled: element.disabled,
+        backgroundColor: style.backgroundColor,
+        color: style.color,
+        opacity: style.opacity,
+        borderColor: style.borderColor,
+        boxShadow: style.boxShadow,
+        filter: style.filter,
+        transform: style.transform,
+        width: style.width,
+        height: style.height,
+        borderRadius: style.borderRadius,
+        transitionDuration: style.transitionDuration,
+      };
+    });
+    await input.fill('');
+    await page.waitForTimeout(100);
+    const empty = await read();
+    await input.fill('视觉恒定');
+    await page.waitForTimeout(100);
+    const typed = await read();
+    const paintProperties = [
+      'backgroundColor', 'color', 'opacity', 'borderColor', 'boxShadow',
+      'filter', 'transform', 'width', 'height', 'borderRadius',
+      'transitionDuration',
+    ];
+    const unchanged = paintProperties.every((property) => empty[property] === typed[property]);
+    check(`composer-send-state-visually-stable-${tag}`,
+      empty.disabled && !typed.disabled
+      && unchanged
+      && typed.backgroundColor === 'rgba(0, 0, 0, 0)'
+      && typed.opacity === '0.72'
+      && typed.transitionDuration === '0s'
+      && errors.length === 0,
+      { empty, typed, errors });
+    await page.close();
+  }
+
   // F0: untrusted Markdown is built with DOM nodes, never executable attributes.
   {
     const { page, errors } = await openPage(browser, { focus: false });

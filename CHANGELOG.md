@@ -5,6 +5,13 @@ All notable changes to Ivory are documented here. The project follows
 
 ## [Unreleased]
 
+## [0.1.1] - 2026-08-16
+
+### Fixed
+
+- Keep the composer send button visually identical before and after text entry
+  in both light and dark themes; only its functional disabled state changes.
+
 ## [0.1.0] - 2026-08-16
 
 ### Added
@@ -27,5 +34,6 @@ All notable changes to Ivory are documented here. The project follows
 - Explicit npm file allowlist, MIT license, third-party notices, and bilingual
   documentation.
 
-[Unreleased]: https://github.com/ZJUZhiyuCai/dsh-ivory/compare/v0.1.0...HEAD
+[Unreleased]: https://github.com/ZJUZhiyuCai/dsh-ivory/compare/v0.1.1...HEAD
+[0.1.1]: https://github.com/ZJUZhiyuCai/dsh-ivory/compare/v0.1.0...v0.1.1
 [0.1.0]: https://github.com/ZJUZhiyuCai/dsh-ivory/releases/tag/v0.1.0

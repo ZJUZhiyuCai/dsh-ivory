@@ -710,17 +710,21 @@ body.dsh-ivory .uV2eYG_card:focus-within {
   outline-offset: 0 !important;
 }
 
-/* F5 send button: Claude fill-primary (ink light / ivory dark), not DSH blue. */
-body.dsh-ivory .uV2eYG_primary {
-  background: var(--cl-primary-fill) !important;
-  color: var(--cl-page) !important;
-}
-body.dsh-ivory .uV2eYG_primary:hover:not(:disabled) {
-  background: var(--cl-primary-hover) !important;
-}
-body.dsh-ivory .uV2eYG_primary:disabled {
-  background: var(--cl-hover) !important;
-  color: var(--cl-muted) !important;
+/* F5 send button: typing changes the native disabled state, but must not turn
+ * the quiet arrow into a filled black/ivory disc. Keep every paint property
+ * identical before and after text entry; the host still owns clickability and
+ * assistive technology receives the real disabled state. */
+body.dsh-ivory button.uV2eYG_primary,
+body.dsh-ivory button.uV2eYG_primary:hover:not(:disabled),
+body.dsh-ivory button.uV2eYG_primary:active:not(:disabled),
+body.dsh-ivory button.uV2eYG_primary:disabled {
+  background: transparent !important;
+  color: var(--cl-ink-strong) !important;
+  border-color: transparent !important;
+  box-shadow: none !important;
+  filter: none !important;
+  opacity: 0.72 !important;
+  transition: none !important;
 }
 
 /* Only animate paint-only properties. `transition: all` caused a card repaint on
