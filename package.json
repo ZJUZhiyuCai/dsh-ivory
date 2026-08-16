@@ -1,0 +1,73 @@
+{
+  "name": "dsh-ivory",
+  "version": "0.1.0",
+  "description": "An unofficial Claude-inspired light/dark theme for DeepSeek Harness with responsive layout, safe Markdown preview, and zero telemetry.",
+  "keywords": [
+    "dsh-plugin",
+    "deepseek-harness",
+    "dsh",
+    "theme",
+    "skin",
+    "claude-inspired",
+    "dark-mode",
+    "accessibility",
+    "responsive"
+  ],
+  "type": "module",
+  "main": "lib/index.js",
+  "exports": {
+    ".": "./lib/index.js",
+    "./client": "./lib/client.js",
+    "./package.json": "./package.json"
+  },
+  "dsh": {
+    "bundle": {
+      "patch": "./cordis.patch.yml"
+    },
+    "client": {
+      "inject": [
+        "@deepseek-ai/dsh-client-runtime"
+      ],
+      "platform": "web"
+    }
+  },
+  "files": [
+    "lib/index.js",
+    "lib/client.js",
+    "README.md",
+    "README.zh-CN.md",
+    "LICENSE",
+    "THIRD_PARTY_NOTICES.md",
+    "cordis.patch.yml"
+  ],
+  "scripts": {
+    "build": "node scripts/build.mjs",
+    "check": "node scripts/release-check.mjs",
+    "check:pack": "npm pack --dry-run --json --ignore-scripts | node scripts/verify-pack.mjs",
+    "check:publint": "publint --level error",
+    "test": "npm run build && npm run check && npm run check:publint && npm run check:pack",
+    "qa:r2": "node scripts/qa-r2-fixes.mjs",
+    "prepack": "npm run build && npm run check"
+  },
+  "devDependencies": {
+    "playwright-core": "^1.59.0",
+    "publint": "^0.3.15"
+  },
+  "engines": {
+    "node": "^22.19.0 || >=24.0.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ZJUZhiyuCai/dsh-ivory.git"
+  },
+  "bugs": {
+    "url": "https://github.com/ZJUZhiyuCai/dsh-ivory/issues"
+  },
+  "homepage": "https://github.com/ZJUZhiyuCai/dsh-ivory#readme",
+  "author": "ZJUZhiyuCai",
+  "license": "MIT",
+  "publishConfig": {
+    "access": "public"
+  },
+  "peerDependencies": {}
+}
