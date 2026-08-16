@@ -1,0 +1,51 @@
+name: Bug report
+description: Report a reproducible Ivory problem without private DSH data
+title: "[Bug]: "
+labels: [bug, needs-triage]
+body:
+  - type: checkboxes
+    attributes:
+      label: Privacy and scope
+      options:
+        - label: I removed conversations, credentials, account details, and private paths.
+          required: true
+        - label: I reproduced this with other non-essential plugins disabled.
+          required: true
+  - type: input
+    attributes:
+      label: Ivory version
+      placeholder: 0.1.0
+    validations:
+      required: true
+  - type: input
+    attributes:
+      label: DSH version
+      placeholder: 0.1.0-rc.6
+    validations:
+      required: true
+  - type: dropdown
+    attributes:
+      label: Appearance
+      options: [Light, Dark, Both]
+    validations:
+      required: true
+  - type: input
+    attributes:
+      label: Browser and operating system
+    validations:
+      required: true
+  - type: textarea
+    attributes:
+      label: Minimal reproduction
+      description: Include viewport width and whether focus mode is enabled.
+    validations:
+      required: true
+  - type: textarea
+    attributes:
+      label: Expected behavior
+    validations:
+      required: true
+  - type: textarea
+    attributes:
+      label: Privacy-safe evidence
+      description: Screenshots or console output with all private information removed.

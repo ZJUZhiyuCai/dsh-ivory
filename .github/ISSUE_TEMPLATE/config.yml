@@ -1,0 +1,8 @@
+blank_issues_enabled: false
+contact_links:
+  - name: Private security report
+    url: https://github.com/ZJUZhiyuCai/dsh-ivory/security/advisories/new
+    about: Report an unpatched vulnerability without exposing it publicly
+  - name: DeepSeek Harness issues
+    url: https://github.com/deepseek-ai/deepseek-harness/issues
+    about: Report behavior that also occurs without Ivory

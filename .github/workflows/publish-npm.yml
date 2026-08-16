@@ -1,0 +1,35 @@
+name: Publish to npm
+
+on:
+  workflow_dispatch:
+    inputs:
+      confirm_version:
+        description: Version in package.json to publish
+        required: true
+        type: string
+
+permissions:
+  contents: read
+  id-token: write
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    environment: npm
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: v${{ inputs.confirm_version }}
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          registry-url: https://registry.npmjs.org
+          cache: npm
+      - run: npm ci
+      - run: npm test
+      - name: Verify requested version
+        run: test "$(node -p "require('./package.json').version")" = "${{ inputs.confirm_version }}"
+      - name: Publish with provenance
+        run: npm publish --access public --provenance
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}

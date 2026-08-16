@@ -1,0 +1,27 @@
+name: Feature request
+description: Propose a focused improvement to Ivory
+title: "[Feature]: "
+labels: [enhancement, needs-triage]
+body:
+  - type: textarea
+    attributes:
+      label: Problem
+      description: What workflow is difficult today? Avoid proposing only an implementation.
+    validations:
+      required: true
+  - type: textarea
+    attributes:
+      label: Proposed outcome
+    validations:
+      required: true
+  - type: checkboxes
+    attributes:
+      label: Trust-boundary impact
+      options:
+        - label: This needs a network request.
+        - label: This needs a host capability or runtime dependency.
+        - label: This adds persistent data.
+        - label: This adds a third-party asset.
+  - type: textarea
+    attributes:
+      label: Alternatives considered
