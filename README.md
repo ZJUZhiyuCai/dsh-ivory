@@ -50,6 +50,8 @@ dsh plugin --profile web remove dsh-ivory
   composer halo, reduced-motion support, and forced-colors fallbacks.
 - **Safe Markdown document preview** — builds DOM nodes instead of injecting
   HTML, permits only HTTP(S) links, and keeps source view reachable.
+- **Independent block copying** — prose paragraphs, user bubbles, and code
+  fences have their own accessible copy control with a clipboard fallback.
 - **Symmetric cleanup** — observers, injected views, and the small ink-colored
   whale marker are removed when the theme is disabled.
 - **Host-friendly compatibility mode** — if an upstream selector changes,
@@ -72,7 +74,7 @@ Ivory is a visual client plugin. Its host entry point is deliberately inert.
 | Network requests or telemetry | None |
 | Persistent data | Two local `localStorage` preference flags |
 | Bundled Anthropic assets | None; platform font stacks only |
-| User content handling | In-browser presentation only; no data leaves DSH |
+| User content handling | In-browser presentation; explicit copy clicks write only to the local clipboard |
 
 The generated npm tarball is allowlisted to eight files and checked in CI.
 See [SECURITY.md](https://github.com/ZJUZhiyuCai/dsh-ivory/blob/main/SECURITY.md) and [the architecture note](https://github.com/ZJUZhiyuCai/dsh-ivory/blob/main/docs/ARCHITECTURE.md)
@@ -85,12 +87,13 @@ The repository has two verification layers:
 ```sh
 npm ci
 npm test          # reproducible build, static security checks, publint, tarball audit
-npm run qa:r2     # 61 browser regressions; requires DSH at 127.0.0.1:3080
+npm run qa:r2     # 67 browser regressions; requires DSH at 127.0.0.1:3080
 ```
 
 The browser suite covers layout contracts, mobile overflow, composer focus,
 Markdown injection attempts, lifecycle cleanup, streaming state, whale marker
-timing, dark mode, plugin coexistence, long tables, and reduced motion.
+timing, exact block-copy payloads and fallback, dark mode, plugin coexistence,
+long tables, and reduced motion.
 
 ## Development
 

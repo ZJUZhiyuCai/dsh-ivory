@@ -49,6 +49,8 @@ dsh plugin --profile web remove dsh-ivory
   reduced-motion 与 forced-colors。
 - **安全 Markdown 文档预览**：只构造 DOM 节点，不注入 HTML；仅允许
   HTTP(S) 链接，源码视图始终可达。
+- **内容块独立复制**：正文段落、用户文字气泡与代码块均有独立、可访问的
+  复制按钮，并提供剪贴板兼容降级。
 - **对称生命周期**：关闭主题时清除观察器、预览节点和墨色小鲸鱼回合标记。
 - **宿主友好的兼容模式**：上游选择器变化时，结构增强自动降级，稳定设计
   token 仍会继续生效。
@@ -70,7 +72,7 @@ Ivory 是纯浏览器视觉插件，宿主入口刻意保持为空实现。
 | 网络请求或遥测 | 无 |
 | 持久化数据 | 两个本地 `localStorage` 偏好标记 |
 | Anthropic 资产 | 不捆绑；只使用系统字体栈 |
-| 用户内容处理 | 仅在浏览器内呈现，不离开 DSH |
+| 用户内容处理 | 仅在浏览器内呈现；只有明确点击复制时才写入本机剪贴板 |
 
 npm 包采用八文件白名单，并由 CI 校验。具体边界见
 [SECURITY.md](https://github.com/ZJUZhiyuCai/dsh-ivory/blob/main/SECURITY.md) 和 [架构说明](https://github.com/ZJUZhiyuCai/dsh-ivory/blob/main/docs/ARCHITECTURE.md)。
@@ -80,12 +82,12 @@ npm 包采用八文件白名单，并由 CI 校验。具体边界见
 ```sh
 npm ci
 npm test          # 可复现构建、静态安全检查、publint、包内容审计
-npm run qa:r2     # 61 项浏览器回归；要求 127.0.0.1:3080 正在运行 DSH
+npm run qa:r2     # 67 项浏览器回归；要求 127.0.0.1:3080 正在运行 DSH
 ```
 
 浏览器套件覆盖布局契约、移动端溢出、输入框焦点、Markdown 注入尝试、
-生命周期清理、流式状态、鲸鱼出现时机、深色模式、插件共存、长表格与
-reduced-motion。
+生命周期清理、流式状态、鲸鱼出现时机、内容块复制精度与降级路径、深色模式、
+插件共存、长表格与 reduced-motion。
 
 ## 开发
 
