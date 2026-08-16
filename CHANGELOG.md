@@ -5,6 +5,13 @@ All notable changes to Ivory are documented here. The project follows
 
 ## [Unreleased]
 
+## [0.1.2] - 2026-08-16
+
+### Fixed
+
+- Recolor the hero preview badge with theme-relative neutral tokens, removing
+  the fixed blue fill and restoring strong dark-mode contrast.
+
 ## [0.1.1] - 2026-08-16
 
 ### Fixed
@@ -34,6 +41,7 @@ All notable changes to Ivory are documented here. The project follows
 - Explicit npm file allowlist, MIT license, third-party notices, and bilingual
   documentation.
 
-[Unreleased]: https://github.com/ZJUZhiyuCai/dsh-ivory/compare/v0.1.1...HEAD
+[Unreleased]: https://github.com/ZJUZhiyuCai/dsh-ivory/compare/v0.1.2...HEAD
+[0.1.2]: https://github.com/ZJUZhiyuCai/dsh-ivory/compare/v0.1.1...v0.1.2
 [0.1.1]: https://github.com/ZJUZhiyuCai/dsh-ivory/compare/v0.1.0...v0.1.1
 [0.1.0]: https://github.com/ZJUZhiyuCai/dsh-ivory/releases/tag/v0.1.0

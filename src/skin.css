@@ -440,6 +440,17 @@ body.dsh-ivory .pXSMma_headlineText {
   color: var(--cl-ink) !important;
   letter-spacing: normal !important;
 }
+/* The preview label is supporting metadata, not a second accent. Resolve its
+ * paint from the active Ivory palette so the light-blue host badge cannot
+ * clash with the warm light theme or become low-contrast in dark mode. */
+body.dsh-ivory .pXSMma_previewBadge {
+  background-color: var(--cl-hover) !important;
+  background-image: none !important;
+  color: var(--cl-ink-strong) !important;
+  -webkit-text-fill-color: var(--cl-ink-strong) !important;
+  border-color: var(--cl-border) !important;
+  box-shadow: none !important;
+}
 body.dsh-ivory .wSkVaW_heroWorkspaceRow {
   justify-content: center !important;
 }

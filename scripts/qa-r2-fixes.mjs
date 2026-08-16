@@ -205,6 +205,69 @@ try {
     await page.close();
   }
 
+  // The hero preview label is metadata, so it must use theme-relative neutral
+  // tokens instead of the host's fixed light-blue badge in either appearance.
+  for (const [theme, tag] of [['浅色', 'light'], ['深色', 'dark']]) {
+    const { page, errors } = await openPage(browser, { w: 1440, h: 900, focus: false });
+    await setTheme(page, theme);
+    const badge = await page.locator('.pXSMma_previewBadge:visible').first().evaluate((element) => {
+      const resolveColor = (value) => {
+        const probe = document.createElement('span');
+        probe.style.color = value;
+        document.body.appendChild(probe);
+        const resolved = getComputedStyle(probe).color;
+        probe.remove();
+        return resolved;
+      };
+      const parse = (value) => {
+        const channels = value.match(/[\d.]+/g)?.map(Number) ?? [];
+        return { rgb: channels.slice(0, 3), alpha: channels[3] ?? 1 };
+      };
+      const composite = (foreground, background) => foreground.rgb.map((channel, index) =>
+        channel * foreground.alpha + background.rgb[index] * (1 - foreground.alpha));
+      const luminance = (rgb) => {
+        const linear = rgb.map((channel) => {
+          const value = channel / 255;
+          return value <= 0.04045 ? value / 12.92 : ((value + 0.055) / 1.055) ** 2.4;
+        });
+        return 0.2126 * linear[0] + 0.7152 * linear[1] + 0.0722 * linear[2];
+      };
+      const contrast = (a, b) => {
+        const [lighter, darker] = [luminance(a), luminance(b)].sort((x, y) => y - x);
+        return (lighter + 0.05) / (darker + 0.05);
+      };
+      const style = getComputedStyle(element);
+      const expected = {
+        color: resolveColor('var(--cl-ink-strong)'),
+        background: resolveColor('var(--cl-hover)'),
+        border: resolveColor('var(--cl-border)'),
+        page: resolveColor('var(--cl-page)'),
+      };
+      const renderedBackground = composite(parse(style.backgroundColor), parse(expected.page));
+      return {
+        text: element.textContent?.trim(),
+        color: style.color,
+        fill: style.webkitTextFillColor,
+        background: style.backgroundColor,
+        image: style.backgroundImage,
+        border: style.borderColor,
+        expected,
+        contrast: Number(contrast(parse(style.color).rgb, renderedBackground).toFixed(2)),
+      };
+    });
+    check(`hero-preview-badge-neutral-${tag}`,
+      badge.text === '预览版'
+      && badge.color === badge.expected.color
+      && badge.fill === badge.expected.color
+      && badge.background === badge.expected.background
+      && badge.image === 'none'
+      && badge.border === badge.expected.border
+      && badge.contrast >= 4.5
+      && errors.length === 0,
+      { badge, errors });
+    await page.close();
+  }
+
   // F0: untrusted Markdown is built with DOM nodes, never executable attributes.
   {
     const { page, errors } = await openPage(browser, { focus: false });
