@@ -1,0 +1,5 @@
+# dsh-ivory bundle patch: mount the browser theme.
+# The host half is intentionally inert; all behavior runs in the web client.
+- insert:
+    - id: dsh-ivory
+      name: 'dsh-ivory'

@@ -1,0 +1,1261 @@
+/* Ivory for DSH — an unofficial Claude-inspired interface theme.
+ * It uses platform fonts only; no third-party brand assets are bundled. */
+
+/* ---------- warm neutral palette ---------- */
+body.dsh-ivory {
+  --cl-page: #fcfcfb;            /* --cds-page-bg / --cds-surface-1 */
+  --cl-surface-0: #f9f9f7;       /* --cds-surface-0 */
+  --cl-surface: #ffffff;         /* --cds-surface-2/3 */
+  --cl-ink: #0b0b0b;             /* --cds-text-primary */
+  --cl-ink-soft: #383835;        /* sidebar nav item text (measured) */
+  --cl-ink-strong: #52514e;      /* --cds-text-secondary */
+  --cl-muted: #898781;           /* --cds-text-muted */
+  --cl-border: hsl(0 0% 4.3% / 10%);
+  --cl-border-strong: hsl(0 0% 4.3% / 20%);
+  --cl-border-stronger: hsl(0 0% 4.3% / 40%);
+  --cl-hover: hsl(0 0% 4.3% / 5%);
+  --cl-active: #f6f6f4;          /* recents active item bg (measured) */
+  --cl-card: #ffffff;
+  --cl-user-bubble: hsl(0 0% 4.3% / 5%);       /* bg-neutral (measured) */
+  --cl-accent: #2a78d6;          /* --cds-fill-accent */
+  --cl-accent-hover: #3987e5;
+  --cl-accent-text: #184f95;     /* --cds-text-accent */
+  --cl-accent-soft: #cde2fb;     /* --cds-bg-accent */
+  --cl-primary-fill: #0b0b0b;    /* --cds-fill-primary */
+  --cl-primary-hover: #2c2c2a;
+  --cl-sans: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, "PingFang SC", "Microsoft YaHei", sans-serif;
+  --cl-serif: ui-serif, "Iowan Old Style", "Palatino Linotype", Palatino, Georgia, "Songti SC", STSong, "Times New Roman", serif;
+  --cl-mono: ui-monospace, "SFMono-Regular", Menlo, Monaco, Consolas, "Liberation Mono", monospace;
+  --cl-shadow-card: 0 4px 20px hsl(0 0% 0% / 7.5%), inset 0 0 0 1px hsl(0 0% 3% / 30%);
+  --cl-shadow-md: 0 2px 4px hsl(0 0% 4.3% / 7%), 0 6px 16px hsl(0 0% 4.3% / 8%);
+  --cl-shadow-lg: 0 4px 8px hsl(0 0% 4.3% / 8%), 0 12px 28px -2px hsl(0 0% 4.3% / 8%);
+}
+
+body.dsh-ivory[data-ds-dark-theme] {
+  --cl-page: #151515;
+  --cl-surface-0: #151515;
+  --cl-surface: #20201f;         /* composer card dark bg (measured) */
+  --cl-ink: #f0efec;
+  --cl-ink-soft: #c3c2b7;        /* dark secondary text (measured) */
+  --cl-ink-strong: #c3c2b7;
+  --cl-muted: #898781;           /* stays the same in dark (measured) */
+  --cl-border: hsl(0 0% 100% / 10%);
+  --cl-border-strong: hsl(0 0% 100% / 20%);
+  --cl-border-stronger: hsl(0 0% 100% / 40%);
+  --cl-hover: hsl(0 0% 100% / 5%);
+  --cl-active: #111111;          /* dark active item bg (measured) */
+  --cl-card: #20201f;
+  --cl-user-bubble: hsl(0 0% 100% / 5%);
+  --cl-accent: #2a78d6;
+  --cl-accent-hover: #3987e5;
+  --cl-accent-text: #86b6ef;
+  --cl-accent-soft: #cde2fb;
+  --cl-primary-fill: #f0efec;
+  --cl-primary-hover: #e8e7e1;
+  --cl-shadow-card: 0 4px 20px hsl(0 0% 0% / 40%), inset 0 0 0 1px hsl(0 0% 100% / 20%);
+  --cl-shadow-md: 0 2px 4px hsl(0 0% 0% / 30%), 0 6px 16px hsl(0 0% 0% / 30%);
+  --cl-shadow-lg: 0 4px 8px hsl(0 0% 0% / 30%), 0 12px 28px -2px hsl(0 0% 0% / 30%);
+}
+
+/* ---------- map Claude palette onto the DSH alias token system ---------- */
+body.dsh-ivory {
+  --dsw-font-family: var(--cl-sans);
+  --ds-font-family-code: var(--cl-mono);
+
+  --dsw-alias-bg-base: var(--cl-page);
+  --dsw-alias-bg-layer-1: var(--cl-page);
+  --dsw-alias-bg-layer-2: var(--cl-surface);
+  --dsw-alias-bg-layer-3: var(--cl-surface);
+  --dsw-alias-bg-module-platform: var(--cl-surface-0);
+  --dsw-alias-bg-multi-select: var(--cl-surface-0);
+  --dsw-alias-bg-overlay: var(--cl-hover);
+  --dsw-alias-bg-skeleton: var(--cl-hover);
+  --dsw-alias-bg-mask-1: rgb(0 0 0 / 24%);
+  --dsw-alias-bg-mask-2: rgb(0 0 0 / 12%);
+  --dsw-alias-bg-mask-3: rgb(0 0 0 / 48%);
+  --dsw-alias-bg-mask-photo: rgb(0 0 0 / 88%);
+  --dsw-alias-bg-mask-drop: rgb(255 255 255 / 70%);
+
+  --dsw-alias-label-primary: var(--cl-ink);
+  --dsw-alias-label-primary-bluish: var(--cl-ink);
+  --dsw-alias-label-primary-dimmed: var(--cl-ink-soft);
+  --dsw-alias-label-primary-foreground: var(--cl-page);
+  --dsw-alias-label-primary-inverted: var(--cl-page);
+  --dsw-alias-label-secondary: var(--cl-ink-strong);
+  --dsw-alias-label-tertiary: var(--cl-muted);
+  --dsw-alias-label-caption: var(--cl-muted);
+  --dsw-alias-label-dimmed: var(--cl-muted);
+
+  --dsw-alias-border-l1: var(--cl-border);
+  --dsw-alias-border-l2: var(--cl-border);
+  --dsw-alias-border-l2-darkmode-thin: var(--cl-border);
+  --dsw-alias-border-l3: var(--cl-border-strong);
+  --dsw-alias-border-l4: var(--cl-border-strong);
+  --dsw-alias-border-inverted: var(--cl-border);
+  --dsw-alias-border-inverted2: transparent;
+
+  --dsw-alias-interactive-bg-hover: var(--cl-hover);
+  --dsw-alias-interactive-bg-active: var(--cl-hover);
+  --dsw-alias-interactive-bg-hover-accent: var(--cl-hover);
+  --dsw-alias-interactive-bg-hover-solid: var(--cl-active);
+  --dsw-alias-interactive-bg-hover-danger: hsl(0 80% 40% / 6%);
+
+  --dsw-alias-button-primary-fill: var(--cl-primary-fill);
+  --dsw-alias-button-primary-hover: var(--cl-primary-hover);
+  --dsw-alias-button-primary-dimmed: var(--cl-active);
+  --dsw-alias-button-ghost-active-fill: var(--cl-active);
+  --dsw-alias-button-ghost-active-hover: var(--cl-active);
+  --dsw-alias-button-ghost-active-border: var(--cl-border-strong);
+  --dsw-alias-button-elevated-fill: var(--cl-surface);
+  --dsw-alias-button-floating-fill: var(--cl-surface);
+  --dsw-alias-button-floating-hover: var(--cl-active);
+  --dsw-alias-button-info-fill: var(--cl-accent);
+  --dsw-alias-button-info-hover: var(--cl-accent-hover);
+  --dsw-alias-button-contrast-fill: var(--cl-ink-strong);
+
+  --dsw-alias-state-business-primary: var(--cl-accent);
+  --dsw-alias-state-business-tertiary: var(--cl-accent-soft);
+
+  --dsw-specific-sidebar-fill: var(--cl-page);
+  --dsw-specific-sidebar-nav-item-hover: var(--cl-hover);
+  --dsw-specific-sidebar-nav-item-active: var(--cl-active);
+  --dsw-specific-sidebar-nav-item-active-accent: var(--cl-active);
+  --dsw-specific-menu: var(--cl-surface);
+  --dsw-specific-selector: var(--cl-surface-0);
+  --dsw-specific-input-major: var(--cl-surface);
+  --dsw-specific-login-input: var(--cl-surface-0);
+  --dsw-specific-tip: var(--cl-surface-0);
+  --dsw-specific-bubble: var(--cl-surface-0);
+  --dsw-specific-bubble-highlight: var(--cl-active);
+
+  --dsw-alias-markdown-code-block: var(--cl-surface-0);
+  --dsw-alias-markdown-code-block-banner: var(--cl-active);
+  --dsw-alias-markdown-inline-code: var(--cl-active);
+  --dsw-alias-markdown-tag: var(--cl-active);
+  --dsw-alias-markdown-citation: var(--cl-active);
+  --dsw-alias-markdown-placeholder: var(--cl-muted);
+
+  --dsw-alias-scrollbar-bg-l1: var(--cl-border);
+  --dsw-alias-scrollbar-bg-l2: var(--cl-border);
+  --dsw-alias-scrollbar-hover-l1: var(--cl-border-strong);
+  --dsw-alias-scrollbar-hover-l2: var(--cl-border-strong);
+
+  --dsw-alias-tooltip-bg: var(--cl-ink);
+  --dsw-alias-toast-bg: var(--cl-ink-soft);
+
+  --dsw-shadow-lv1: 0 1px 2px hsl(0 0% 4.3% / 6%), 0 2px 8px hsl(0 0% 4.3% / 8%);
+  --dsw-shadow-lv1-blur: var(--cl-shadow-md);
+  --dsw-shadow-lv2: var(--cl-shadow-md);
+  --dsw-shadow-lv3: var(--cl-shadow-lg);
+
+  --dsw-font-markdown-base-font-family: var(--cl-serif);
+  --dsw-font-markdown-base-font-size: 16px;
+  --dsw-font-markdown-base-line-height: 26.4px;
+  --dsw-font-markdown-base-font-weight: 400;
+  --dsw-font-markdown-base: 400 16px/26.4px var(--cl-serif);
+  --dsw-font-markdown-base-strong-font-family: var(--cl-serif);
+  --dsw-font-markdown-base-strong: 600 16px/26.4px var(--cl-serif);
+  --dsw-font-markdown-small-font-family: var(--cl-sans);
+  --dsw-font-markdown-small: 400 14px/24px var(--cl-sans);
+  --dsw-font-markdown-code-block-font-family: var(--cl-mono);
+  --dsw-font-markdown-code-block: 400 13px/22px var(--cl-mono);
+}
+
+/* ---------- frame ----------
+ * The host owns its three-column concession solver. Default mode deliberately
+ * does not override grid-template-columns: that solver is what protects the
+ * chat at tablet/mobile widths and when Better Sidebar is open. Focus mode is
+ * the only exception because it hides the details/extensions for comparison. */
+body.dsh-ivory.dsh-ivory-focus .pI_x6G_frame {
+  grid-template-columns: 288px minmax(0, 1fr) 0px !important;
+}
+body.dsh-ivory.dsh-ivory-focus .pI_x6G_frame[data-sidebar-collapsed="true"] {
+  grid-template-columns: 56px minmax(0, 1fr) 0px !important;
+}
+html:has(body.dsh-ivory.dsh-ivory-focus) {
+  --dsh-sidebar-width: 0px !important;
+  --dsh-sidebar-height: 0px !important;
+}
+body.dsh-ivory.dsh-ivory-focus #root {
+  width: 100vw !important;
+  max-width: 100vw !important;
+}
+body.dsh-ivory.dsh-ivory-focus .aionui-explorer-col,
+body.dsh-ivory.dsh-ivory-focus .W-zNGW_panel,
+body.dsh-ivory.dsh-ivory-focus .W-zNGW_toggleCluster,
+body.dsh-ivory.dsh-ivory-focus .W-zNGW_bottomPanel,
+body.dsh-ivory.dsh-ivory-focus .kz2Bea_summon {
+  display: none !important;
+}
+body.dsh-ivory .pI_x6G_sidebarCol {
+  background: var(--cl-page) !important;
+  border-right: 0.5px solid var(--cl-border) !important;
+}
+body.dsh-ivory .pI_x6G_centerCol {
+  min-width: 0;
+}
+
+/* ---------- sidebar ---------- */
+body.dsh-ivory .hHd-Xa_root {
+  background: var(--cl-page) !important;
+}
+/* Keep the DeepSeek wordmark — only align position, never replace branding. */
+body.dsh-ivory .hHd-Xa_root {
+  padding: 0 !important;
+}
+body.dsh-ivory .hHd-Xa_logoRow {
+  height: 48px !important;
+  min-height: 48px !important;
+  margin: 0 !important;
+  padding: 8px !important;
+  box-sizing: border-box;
+}
+/* Keep the DeepSeek wordmark — only align position, never replace branding. */
+body.dsh-ivory .hHd-Xa_brand {
+  padding: 0 !important;
+  color: var(--cl-ink) !important;
+  justify-content: flex-start !important;
+}
+body.dsh-ivory .hHd-Xa_brand svg {
+  display: block !important;
+  width: auto !important;
+  height: 20px !important;
+  flex: none;
+}
+body.dsh-ivory .hHd-Xa_iconButton {
+  width: 24px !important;
+  height: 24px !important;
+  border-radius: 6px !important;
+  color: var(--cl-ink-strong) !important;
+}
+body.dsh-ivory .hHd-Xa_iconButton:hover {
+  background: var(--cl-hover) !important;
+}
+
+/* New chat — Claude sidebar item: 272x32, radius 9, 14px/20px left-aligned */
+body.dsh-ivory .hHd-Xa_newSession {
+  width: 272px !important;
+  height: 32px !important;
+  margin: 8px !important;
+  padding: 6px 16px !important;
+  border: 0 !important;
+  border-radius: 9px !important;
+  background: transparent !important;
+  color: var(--cl-ink-soft) !important;
+  font-family: var(--cl-sans) !important;
+  font-size: 14px !important;
+  line-height: 20px !important;
+  justify-content: flex-start !important;
+  gap: 12px !important;
+  box-shadow: none !important;
+}
+body.dsh-ivory .hHd-Xa_newSession:hover {
+  background: var(--cl-hover) !important;
+}
+body.dsh-ivory .hHd-Xa_newSession svg {
+  width: 20px !important;
+  height: 20px !important;
+  flex: none;
+}
+body.dsh-ivory .hHd-Xa_newSessionLabel {
+  font: inherit !important;
+  color: inherit !important;
+}
+
+/* plugin nav entries (task board / ssh) get the same row treatment */
+body.dsh-ivory ._7D6uKa_entry,
+body.dsh-ivory .mL8Uca_entry {
+  height: 32px !important;
+  margin: 0 8px !important;
+  padding: 6px 16px !important;
+  border-radius: 9px !important;
+  color: var(--cl-ink-soft) !important;
+  font-family: var(--cl-sans) !important;
+  font-size: 14px !important;
+  line-height: 20px !important;
+  justify-content: flex-start !important;
+  gap: 12px !important;
+}
+body.dsh-ivory ._7D6uKa_entry:hover,
+body.dsh-ivory .mL8Uca_entry:hover {
+  background: var(--cl-hover) !important;
+}
+body.dsh-ivory ._7D6uKa_entryIcon,
+body.dsh-ivory .mL8Uca_entryIcon {
+  width: 20px !important;
+  height: 20px !important;
+}
+
+/* section headers — 12px/16px muted */
+body.dsh-ivory .qDHVXG_sectionHeader {
+  height: auto !important;
+  min-height: 24px !important;
+  padding: 4px 16px 4px 16px !important;
+  color: var(--cl-muted) !important;
+}
+body.dsh-ivory .qDHVXG_sectionLabel {
+  font-family: var(--cl-sans) !important;
+  font-size: 12px !important;
+  line-height: 16px !important;
+  color: var(--cl-muted) !important;
+}
+
+/* workspace + session rows — Claude item geometry */
+body.dsh-ivory .qDHVXG_groupSection {
+  padding: 0 8px !important;
+}
+body.dsh-ivory .YDXeBa_projectRow,
+body.dsh-ivory .YDXeBa_sessionRow {
+  box-sizing: border-box !important;
+  height: 32px !important;
+  min-height: 32px !important;
+  padding: 6px 16px !important;
+  border-radius: 9px !important;
+  color: var(--cl-ink-soft) !important;
+  font-family: var(--cl-sans) !important;
+  font-size: 14px !important;
+  line-height: 20px !important;
+}
+body.dsh-ivory .YDXeBa_projectRow:hover,
+body.dsh-ivory .YDXeBa_sessionRow:hover {
+  background: var(--cl-hover) !important;
+}
+body.dsh-ivory .YDXeBa_sessionRow[aria-current="true"],
+body.dsh-ivory .YDXeBa_sessionRow[data-active="true"] {
+  background: var(--cl-active) !important;
+  color: var(--cl-ink) !important;
+}
+body.dsh-ivory .YDXeBa_time {
+  color: var(--cl-muted) !important;
+  font-size: 12px !important;
+  line-height: 16px !important;
+}
+body.dsh-ivory .qDHVXG_iconButton,
+body.dsh-ivory .qDHVXG_searchButton {
+  width: 24px !important;
+  height: 24px !important;
+  border-radius: 6px !important;
+  color: var(--cl-ink-strong) !important;
+}
+body.dsh-ivory .qDHVXG_iconButton:hover {
+  background: var(--cl-hover) !important;
+}
+
+/* bottom settings row — Claude user-menu-like footer */
+body.dsh-ivory .fThDlq_entryRow {
+  height: 64px !important;
+  min-height: 64px !important;
+  border-top: 0.5px solid var(--cl-border) !important;
+  font-family: var(--cl-sans) !important;
+  font-size: 14px !important;
+  line-height: 20px !important;
+  color: var(--cl-ink-strong) !important;
+}
+
+/* ---------- center column / chat ---------- */
+body.dsh-ivory .wSkVaW_root,
+body.dsh-ivory .wSkVaW_scrollBody {
+  background: var(--cl-page) !important;
+  scrollbar-gutter: auto !important;
+}
+body.dsh-ivory .wSkVaW_viewArea,
+body.dsh-ivory .wSkVaW_composerSeat,
+body.dsh-ivory .wSkVaW_composerStack {
+  width: 100% !important;
+  scrollbar-gutter: auto !important;
+}
+
+/* Claude conversation header: title only, no DSH tabs */
+body.dsh-ivory .wSkVaW_header {
+  display: block !important;
+  padding: 10px 24px 0 24px !important;
+}
+body.dsh-ivory .wSkVaW_titleRow {
+  padding: 0 !important;
+}
+body.dsh-ivory .wSkVaW_crumbs,
+body.dsh-ivory .wSkVaW_crumb {
+  font-family: var(--cl-sans) !important;
+  font-size: 15px !important;
+  line-height: 20px !important;
+  color: var(--cl-ink) !important;
+  background: transparent !important;
+  border: 0 !important;
+  padding: 0 !important;
+}
+body.dsh-ivory .wSkVaW_crumb {
+  min-height: 24px !important;
+  display: inline-flex !important;
+  align-items: center !important;
+}
+body.dsh-ivory .wSkVaW_headerActions {
+  color: var(--cl-muted) !important;
+}
+/* keep the DSH "对话轨迹" tab bar visible */
+
+/* ---------- hero (new chat) ---------- */
+/* DSH hero mascot/badge stay visible; the decorative glow layer is removed above. */
+/* claude.ai home vertical rhythm: greeting 240, card 320, chips ~456 */
+body.dsh-ivory .wSkVaW_composerHero {
+  width: min(672px, 100%) !important;
+  margin-inline: auto !important;
+}
+body.dsh-ivory .wSkVaW_scrollBody:has(.wSkVaW_composerHero) {
+  justify-content: flex-start !important;
+}
+body.dsh-ivory .wSkVaW_composerHero > .pXSMma_root {
+  order: 0 !important;
+  height: auto !important;
+  margin-top: 229px !important;
+}
+body.dsh-ivory .wSkVaW_composerHero > div:has(.uV2eYG_root) {
+  order: 1 !important;
+  margin-top: 36px !important;
+}
+body.dsh-ivory .wSkVaW_composerHero .uV2eYG_root {
+  margin-top: 0 !important;
+  padding-top: 12px !important;
+  padding-inline: 0 !important;
+}
+body.dsh-ivory .wSkVaW_composerHero > .wSkVaW_heroWorkspaceRow {
+  order: 2 !important;
+  width: min(672px, 100%) !important;
+  margin: 8px auto 0 !important;
+}
+body.dsh-ivory .pXSMma_root,
+body.dsh-ivory .pXSMma_stack {
+  width: auto !important;
+  max-width: 752px !important;
+  margin-inline: auto !important;
+}
+body.dsh-ivory .pXSMma_headline {
+  height: 48px !important;
+  justify-content: center !important;
+}
+body.dsh-ivory .pXSMma_headlineText {
+  font-family: var(--cl-serif) !important;
+  font-size: 38px !important;
+  font-weight: 330 !important;
+  line-height: 47.5px !important;
+  color: var(--cl-ink) !important;
+  letter-spacing: normal !important;
+}
+body.dsh-ivory .wSkVaW_heroWorkspaceRow {
+  justify-content: center !important;
+}
+body.dsh-ivory .pXSMma_workspace,
+body.dsh-ivory .cubgiG_seat {
+  border-radius: 8px !important;
+  background: transparent !important;
+  border: 0.5px solid var(--cl-border) !important;
+  color: var(--cl-muted) !important;
+  font-family: var(--cl-sans) !important;
+  font-size: 14px !important;
+  line-height: 20px !important;
+  padding: 0 12px !important;
+  height: 32px !important;
+}
+body.dsh-ivory .pXSMma_workspaceLabel {
+  font: inherit !important;
+  color: inherit !important;
+}
+
+/* ---------- composer ---------- */
+body.dsh-ivory .wSkVaW_composerSeat {
+  width: 100% !important;
+}
+body.dsh-ivory .wSkVaW_composerStack {
+  width: 100% !important;
+}
+body.dsh-ivory .uV2eYG_root {
+  box-sizing: border-box !important;
+  width: 100% !important;
+  max-width: 752px !important;
+  margin-inline: auto !important;
+}
+/* The host gives the root 16px inline padding. Keep that breathing room in the
+ * normal plugin layout, but remove it in pixel-comparison focus mode so the
+ * visible conversation card—not only its invisible wrapper—is 752px wide. */
+body.dsh-ivory.dsh-ivory-focus .uV2eYG_root {
+  padding-inline: 0 !important;
+}
+body.dsh-ivory .uV2eYG_card {
+  min-height: 100px !important;
+  border-radius: 20px !important;
+  border: 1px solid transparent !important;
+  background: var(--cl-card) !important;
+  box-shadow: var(--cl-shadow-card) !important;
+}
+body.dsh-ivory .wSkVaW_composerHero .uV2eYG_card {
+  max-width: min(672px, 100%) !important;
+  min-height: 120px !important;
+  margin-inline: auto !important;
+}
+body.dsh-ivory .uV2eYG_input {
+  font-family: var(--cl-sans) !important;
+  font-size: 15px !important;
+  line-height: 20px !important;
+  font-weight: 400 !important;
+  /* DSH deliberately paints text through the backdrop so chips and highlights
+   * share one visual layer. Keep the native textarea transparent: making both
+   * layers opaque is what caused the reported bold/ghosted input. */
+  color: transparent !important;
+  -webkit-text-fill-color: transparent !important;
+  caret-color: var(--cl-accent) !important;
+  padding-left: 16px !important;
+}
+body.dsh-ivory .uV2eYG_backdrop {
+  font-family: DshChipCell, var(--cl-sans) !important;
+  font-size: 15px !important;
+  line-height: 20px !important;
+  padding-left: 16px !important;
+  color: var(--cl-ink) !important;
+  -webkit-text-fill-color: currentColor !important;
+}
+body.dsh-ivory .uV2eYG_mirror {
+  font-family: DshChipCell, var(--cl-sans) !important;
+  font-size: 15px !important;
+  line-height: 20px !important;
+  padding-left: 16px !important;
+  color: transparent !important;
+  visibility: hidden !important;
+}
+body.dsh-ivory .uV2eYG_input::placeholder {
+  color: var(--cl-muted) !important;
+  -webkit-text-fill-color: var(--cl-muted) !important;
+}
+body.dsh-ivory .uV2eYG_row {
+  padding: 2px 12px 8px !important;
+  gap: 8px !important;
+  min-width: 0 !important;
+}
+body.dsh-ivory .uV2eYG_tools,
+body.dsh-ivory .uV2eYG_modes,
+body.dsh-ivory .uV2eYG_trailing,
+body.dsh-ivory ._7KE1Ra_root,
+body.dsh-ivory ._7KE1Ra_trigger {
+  min-width: 0 !important;
+}
+body.dsh-ivory ._7KE1Ra_triggerLabel {
+  min-width: 0 !important;
+  overflow: hidden !important;
+  text-overflow: ellipsis !important;
+  white-space: nowrap !important;
+}
+body.dsh-ivory .uV2eYG_tools button,
+body.dsh-ivory .uV2eYG_trailing button {
+  border-radius: 8px !important;
+  color: var(--cl-ink) !important;
+}
+body.dsh-ivory .uV2eYG_tools button:hover,
+body.dsh-ivory .uV2eYG_trailing button:hover {
+  background: var(--cl-hover) !important;
+}
+
+/* ---------- conversation messages ---------- */
+/* F1 responsive: fluid column — full width up to Claude's 720px cap, so narrow
+ * viewports never clip messages (was fixed width:720px). */
+body.dsh-ivory .Md3f7G_scroll {
+  max-width: 720px !important;
+  width: 100% !important;
+  margin-inline: auto !important;
+  padding: 0 !important;
+}
+body.dsh-ivory .Md3f7G_column {
+  width: 100% !important;
+  max-width: 720px !important;
+  margin: 0 auto !important;
+}
+/* user message: right-aligned neutral bubble, 12px radius, 15/20 sans */
+body.dsh-ivory .gdEzaW_userRow {
+  width: 100% !important;
+  max-width: 720px !important;
+}
+body.dsh-ivory .gdEzaW_userStack {
+  margin-left: auto !important;
+  max-width: 85% !important;
+}
+body.dsh-ivory .gdEzaW_bubble {
+  border-radius: 12px !important;
+  background: var(--cl-user-bubble) !important;
+  color: var(--cl-ink) !important;
+  padding: 12px 16px !important;
+  font-family: var(--cl-sans) !important;
+  font-size: 15px !important;
+  line-height: 20px !important;
+  font-weight: 400 !important;
+}
+body.dsh-ivory .gdEzaW_bubble * {
+  font-family: var(--cl-sans) !important;
+  font-size: 15px !important;
+  line-height: 20px !important;
+  color: var(--cl-ink) !important;
+}
+/* assistant text: serif 16/26.4, right padding for action room */
+body.dsh-ivory .Sxvs8a_root,
+body.dsh-ivory .Sxvs8a_body {
+  font-family: var(--cl-serif) !important;
+  font-size: 16px !important;
+  line-height: 26.4px !important;
+  color: var(--cl-ink) !important;
+}
+body.dsh-ivory .Sxvs8a_body > * {
+  font-family: inherit !important;
+}
+/* tool call rows — quiet 13px muted */
+body.dsh-ivory .Md3f7G_callRow,
+body.dsh-ivory .ztWv_q_callRow {
+  border-radius: 8px !important;
+  color: var(--cl-muted) !important;
+  font-family: var(--cl-sans) !important;
+  font-size: 13px !important;
+  line-height: 20px !important;
+  background: transparent !important;
+}
+body.dsh-ivory .osXY9a_root,
+body.dsh-ivory .p-xYUq_actions {
+  color: var(--cl-muted) !important;
+}
+body.dsh-ivory .osXY9a_actions,
+body.dsh-ivory .p-xYUq_actions {
+  box-sizing: border-box !important;
+  margin-inline: 0 !important;
+  width: 100% !important;
+  max-width: 100% !important;
+  min-width: 0 !important;
+}
+body.dsh-ivory .p-xYUq_timeEnd {
+  min-width: 0 !important;
+  max-width: 100% !important;
+  overflow: hidden !important;
+  text-overflow: ellipsis !important;
+  white-space: nowrap !important;
+}
+@media (hover: hover) and (pointer: fine) {
+  body.dsh-ivory .Md3f7G_flowItem .osXY9a_actions,
+  body.dsh-ivory .Md3f7G_flowItem .p-xYUq_actions {
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 150ms ease;
+  }
+  body.dsh-ivory .Md3f7G_flowItem:hover .osXY9a_actions,
+  body.dsh-ivory .Md3f7G_flowItem:hover .p-xYUq_actions,
+  body.dsh-ivory .Md3f7G_flowItem:focus-within .osXY9a_actions,
+  body.dsh-ivory .Md3f7G_flowItem:focus-within .p-xYUq_actions {
+    opacity: 1;
+    pointer-events: auto;
+  }
+}
+
+/* inline markdown code + links */
+body.dsh-ivory ._markdown_1nba0_5 a {
+  color: var(--cl-accent-text) !important;
+}
+
+/* Claude uses native overlay scrollbars — no reserved gutter width.
+ * Focus mode (pixel comparison) hides bars entirely; normal mode keeps a thin
+ * Claude-style overlay bar so long lists/code stay navigable. */
+body.dsh-ivory.dsh-ivory-focus ::-webkit-scrollbar {
+  width: 0 !important;
+  height: 0 !important;
+}
+body.dsh-ivory.dsh-ivory-focus * {
+  scrollbar-width: none;
+}
+body.dsh-ivory:not(.dsh-ivory-focus) ::-webkit-scrollbar {
+  width: 10px !important;
+  height: 10px !important;
+}
+body.dsh-ivory:not(.dsh-ivory-focus) ::-webkit-scrollbar-track {
+  background: transparent !important;
+}
+body.dsh-ivory:not(.dsh-ivory-focus) ::-webkit-scrollbar-thumb {
+  background: var(--cl-border-strong) !important;
+  border-radius: 5px !important;
+  border: 3px solid transparent !important;
+  background-clip: content-box !important;
+}
+body.dsh-ivory {
+  --dsh-scrollbar-width: 0px;
+}
+
+/* ---------- QA round-1 fixes (adversarial review 2026-08-16) ---------- */
+
+/* F1 hero glow: the DSH decorative glow SVG tints the whole hero zone blue and
+ * pushes dark-home chrome diff over budget. Claude's home is flat — remove the
+ * glow layer only; the mascot fish (.pXSMma_fish) is separate and stays. */
+body.dsh-ivory .wSkVaW_heroGlow {
+  display: none !important;
+}
+
+/* F2 dark tooltip text: bubble bg flips to ivory in dark, but the bubble text
+ * stays hardcoded white → unreadable. Flip text along with the surface. */
+body.dsh-ivory[data-ds-dark-theme] [class^="_bubble_"],
+body.dsh-ivory[data-ds-dark-theme] [class*=" _bubble_"] {
+  color: var(--cl-page) !important;
+}
+
+/* F3 selected session row: DSH marks it with .YDXeBa_selected + aria-selected,
+ * not aria-current/data-active — Claude active bg never applied before. */
+body.dsh-ivory .YDXeBa_sessionRow.YDXeBa_selected,
+body.dsh-ivory .YDXeBa_sessionRow[aria-selected="true"] {
+  background: var(--cl-active) !important;
+  color: var(--cl-ink) !important;
+}
+
+/* Keep the composer visually steady while typing: focus must not add a blue
+ * outer ring or shift the card's perceived size. */
+body.dsh-ivory .uV2eYG_card:focus-within {
+  outline: none !important;
+  outline-offset: 0 !important;
+}
+
+/* F5 send button: Claude fill-primary (ink light / ivory dark), not DSH blue. */
+body.dsh-ivory .uV2eYG_primary {
+  background: var(--cl-primary-fill) !important;
+  color: var(--cl-page) !important;
+}
+body.dsh-ivory .uV2eYG_primary:hover:not(:disabled) {
+  background: var(--cl-primary-hover) !important;
+}
+body.dsh-ivory .uV2eYG_primary:disabled {
+  background: var(--cl-hover) !important;
+  color: var(--cl-muted) !important;
+}
+
+/* Only animate paint-only properties. `transition: all` caused a card repaint on
+ * every textarea resize, while disabling all transitions removed useful state
+ * feedback. */
+body.dsh-ivory .uV2eYG_card {
+  transition: background-color 150ms ease, border-color 150ms ease, box-shadow 150ms ease !important;
+}
+body.dsh-ivory .uV2eYG_cardWorkspaceTrigger::after {
+  transition: opacity 150ms ease, border-color 150ms ease !important;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  body.dsh-ivory *,
+  body.dsh-ivory *::before,
+  body.dsh-ivory *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    scroll-behavior: auto !important;
+    transition-duration: 0.001ms !important;
+  }
+  body.dsh-ivory .uV2eYG_card,
+  body.dsh-ivory .uV2eYG_cardWorkspaceTrigger::after,
+  body.dsh-ivory .Md3f7G_flowItem .osXY9a_actions,
+  body.dsh-ivory .Md3f7G_flowItem .p-xYUq_actions {
+    transition-duration: 0.001ms !important;
+  }
+}
+
+/* Plugin panels: inherit typography at the component root, then adapt semantic
+ * controls/roles. Avoid styling every descendant div/span: that leaked into
+ * third-party canvases and made future plugin upgrades brittle. */
+body.dsh-ivory .aionui-explorer-col,
+body.dsh-ivory .aionui-preview-col {
+  background: var(--cl-page) !important;
+  border-left: 0.5px solid var(--cl-border) !important;
+  font-family: var(--cl-sans) !important;
+  color: var(--cl-ink) !important;
+}
+body.dsh-ivory .aionui-explorer-col button,
+body.dsh-ivory .aionui-preview-col button {
+  color: var(--cl-ink-strong) !important;
+  border-radius: 6px !important;
+  font: inherit !important;
+}
+body.dsh-ivory .aionui-explorer-col button:hover,
+body.dsh-ivory .aionui-preview-col button:hover,
+body.dsh-ivory .aionui-explorer-col [role="treeitem"]:hover {
+  background: var(--cl-hover) !important;
+}
+body.dsh-ivory .aionui-explorer-col :is([role="tab"], [role="treeitem"])[aria-selected="true"],
+body.dsh-ivory .aionui-preview-col [role="tab"][aria-selected="true"] {
+  background: var(--cl-active) !important;
+  color: var(--cl-ink) !important;
+}
+body.dsh-ivory .aionui-explorer-col :is(input, [role="searchbox"]),
+body.dsh-ivory .aionui-preview-col :is(input, [role="searchbox"]) {
+  background: var(--cl-surface) !important;
+  border: 0.5px solid var(--cl-border-strong) !important;
+  color: var(--cl-ink) !important;
+  border-radius: 8px !important;
+}
+body.dsh-ivory .aionui-preview-col :is(pre, table) {
+  max-width: 100% !important;
+  overflow: auto !important;
+}
+
+body.dsh-ivory .W-zNGW_panel {
+  font-family: var(--cl-sans) !important;
+  color: var(--cl-ink) !important;
+  background: var(--cl-page) !important;
+}
+body.dsh-ivory .W-zNGW_tabActive {
+  color: var(--cl-ink) !important;
+  background: var(--cl-active) !important;
+}
+body.dsh-ivory .W-zNGW_explorerRow:hover {
+  background: var(--cl-hover) !important;
+}
+body.dsh-ivory .W-zNGW_explorerRow {
+  box-sizing: border-box !important;
+  width: 100% !important;
+  max-width: 100% !important;
+  min-width: 0 !important;
+  overflow: hidden !important;
+}
+body.dsh-ivory .W-zNGW_explorerRow > *,
+body.dsh-ivory .W-zNGW_explorerName,
+body.dsh-ivory .W-zNGW_paneContent,
+body.dsh-ivory .W-zNGW_editorMd {
+  min-width: 0 !important;
+  max-width: 100% !important;
+}
+body.dsh-ivory .W-zNGW_explorerName {
+  overflow: hidden !important;
+  text-overflow: ellipsis !important;
+  white-space: nowrap !important;
+}
+body.dsh-ivory .W-zNGW_editorMd {
+  overflow-x: hidden !important;
+}
+body.dsh-ivory .W-zNGW_editorMd ._markdown_1nba0_5 table,
+body.dsh-ivory .W-zNGW_editorMd table {
+  box-sizing: border-box !important;
+  display: block !important;
+  width: max-content !important;
+  max-width: 100% !important;
+  overflow-x: auto !important;
+}
+body.dsh-ivory .W-zNGW_tabClose,
+body.dsh-ivory .W-zNGW_tabBarPlus,
+body.dsh-ivory .W-zNGW_editorModeButton,
+body.dsh-ivory .W-zNGW_cardGear {
+  box-sizing: border-box !important;
+  min-width: 24px !important;
+  min-height: 24px !important;
+}
+body.dsh-ivory .W-zNGW_tabClose,
+body.dsh-ivory .W-zNGW_tabBarPlus {
+  width: 24px !important;
+  height: 24px !important;
+}
+body.dsh-ivory .W-zNGW_editorModeButton {
+  height: 24px !important;
+  padding-inline: 8px !important;
+}
+
+/* F9 context-injection cards in the flow: read like Claude's quiet small rows,
+ * not 16px body text. */
+body.dsh-ivory .Md3f7G_flowItem .pC0e7a_root {
+  font-size: 13px !important;
+  line-height: 20px !important;
+  color: var(--cl-ink-strong) !important;
+}
+body.dsh-ivory .Md3f7G_flowItem .pC0e7a_root :is(div, span, p) {
+  color: inherit !important;
+}
+
+/* Outline is a floating utility panel. Its bottom edge follows the actual
+ * composer top (the client updates --dshcs-composer-clearance via ResizeObserver)
+ * so the primary send/model/permission controls remain hit-testable even when
+ * the composer grows to multiple lines. */
+body.dsh-ivory .d5Qffq_panel {
+  box-sizing: border-box !important;
+  top: auto !important;
+  right: clamp(16px, 3vw, 30px) !important;
+  bottom: var(--dshcs-composer-clearance, 144px) !important;
+  width: min(320px, calc(100vw - 32px)) !important;
+  height: 560px !important;
+  max-height: max(120px, calc(100dvh - var(--dshcs-composer-clearance, 144px) - 24px)) !important;
+  background: var(--cl-surface) !important;
+  border-color: var(--cl-border-strong) !important;
+  color: var(--cl-ink) !important;
+}
+body.dsh-ivory .d5Qffq_panel :is(input, [role="searchbox"]) {
+  background: var(--cl-page) !important;
+  border-color: var(--cl-border) !important;
+  color: var(--cl-ink) !important;
+}
+body.dsh-ivory .d5Qffq_item:hover,
+body.dsh-ivory .d5Qffq_item[aria-current="true"] {
+  background: var(--cl-hover) !important;
+}
+
+/* Settings extensions: use the same quiet surfaces, borders and controls as
+ * the main settings shell while retaining semantic text and all functionality. */
+body.dsh-ivory .dvt-settings,
+body.dsh-ivory .Pz1RTq_section {
+  font-family: var(--cl-sans) !important;
+  color: var(--cl-ink) !important;
+}
+body.dsh-ivory .dvt-panel,
+body.dsh-ivory .dvt-advanced,
+body.dsh-ivory .Pz1RTq_group {
+  background: var(--cl-surface) !important;
+  border: 0.5px solid var(--cl-border) !important;
+  border-radius: 14px !important;
+  box-shadow: none !important;
+}
+body.dsh-ivory .dvt-panel.dvt-essential {
+  border-color: var(--cl-border-strong) !important;
+}
+body.dsh-ivory .dvt-alert.notice {
+  background: var(--cl-surface-0) !important;
+  border: 0.5px solid var(--cl-border) !important;
+  color: var(--cl-ink-strong) !important;
+}
+body.dsh-ivory .dvt-badge,
+body.dsh-ivory .dvt-badge.error,
+body.dsh-ivory .dvt-badge.ok {
+  background: var(--cl-active) !important;
+  border: 0.5px solid var(--cl-border) !important;
+  color: var(--cl-ink-strong) !important;
+}
+body.dsh-ivory .dvt-runtime-facts,
+body.dsh-ivory .dvt-release {
+  background: var(--cl-surface-0) !important;
+  border: 0.5px solid var(--cl-border) !important;
+  color: var(--cl-ink-strong) !important;
+}
+body.dsh-ivory .dvt-kicker,
+body.dsh-ivory .dvt-muted,
+body.dsh-ivory .Pz1RTq_intro,
+body.dsh-ivory .Pz1RTq_desc,
+body.dsh-ivory .Pz1RTq_count,
+body.dsh-ivory .Pz1RTq_cardDesc {
+  color: var(--cl-muted) !important;
+}
+body.dsh-ivory .Pz1RTq_card,
+body.dsh-ivory .Pz1RTq_addCard {
+  background: transparent !important;
+  border: 0.5px solid var(--cl-border) !important;
+  border-radius: 12px !important;
+  box-shadow: none !important;
+}
+body.dsh-ivory .Pz1RTq_card:hover,
+body.dsh-ivory .Pz1RTq_addCard:hover {
+  background: var(--cl-hover) !important;
+  border-color: var(--cl-border-strong) !important;
+}
+body.dsh-ivory .Pz1RTq_card.Pz1RTq_cardOn {
+  background: var(--cl-hover) !important;
+  border-color: var(--cl-border-strong) !important;
+}
+body.dsh-ivory .Pz1RTq_cardIconChip {
+  background: var(--cl-active) !important;
+  border: 0.5px solid var(--cl-border) !important;
+  color: var(--cl-ink-strong) !important;
+}
+body.dsh-ivory .Pz1RTq_cardCheck {
+  background: var(--cl-primary-fill) !important;
+  color: var(--cl-page) !important;
+}
+body.dsh-ivory .Pz1RTq_switchTrack {
+  background: var(--cl-active) !important;
+  border-color: var(--cl-border-strong) !important;
+}
+body.dsh-ivory .Pz1RTq_switchInput:checked + .Pz1RTq_switchTrack {
+  background: var(--cl-primary-fill) !important;
+  border-color: var(--cl-primary-fill) !important;
+}
+body.dsh-ivory .Pz1RTq_switchThumb {
+  background: var(--cl-surface) !important;
+  box-shadow: 0 1px 2px hsl(0 0% 0% / 18%) !important;
+}
+body.dsh-ivory .Pz1RTq_cardGear {
+  box-sizing: border-box !important;
+  width: 24px !important;
+  height: 24px !important;
+}
+
+/* Keyboard focus remains visible with neutral theme ink. The composer input is
+ * excluded because its caret is the focus cue and the requested outer ring is
+ * intentionally absent. */
+body.dsh-ivory :is(button, a, [role="button"], [role="tab"], [role="menuitem"], input:not(.uV2eYG_input), select):focus-visible {
+  outline: 2px solid var(--cl-ink) !important;
+  outline-offset: 2px !important;
+}
+body.dsh-ivory .uV2eYG_input:focus-visible {
+  outline: none !important;
+}
+
+@media (max-width: 720px) {
+  body.dsh-ivory .wSkVaW_header {
+    padding-inline: 12px !important;
+  }
+  body.dsh-ivory .wSkVaW_titleCluster,
+  body.dsh-ivory .wSkVaW_crumbs,
+  body.dsh-ivory .wSkVaW_crumbSeg,
+  body.dsh-ivory .wSkVaW_crumb,
+  body.dsh-ivory .wSkVaW_headerActions,
+  body.dsh-ivory .SVAs4q_label {
+    min-width: 0 !important;
+  }
+  body.dsh-ivory .wSkVaW_titleCluster {
+    gap: 8px !important;
+    overflow: hidden !important;
+  }
+  body.dsh-ivory .wSkVaW_crumbs {
+    flex: 1 1 auto !important;
+  }
+  body.dsh-ivory .wSkVaW_crumbSeg,
+  body.dsh-ivory .wSkVaW_crumb {
+    width: 100% !important;
+    max-width: 100% !important;
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
+    white-space: nowrap !important;
+  }
+  body.dsh-ivory .wSkVaW_headerActions {
+    flex: 0 1 110px !important;
+    max-width: 110px !important;
+    overflow: hidden !important;
+  }
+  body.dsh-ivory .SVAs4q_label {
+    max-width: 100% !important;
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
+    white-space: nowrap !important;
+  }
+  body.dsh-ivory .wSkVaW_composerHero > .pXSMma_root {
+    margin-top: clamp(104px, 20vh, 180px) !important;
+  }
+  body.dsh-ivory .wSkVaW_composerHero > div:has(.uV2eYG_root) {
+    margin-top: 24px !important;
+  }
+  body.dsh-ivory .wSkVaW_composerHero {
+    width: calc(100% - 24px) !important;
+  }
+  body.dsh-ivory .d5Qffq_edgeTrigger {
+    top: 64px !important;
+    right: 8px !important;
+    bottom: auto !important;
+  }
+  body.dsh-ivory .uV2eYG_row {
+    padding-inline: 8px !important;
+    gap: 6px !important;
+  }
+  body.dsh-ivory .uV2eYG_tools,
+  body.dsh-ivory .uV2eYG_trailing {
+    gap: 4px !important;
+  }
+  body.dsh-ivory .Sh0Q9G_trigger {
+    position: relative !important;
+    box-sizing: border-box !important;
+    width: 32px !important;
+    min-width: 32px !important;
+    padding-inline: 6px !important;
+    justify-content: center !important;
+  }
+  body.dsh-ivory .Sh0Q9G_triggerLabel {
+    position: absolute !important;
+    width: 1px !important;
+    height: 1px !important;
+    overflow: hidden !important;
+    clip-path: inset(50%) !important;
+    white-space: nowrap !important;
+  }
+  body.dsh-ivory .Sh0Q9G_chevron {
+    display: none !important;
+  }
+  body.dsh-ivory ._7KE1Ra_trigger {
+    max-width: min(132px, 40vw) !important;
+    padding-inline: 6px !important;
+  }
+  body.dsh-ivory .wSkVaW_heroWorkspaceRow {
+    flex-wrap: wrap !important;
+    padding-inline: 12px !important;
+  }
+  body.dsh-ivory .Pz1RTq_grid,
+  body.dsh-ivory .dvt-form-grid {
+    grid-template-columns: minmax(0, 1fr) !important;
+  }
+}
+
+@media (max-width: 420px) {
+  body.dsh-ivory .uV2eYG_card {
+    border-radius: 16px !important;
+  }
+  body.dsh-ivory .uV2eYG_row {
+    gap: 4px !important;
+  }
+  body.dsh-ivory ._7KE1Ra_trigger {
+    max-width: 118px !important;
+  }
+  body.dsh-ivory .pXSMma_headline {
+    width: 100% !important;
+    height: auto !important;
+    gap: 6px !important;
+    flex-wrap: nowrap !important;
+  }
+  body.dsh-ivory .pXSMma_headlineText {
+    min-width: 0 !important;
+    font-size: 30px !important;
+    line-height: 38px !important;
+    white-space: nowrap !important;
+  }
+  body.dsh-ivory .pXSMma_previewBadge {
+    flex: none !important;
+    font-size: 11px !important;
+  }
+  body.dsh-ivory .nL4_yW_sessionLogButton {
+    position: relative !important;
+    box-sizing: border-box !important;
+    width: 36px !important;
+    min-width: 36px !important;
+    padding-inline: 10px !important;
+  }
+  body.dsh-ivory .nL4_yW_sessionLogButton > span {
+    position: absolute !important;
+    width: 1px !important;
+    height: 1px !important;
+    overflow: hidden !important;
+    clip-path: inset(50%) !important;
+    white-space: nowrap !important;
+  }
+}
+
+@media (forced-colors: active) {
+  body.dsh-ivory :is(button, a, input, textarea, select):focus-visible {
+    outline: 2px solid CanvasText !important;
+  }
+}
+
+/* F10 icon consistency: one size + one stroke color per zone, like Claude's
+ * Iconography set (nav icons 20/16px ink-soft, composer icons ink). */
+body.dsh-ivory .YDXeBa_sessionRow svg,
+body.dsh-ivory .YDXeBa_projectRow svg {
+  width: 16px !important;
+  height: 16px !important;
+  color: var(--cl-ink-strong) !important;
+}
+body.dsh-ivory .hHd-Xa_iconButton svg,
+body.dsh-ivory .qDHVXG_iconButton svg,
+body.dsh-ivory .qDHVXG_searchButton svg {
+  width: 18px !important;
+  height: 18px !important;
+}
+body.dsh-ivory ._7D6uKa_entryIcon svg,
+body.dsh-ivory .mL8Uca_entryIcon svg {
+  width: 20px !important;
+  height: 20px !important;
+  color: var(--cl-ink-soft) !important;
+}
+
+/* F11 sidebar item typography to Claude: 400 weight, 21px line, primary ink
+ * for recents (measured from claude.ai tokens). */
+body.dsh-ivory .hHd-Xa_newSession,
+body.dsh-ivory .YDXeBa_sessionRow,
+body.dsh-ivory .YDXeBa_projectRow {
+  font-weight: 400 !important;
+}
+body.dsh-ivory .YDXeBa_sessionRow {
+  line-height: 21px !important;
+  color: var(--cl-ink) !important;
+}
+
+/* F5b composer add/tools buttons: transparent like Claude's icon buttons. */
+body.dsh-ivory .uV2eYG_add,
+body.dsh-ivory .uV2eYG_tools button {
+  background: transparent !important;
+  color: var(--cl-ink) !important;
+}
+
+/* F13 turn-end mark: keep the DSH whale quiet and legible. It follows the
+ * theme's primary ink (black in light, ivory in dark) instead of accent blue. */
+body.dsh-ivory .dshcs-turn-mark {
+  display: inline-block !important;
+  width: 18px;
+  height: 13.5px;
+  margin-left: 7px;
+  vertical-align: -1.5px;
+  color: var(--cl-ink);
+  opacity: 0.9;
+}
+body.dsh-ivory .dshcs-turn-mark svg {
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+
+/* F12 markdown document preview (client.js swaps .md code blocks for a rendered
+ * view with a source toggle) — Claude doc styles. */
+body.dsh-ivory .dshcs-md {
+  font-family: var(--cl-serif);
+  font-size: 15px;
+  line-height: 24px;
+  color: var(--cl-ink);
+  padding: 4px 2px;
+  min-width: 0;
+  max-width: 100%;
+}
+body.dsh-ivory .dshcs-md h1 { font-size: 26px; line-height: 34px; font-weight: 500; margin: 18px 0 10px; letter-spacing: -0.01em; }
+body.dsh-ivory .dshcs-md h2 { font-size: 20px; line-height: 28px; font-weight: 600; margin: 16px 0 8px; }
+body.dsh-ivory .dshcs-md h3 { font-size: 17px; line-height: 24px; font-weight: 600; margin: 14px 0 6px; }
+body.dsh-ivory .dshcs-md h1:first-child,
+body.dsh-ivory .dshcs-md h2:first-child { margin-top: 4px; }
+body.dsh-ivory .dshcs-md p { margin: 8px 0; }
+body.dsh-ivory .dshcs-md ul,
+body.dsh-ivory .dshcs-md ol { margin: 8px 0; padding-left: 24px; }
+body.dsh-ivory .dshcs-md li { margin: 3px 0; }
+body.dsh-ivory .dshcs-md code {
+  font-family: var(--cl-mono);
+  font-size: 13px;
+  background: var(--cl-active);
+  border-radius: 5px;
+  padding: 1px 5px;
+}
+body.dsh-ivory .dshcs-md pre {
+  background: var(--cl-surface-0);
+  border: 0.5px solid var(--cl-border);
+  border-radius: 10px;
+  padding: 12px 14px;
+  overflow: auto;
+  margin: 10px 0;
+}
+body.dsh-ivory .dshcs-md pre code { background: transparent; padding: 0; font-size: 12.5px; line-height: 20px; }
+body.dsh-ivory .dshcs-md blockquote {
+  border-left: 3px solid var(--cl-border-strong);
+  margin: 8px 0; padding: 2px 14px;
+  color: var(--cl-ink-strong);
+}
+body.dsh-ivory .dshcs-md table {
+  box-sizing: border-box;
+  display: block;
+  width: max-content;
+  max-width: 100%;
+  overflow-x: auto;
+  border-collapse: collapse;
+  margin: 10px 0;
+  font-size: 14px;
+}
+body.dsh-ivory .dshcs-md th,
+body.dsh-ivory .dshcs-md td { border: 0.5px solid var(--cl-border-strong); padding: 6px 12px; text-align: left; }
+body.dsh-ivory .dshcs-md th { background: var(--cl-active); font-weight: 600; }
+body.dsh-ivory .dshcs-md a { color: var(--cl-accent-text); }
+body.dsh-ivory .dshcs-md hr { border: 0; border-top: 0.5px solid var(--cl-border-strong); margin: 14px 0; }
+body.dsh-ivory .dshcs-md-toggle {
+  font-family: var(--cl-sans);
+  font-size: 12px;
+  line-height: 16px;
+  color: var(--cl-muted);
+  background: transparent;
+  border: 0.5px solid var(--cl-border);
+  border-radius: 6px;
+  padding: 2px 10px;
+  cursor: pointer;
+}
+body.dsh-ivory .dshcs-md-toggle:hover { background: var(--cl-hover); color: var(--cl-ink-strong); }
+body.dsh-ivory .dshcs-safe-source-note {
+  margin: 0 0 10px;
+  padding: 8px 10px;
+  border: 0.5px solid var(--cl-border);
+  border-radius: 8px;
+  background: var(--cl-surface-0);
+  color: var(--cl-muted);
+  font: 400 12px/18px var(--cl-sans);
+}

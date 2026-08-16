@@ -1,0 +1,12 @@
+{
+  "version": 1,
+  "notes": "Ivory 设计资产。SVG 使用 viewBox + fill=currentColor，颜色由主题 token 控制。whale.svg 基于 MIT 许可的 DeepSeek Harness hero mascot；归属说明见 THIRD_PARTY_NOTICES.md。",
+  "icons": {
+    "whale": {
+      "file": "whale.svg",
+      "viewBox": "0 0 23.16 17.04",
+      "usage": "回合结束标记（.dshcs-turn-mark）",
+      "color": "var(--cl-ink)"
+    }
+  }
+}
