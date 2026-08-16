@@ -642,6 +642,111 @@ body.dsh-ivory .p-xYUq_timeEnd {
   text-overflow: ellipsis !important;
   white-space: nowrap !important;
 }
+
+/* Per-block copy complements DSH's whole-message action. Code controls stay
+ * visible; prose controls appear on block hover or keyboard focus. */
+body.dsh-ivory .dshcs-code-copy-wrap {
+  position: relative !important;
+  box-sizing: border-box !important;
+  min-width: 0 !important;
+  max-width: 100% !important;
+}
+body.dsh-ivory .dshcs-copy-text-target {
+  position: relative !important;
+}
+body.dsh-ivory .dshcs-copy-button {
+  appearance: none !important;
+  box-sizing: border-box !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  min-width: 26px !important;
+  height: 26px !important;
+  margin: 0 !important;
+  padding: 4px !important;
+  border: 0.5px solid var(--cl-border) !important;
+  border-radius: 7px !important;
+  background: color-mix(in srgb, var(--cl-surface) 94%, transparent) !important;
+  color: var(--cl-muted) !important;
+  box-shadow: 0 1px 3px hsl(0 0% 0% / 8%) !important;
+  font: 500 11px/16px var(--cl-sans) !important;
+  letter-spacing: 0 !important;
+  cursor: pointer !important;
+  transition: opacity 120ms ease, color 120ms ease, background-color 120ms ease !important;
+}
+body.dsh-ivory .dshcs-copy-button:hover {
+  background: var(--cl-hover) !important;
+  color: var(--cl-ink-strong) !important;
+}
+body.dsh-ivory .dshcs-copy-button svg {
+  display: block !important;
+  flex: none !important;
+  width: 15px !important;
+  height: 15px !important;
+}
+body.dsh-ivory .dshcs-copy-button[data-copy-state="success"] {
+  color: var(--cl-ink-strong) !important;
+}
+body.dsh-ivory .dshcs-copy-button[data-copy-state="error"] {
+  color: var(--cl-accent-text) !important;
+}
+body.dsh-ivory .dshcs-copy-code {
+  position: absolute !important;
+  z-index: 3 !important;
+  top: 8px !important;
+  right: 8px !important;
+  gap: 5px !important;
+  min-width: 58px !important;
+  padding-inline: 7px !important;
+  opacity: 0.82 !important;
+}
+body.dsh-ivory .dshcs-copy-code::after {
+  content: attr(data-label);
+  white-space: nowrap;
+}
+body.dsh-ivory .dshcs-code-copy-wrap:hover > .dshcs-copy-code,
+body.dsh-ivory .dshcs-copy-code:focus-visible {
+  opacity: 1 !important;
+}
+body.dsh-ivory .dshcs-copy-text {
+  position: absolute !important;
+  z-index: 2 !important;
+  top: 0 !important;
+  right: 0 !important;
+  opacity: 0 !important;
+  pointer-events: none !important;
+}
+body.dsh-ivory .dshcs-copy-text-target:hover > .dshcs-copy-text,
+body.dsh-ivory .dshcs-copy-text:focus-visible {
+  opacity: 0.9 !important;
+  pointer-events: auto !important;
+}
+body.dsh-ivory .gdEzaW_bubble.dshcs-copy-text-target > .dshcs-copy-text {
+  top: auto !important;
+  right: auto !important;
+  bottom: 2px !important;
+  left: -32px !important;
+}
+body.dsh-ivory .dshcs-copy-status {
+  position: fixed !important;
+  width: 1px !important;
+  height: 1px !important;
+  padding: 0 !important;
+  margin: -1px !important;
+  overflow: hidden !important;
+  clip-path: inset(50%) !important;
+  white-space: nowrap !important;
+  border: 0 !important;
+}
+@media (hover: none), (pointer: coarse) {
+  body.dsh-ivory .dshcs-copy-text-target:not(.gdEzaW_bubble) {
+    padding-inline-end: 30px !important;
+  }
+  body.dsh-ivory .dshcs-copy-text {
+    opacity: 0.72 !important;
+    pointer-events: auto !important;
+  }
+}
 @media (hover: hover) and (pointer: fine) {
   body.dsh-ivory .Md3f7G_flowItem .osXY9a_actions,
   body.dsh-ivory .Md3f7G_flowItem .p-xYUq_actions {

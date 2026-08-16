@@ -5,6 +5,12 @@ All notable changes to Ivory are documented here. The project follows
 
 ## [Unreleased]
 
+### Added
+
+- Add independent copy controls for prose paragraphs, user text bubbles, and
+  code blocks, including exact code whitespace, accessible success/error
+  feedback, and a selection-based fallback when Clipboard API access fails.
+
 ## [0.1.2] - 2026-08-16
 
 ### Fixed

@@ -327,6 +327,93 @@ try {
     await page.close();
   }
 
+  // Per-block copy: prose and code keep independent payloads, code whitespace
+  // is exact, and the legacy selection fallback works without Clipboard API.
+  {
+    const { page, errors } = await openPage(browser, { focus: false });
+    await page.evaluate(() => {
+      window.__dshcsCopied = [];
+      Object.defineProperty(navigator, 'clipboard', {
+        configurable: true,
+        value: { writeText: async (value) => { window.__dshcsCopied.push(value); } },
+      });
+
+      const fixture = document.createElement('article');
+      fixture.className = 'Sxvs8a_root dshcs-copy-fixture';
+      fixture.style.cssText = 'position:fixed;left:16px;top:16px;width:420px;z-index:99999;background:var(--cl-page)';
+      const body = document.createElement('div');
+      body.className = 'Sxvs8a_body';
+      const paragraph = document.createElement('p');
+      paragraph.className = 'dshcs-copy-fixture-text';
+      paragraph.append('段落 alpha 与 ');
+      const strong = document.createElement('strong');
+      strong.textContent = 'beta';
+      paragraph.append(strong, '。', document.createElement('br'), '第二行');
+      const block = document.createElement('div');
+      block.className = 'code-block-copy-fixture';
+      const seat = document.createElement('div');
+      const pre = document.createElement('pre');
+      pre.className = 'shiki-copy-fixture';
+      pre.textContent = 'const answer = 42;\n  return answer;\n';
+      seat.appendChild(pre);
+      block.appendChild(seat);
+      body.append(paragraph, block);
+      fixture.appendChild(body);
+
+      const bubble = document.createElement('div');
+      bubble.className = 'gdEzaW_bubble dshcs-copy-fixture-bubble';
+      bubble.style.cssText = 'position:fixed;left:16px;top:240px;z-index:99999';
+      bubble.textContent = '用户文字块';
+      document.body.append(fixture, bubble);
+    });
+    await page.waitForTimeout(350);
+    await page.locator('.dshcs-copy-fixture-text > .dshcs-copy-text').evaluate((button) => button.remove());
+    await page.waitForTimeout(250);
+
+    const controls = await page.evaluate(() => ({
+      code: document.querySelectorAll('.dshcs-copy-fixture .dshcs-copy-code').length,
+      text: document.querySelectorAll('.dshcs-copy-fixture-text > .dshcs-copy-text, .dshcs-copy-fixture-bubble > .dshcs-copy-text').length,
+      wraps: document.querySelectorAll('.dshcs-copy-fixture .dshcs-code-copy-wrap').length,
+      status: document.querySelectorAll('.dshcs-copy-status[role="status"]').length,
+    }));
+    check('copy-controls-injected-once', controls.code === 1 && controls.text === 2 && controls.wraps === 1 && controls.status === 1, controls);
+
+    const paragraph = page.locator('.dshcs-copy-fixture-text');
+    await paragraph.hover();
+    await paragraph.getByRole('button', { name: '复制文字' }).click();
+    await page.waitForFunction(() => window.__dshcsCopied.length === 1);
+    const copiedText = await page.evaluate(() => window.__dshcsCopied[0]);
+    check('copy-prose-block-exact', copiedText === '段落 alpha 与 beta。\n第二行', copiedText);
+
+    const codeButton = page.locator('.dshcs-copy-fixture .dshcs-copy-code');
+    await codeButton.click();
+    await page.waitForFunction(() => window.__dshcsCopied.length === 2);
+    const codeResult = await page.evaluate(() => ({
+      copied: window.__dshcsCopied[1],
+      state: document.querySelector('.dshcs-copy-fixture .dshcs-copy-code')?.dataset.copyState,
+      label: document.querySelector('.dshcs-copy-fixture .dshcs-copy-code')?.getAttribute('aria-label'),
+    }));
+    check('copy-code-preserves-whitespace', codeResult.copied === 'const answer = 42;\n  return answer;\n', codeResult);
+    check('copy-success-feedback-accessible', codeResult.state === 'success' && codeResult.label === '代码已复制', codeResult);
+
+    await page.evaluate(() => {
+      navigator.clipboard.writeText = async () => { throw new Error('denied fixture'); };
+      document.execCommand = (command) => {
+        if (command !== 'copy') return false;
+        window.__dshcsFallback = document.activeElement?.value;
+        return true;
+      };
+    });
+    const bubble = page.locator('.dshcs-copy-fixture-bubble');
+    await bubble.hover();
+    await bubble.getByRole('button', { name: '复制文字' }).click();
+    await page.waitForFunction(() => window.__dshcsFallback === '用户文字块');
+    const fallback = await page.evaluate(() => window.__dshcsFallback);
+    check('copy-selection-fallback', fallback === '用户文字块', fallback);
+    check('copy-controls-no-page-errors', errors.length === 0, errors);
+    await page.close();
+  }
+
   // F3: outline may float, but it must end above the live composer.
   {
     const { page, errors } = await openPage(browser, { w: 1440, h: 900, focus: false });
@@ -409,7 +496,11 @@ try {
   {
     const { page, errors } = await openPage(browser, { focus: false });
     await openConversation(page);
-    const before = await page.evaluate(() => ({ messages: document.querySelectorAll('.Sxvs8a_root').length, marks: document.querySelectorAll('.dshcs-turn-mark').length }));
+    const before = await page.evaluate(() => ({
+      messages: document.querySelectorAll('.Sxvs8a_root').length,
+      marks: document.querySelectorAll('.dshcs-turn-mark').length,
+      copyControls: document.querySelectorAll('.dshcs-copy-button').length,
+    }));
     await page.locator('.VOzbGW_trigger').last().click();
     await page.waitForTimeout(300);
     await page.getByRole('button', { name: 'Ivory 主题' }).click();
@@ -422,12 +513,17 @@ try {
       previews: document.querySelectorAll('.dshcs-md, .dshcs-md-toggle, .dshcs-safe-source-note').length,
       compat: document.body.dataset.dshcsCompat,
       clearance: document.body.style.getPropertyValue('--dshcs-composer-clearance'),
+      copyControls: document.querySelectorAll('.dshcs-copy-button, .dshcs-copy-status, [data-dshcs-copy-wrap], [data-dshcs-copy-text]').length,
     }));
-    check('skin-off-removes-enhancements', !off.bodyClass.includes('dsh-ivory') && off.marks === 0 && off.previews === 0 && !off.compat && off.clearance === '', { before, off });
+    check('skin-off-removes-enhancements', !off.bodyClass.includes('dsh-ivory') && off.marks === 0 && off.previews === 0 && off.copyControls === 0 && !off.compat && off.clearance === '', { before, off });
     await enabledSwitch.click();
     await page.waitForTimeout(300);
-    const on = await page.evaluate(() => ({ marks: document.querySelectorAll('.dshcs-turn-mark').length, compat: document.body.dataset.dshcsCompat }));
-    check('skin-reenable-restores-enhancements', before.messages === 0 || on.marks === before.messages, { before, on });
+    const on = await page.evaluate(() => ({
+      marks: document.querySelectorAll('.dshcs-turn-mark').length,
+      copyControls: document.querySelectorAll('.dshcs-copy-button').length,
+      compat: document.body.dataset.dshcsCompat,
+    }));
+    check('skin-reenable-restores-enhancements', before.messages === 0 || (on.marks === before.messages && on.copyControls > 0), { before, on });
     check('lifecycle-no-page-errors', errors.length === 0, errors);
     await page.close();
   }

@@ -32,8 +32,8 @@ settings section stores only the enabled and focus preferences. When enabled:
 1. stable DSH design tokens receive the warm neutral theme;
 2. a small selector contract checks that the current frame can accept structural
    enhancements;
-3. narrow observers enhance new Markdown blocks, completed assistant turns, and
-   composer clearance;
+3. narrow observers enhance new Markdown blocks, per-block copy controls,
+   completed assistant turns, and composer clearance;
 4. cleanup disconnects every observer and removes every injected node when the
    theme is disabled or unloaded.
 
@@ -48,6 +48,15 @@ small presentation subset using `createElement`, `createTextNode`, and explicit
 attributes. Raw HTML remains text. Link parsing accepts only absolute HTTP(S)
 URLs and rejects control characters and attribute delimiters. Source view is
 always reachable, and inputs above 250,000 characters are not previewed.
+
+## Clipboard behavior
+
+Ivory adds independent copy controls to prose paragraphs, user text bubbles,
+and code blocks without replacing DSH's whole-message action. Clipboard writes
+run only in response to a button click. The modern Clipboard API is attempted
+first, followed by a local selection-based fallback; neither path makes a
+network request. Copy controls, wrappers, live-status nodes, and pending visual
+feedback timers are removed when the theme is disabled.
 
 ## Assets and typography
 

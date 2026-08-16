@@ -8,6 +8,20 @@ window.__ModuleLoader__.load({
     const ENABLED_KEY = 'dsh-ivory.enabled';
     const FOCUS_KEY = 'dsh-ivory.focus';
     const MAX_MARKDOWN_PREVIEW_CHARS = 250_000;
+    const COPY_FEEDBACK_MS = 1_800;
+    const CODE_COPY_SELECTOR = [
+      '.Sxvs8a_body pre',
+      '[class*="code-block"] pre',
+      '.dshcs-md pre',
+      '.W-zNGW_editorMd pre',
+      '.aionui-preview-col pre',
+    ].join(',');
+    const TEXT_COPY_SELECTOR = [
+      '.Sxvs8a_body p',
+      '.gdEzaW_bubble',
+      '.dshcs-md p',
+      '.W-zNGW_editorMd p',
+    ].join(',');
 
     const SKIN_CSS = /*__SKIN_CSS__*/;
     // design asset: DSH whale (lib/assets/icons/whale.svg), inlined by the build
@@ -90,6 +104,8 @@ body[data-ds-dark-theme] .dshcs-knob{background:var(--cl-ink)}
     let contractTimer = 0;
     let contractAttempts = 0;
     let whaleNode = null;
+    let copyStatusNode = null;
+    const copyResetTimers = new Set();
 
     const isEnabled = () => document.body.classList.contains('dsh-ivory');
 
@@ -106,6 +122,199 @@ body[data-ds-dark-theme] .dshcs-knob{background:var(--cl-ink)}
       if (closest) out.add(closest);
       for (const child of el.querySelectorAll(selector)) out.add(child);
       return out;
+    }
+
+    // ---- per-block copy controls ----
+    // DSH already owns whole-message actions. Ivory complements those actions
+    // with controls scoped to an individual prose or code block. Clipboard
+    // access only happens after a direct button click and never leaves the page.
+    function copyIcon(state = 'idle') {
+      const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+      svg.setAttribute('viewBox', '0 0 24 24');
+      svg.setAttribute('aria-hidden', 'true');
+      svg.setAttribute('focusable', 'false');
+      svg.setAttribute('fill', 'none');
+      svg.setAttribute('stroke', 'currentColor');
+      svg.setAttribute('stroke-width', '1.8');
+      svg.setAttribute('stroke-linecap', 'round');
+      svg.setAttribute('stroke-linejoin', 'round');
+      if (state === 'success') {
+        const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+        path.setAttribute('d', 'm5 12 4 4L19 6');
+        svg.appendChild(path);
+      } else if (state === 'error') {
+        const first = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+        const second = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+        first.setAttribute('d', 'M6 6l12 12');
+        second.setAttribute('d', 'M18 6 6 18');
+        svg.append(first, second);
+      } else {
+        const back = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
+        const front = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
+        back.setAttribute('x', '4');
+        back.setAttribute('y', '4');
+        back.setAttribute('width', '12');
+        back.setAttribute('height', '12');
+        back.setAttribute('rx', '2');
+        front.setAttribute('x', '8');
+        front.setAttribute('y', '8');
+        front.setAttribute('width', '12');
+        front.setAttribute('height', '12');
+        front.setAttribute('rx', '2');
+        svg.append(back, front);
+      }
+      return svg;
+    }
+
+    function ensureCopyStatus() {
+      if (copyStatusNode?.isConnected) return copyStatusNode;
+      const status = document.createElement('div');
+      status.className = 'dshcs-copy-status';
+      status.setAttribute('role', 'status');
+      status.setAttribute('aria-live', 'polite');
+      status.setAttribute('aria-atomic', 'true');
+      document.body.appendChild(status);
+      copyStatusNode = status;
+      return status;
+    }
+
+    function announceCopy(message) {
+      if (!isEnabled()) return;
+      const status = ensureCopyStatus();
+      status.textContent = '';
+      requestAnimationFrame(() => {
+        if (status.isConnected) status.textContent = message;
+      });
+    }
+
+    async function writeClipboard(text) {
+      let clipboardError = null;
+      if (navigator.clipboard?.writeText) {
+        try {
+          await navigator.clipboard.writeText(text);
+          return;
+        } catch (error) {
+          clipboardError = error;
+        }
+      }
+
+      const active = document.activeElement;
+      const selection = document.getSelection();
+      const ranges = selection ? [...Array(selection.rangeCount)].map((_, index) => selection.getRangeAt(index).cloneRange()) : [];
+      const field = document.createElement('textarea');
+      field.value = text;
+      field.readOnly = true;
+      field.setAttribute('aria-hidden', 'true');
+      field.style.cssText = 'position:fixed;inset:0 auto auto:-9999px;width:1px;height:1px;opacity:0;pointer-events:none';
+      document.body.appendChild(field);
+      field.focus({ preventScroll: true });
+      field.select();
+      field.setSelectionRange(0, field.value.length);
+      let copied = false;
+      try { copied = typeof document.execCommand === 'function' && document.execCommand('copy'); }
+      finally {
+        field.remove();
+        if (active instanceof HTMLElement) active.focus({ preventScroll: true });
+        if (selection) {
+          selection.removeAllRanges();
+          for (const range of ranges) selection.addRange(range);
+        }
+      }
+      if (!copied) throw clipboardError || new Error('Clipboard unavailable');
+    }
+
+    function textForCopy(target, preserveWhitespace = false) {
+      const clone = target.cloneNode(true);
+      clone.querySelectorAll('.dshcs-copy-button, .dshcs-turn-mark').forEach((node) => node.remove());
+      clone.querySelectorAll('br').forEach((node) => node.replaceWith(document.createTextNode('\n')));
+      const text = (clone.textContent || '').replace(/\r\n?/g, '\n');
+      if (preserveWhitespace) return text;
+      return text.replace(/\u00a0/g, ' ').replace(/[\t ]+/g, ' ').replace(/ *\n */g, '\n').trim();
+    }
+
+    function setCopyButtonState(button, state) {
+      const kind = button.dataset.copyKind === 'code' ? '代码' : '文字';
+      const labels = {
+        idle: `复制${kind}`,
+        pending: `正在复制${kind}`,
+        success: `${kind}已复制`,
+        error: `${kind}复制失败`,
+      };
+      const shortLabels = { idle: '复制', pending: '复制中', success: '已复制', error: '失败' };
+      button.dataset.copyState = state;
+      button.dataset.label = shortLabels[state];
+      button.setAttribute('aria-label', labels[state]);
+      button.title = labels[state];
+      button.replaceChildren(copyIcon(state));
+    }
+
+    function makeCopyButton(kind, getText) {
+      const button = document.createElement('button');
+      button.type = 'button';
+      button.className = `dshcs-copy-button dshcs-copy-${kind}`;
+      button.dataset.copyKind = kind;
+      setCopyButtonState(button, 'idle');
+      button.addEventListener('click', async (event) => {
+        event.preventDefault();
+        event.stopPropagation();
+        if (button.dataset.copyState === 'pending') return;
+        if (button._dshcsCopyTimer) {
+          clearTimeout(button._dshcsCopyTimer);
+          copyResetTimers.delete(button._dshcsCopyTimer);
+          button._dshcsCopyTimer = 0;
+        }
+        const text = getText();
+        if (!text) {
+          setCopyButtonState(button, 'error');
+          announceCopy('没有可复制的内容');
+        } else {
+          setCopyButtonState(button, 'pending');
+          try {
+            await writeClipboard(text);
+            if (!button.isConnected || !isEnabled()) return;
+            setCopyButtonState(button, 'success');
+            announceCopy(kind === 'code' ? '代码已复制' : '文字已复制');
+          } catch (error) {
+            if (!button.isConnected || !isEnabled()) return;
+            setCopyButtonState(button, 'error');
+            announceCopy('复制失败，请检查浏览器剪贴板权限');
+            console.warn('[dsh-ivory] Unable to copy block.', error);
+          }
+        }
+        if (!button.isConnected || !isEnabled()) return;
+        const timer = window.setTimeout(() => {
+          copyResetTimers.delete(timer);
+          button._dshcsCopyTimer = 0;
+          if (button.isConnected) setCopyButtonState(button, 'idle');
+        }, COPY_FEEDBACK_MS);
+        button._dshcsCopyTimer = timer;
+        copyResetTimers.add(timer);
+      });
+      return button;
+    }
+
+    function enhanceCopyControls(root = document) {
+      if (!isEnabled()) return;
+      ensureCopyStatus();
+      for (const pre of collectNear(root, CODE_COPY_SELECTOR)) {
+        if (pre.dataset.dshcsCopyCode) continue;
+        const parent = pre.parentNode;
+        if (!parent) continue;
+        const wrap = document.createElement('div');
+        wrap.className = 'dshcs-code-copy-wrap';
+        wrap.dataset.dshcsCopyWrap = '1';
+        parent.insertBefore(wrap, pre);
+        wrap.appendChild(pre);
+        pre.dataset.dshcsCopyCode = '1';
+        wrap.appendChild(makeCopyButton('code', () => textForCopy(pre, true)));
+      }
+      for (const target of collectNear(root, TEXT_COPY_SELECTOR)) {
+        const existing = target.querySelector(':scope > .dshcs-copy-text');
+        if ((target.dataset.dshcsCopyText && existing) || !(target.textContent || '').trim()) continue;
+        target.dataset.dshcsCopyText = '1';
+        target.classList.add('dshcs-copy-text-target');
+        target.appendChild(makeCopyButton('text', () => textForCopy(target)));
+      }
     }
 
     function safeLink(raw) {
@@ -303,6 +512,7 @@ body[data-ds-dark-theme] .dshcs-knob{background:var(--cl-ink)}
         seat.insertBefore(toggle, pre);
         seat.insertBefore(view, pre);
         apply2();
+        enhanceCopyControls(seat);
       }
     }
 
@@ -390,7 +600,9 @@ body[data-ds-dark-theme] .dshcs-knob{background:var(--cl-ink)}
       const roots = [...pendingRoots];
       pendingRoots.clear();
       for (const root of roots) {
+        enhanceCopyControls(root);
         enhanceMarkdown(root);
+        enhanceCopyControls(root);
         enhanceTurnMarks(root);
         enhanceSafeSourceNotes(root);
       }
@@ -454,11 +666,33 @@ body[data-ds-dark-theme] .dshcs-knob{background:var(--cl-ink)}
       }
     }
 
+    function cleanupCopyControls() {
+      for (const timer of copyResetTimers) clearTimeout(timer);
+      copyResetTimers.clear();
+      document.querySelectorAll('[data-dshcs-copy-text]').forEach((target) => {
+        delete target.dataset.dshcsCopyText;
+        target.classList.remove('dshcs-copy-text-target');
+      });
+      document.querySelectorAll('.dshcs-copy-button').forEach((button) => button.remove());
+      const wraps = [...document.querySelectorAll('[data-dshcs-copy-wrap]')].reverse();
+      for (const wrap of wraps) {
+        const pre = wrap.querySelector(':scope > pre[data-dshcs-copy-code]');
+        if (pre) delete pre.dataset.dshcsCopyCode;
+        if (!wrap.parentNode) continue;
+        while (wrap.firstChild) wrap.parentNode.insertBefore(wrap.firstChild, wrap);
+        wrap.remove();
+      }
+      copyStatusNode?.remove();
+      copyStatusNode = null;
+    }
+
     function enableEnhancements() {
       if (!isEnabled()) return;
       contractAttempts = 0;
       validateHostContract();
+      enhanceCopyControls(document);
       enhanceMarkdown(document);
+      enhanceCopyControls(document);
       enhanceTurnMarks(document);
       enhanceSafeSourceNotes(document);
       observeFlow();
@@ -479,6 +713,7 @@ body[data-ds-dark-theme] .dshcs-knob{background:var(--cl-ink)}
         resizeListening = false;
       }
       cleanupMarkdown();
+      cleanupCopyControls();
       document.querySelectorAll('.dshcs-turn-mark, .dshcs-safe-source-note').forEach((node) => node.remove());
       document.body.style.removeProperty('--dshcs-composer-clearance');
       document.body.classList.remove('dshcs-contract-mismatch');

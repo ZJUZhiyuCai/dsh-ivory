@@ -66,6 +66,10 @@ check('browser security boundary', () => {
   assert.match(template, /url\.protocol === 'http:' \|\| url\.protocol === 'https:'/);
   assert.match(template, /rel = 'noopener noreferrer'/);
   assert.match(template, /MAX_MARKDOWN_PREVIEW_CHARS = 250_000/);
+  assert.match(template, /navigator\.clipboard\?\.writeText/);
+  assert.match(template, /document\.execCommand\('copy'\)/);
+  assert.match(template, /\.dshcs-copy-button, \.dshcs-turn-mark/);
+  assert.match(css, /\.dshcs-copy-code/);
 });
 
 check('brand-safe assets and fonts', () => {
