@@ -17,7 +17,7 @@ All notable changes to Ivory are documented here. The project follows
 - Compatibility contract with token-only degradation.
 - Reduced-motion, forced-colors, keyboard focus, mobile overflow, and plugin
   coexistence handling.
-- Fifty-five browser regressions plus deterministic build and package gates.
+- Fifty-seven browser regressions plus deterministic build and package gates.
 
 ### Security and release hygiene
 

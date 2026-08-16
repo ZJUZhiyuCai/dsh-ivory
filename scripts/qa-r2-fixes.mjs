@@ -23,10 +23,16 @@ async function openConversation(page) {
   await expandSidebar(page).catch(() => {});
   const rows = page.locator('.YDXeBa_sessionRow');
   const count = await rows.count();
-  if (!count) return false;
-  await rows.nth(Math.min(1, count - 1)).click();
-  await page.waitForTimeout(1200);
-  return Boolean(await page.locator('.Md3f7G_column, .Sxvs8a_root').count());
+  if (!count) throw new Error('Browser QA requires at least one saved conversation.');
+  for (let index = 0; index < count; index++) {
+    const label = (await rows.nth(index).innerText()).trim();
+    if (/^(?:新会话|New chat)(?:\s|$)/i.test(label)) continue;
+    await rows.nth(index).click();
+    await page.waitForTimeout(1200);
+    if (await page.locator('.wSkVaW_crumb, .Md3f7G_column, .Sxvs8a_root').count()) return true;
+    await expandSidebar(page).catch(() => {});
+  }
+  throw new Error('No saved sidebar row opened a conversation view.');
 }
 
 const browser = await launch();
@@ -424,6 +430,29 @@ try {
     });
     check(`settings-sidecards-neutral-${tag}`, Boolean(sidecards.group && sidecards.card) && (!sidecards.gear || (sidecards.gear[2] >= 24 && sidecards.gear[3] >= 24)), sidecards);
     await page.screenshot({ path: `${OUT}/settings-sidecards-${tag}.png` });
+    await page.getByRole('button', { name: 'Ivory 主题' }).click();
+    await page.waitForTimeout(150);
+    const ivorySwitches = await page.evaluate(() => {
+      const color = (value) => {
+        const probe = document.createElement('span');
+        probe.style.color = value;
+        document.body.appendChild(probe);
+        const result = getComputedStyle(probe).color;
+        probe.remove();
+        return result;
+      };
+      const ink = color('var(--cl-ink)');
+      const page = color('var(--cl-page)');
+      const active = [...document.querySelectorAll('.dshcs-switch.dshcs-on')].map((track) => ({
+        track: getComputedStyle(track).backgroundColor,
+        knob: getComputedStyle(track.querySelector('.dshcs-knob')).backgroundColor,
+      }));
+      return { ink, page, active };
+    });
+    check(`settings-ivory-switches-use-theme-ink-${tag}`,
+      ivorySwitches.active.length >= 1
+      && ivorySwitches.active.every((item) => item.track === ivorySwitches.ink && item.knob === ivorySwitches.page),
+      ivorySwitches);
     check(`settings-no-page-errors-${tag}`, errors.length === 0, errors);
     await page.close();
   }

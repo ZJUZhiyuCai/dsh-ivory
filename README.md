@@ -85,7 +85,7 @@ The repository has two verification layers:
 ```sh
 npm ci
 npm test          # reproducible build, static security checks, publint, tarball audit
-npm run qa:r2     # 55 browser regressions; requires DSH at 127.0.0.1:3080
+npm run qa:r2     # 57 browser regressions; requires DSH at 127.0.0.1:3080
 ```
 
 The browser suite covers layout contracts, mobile overflow, composer focus,
