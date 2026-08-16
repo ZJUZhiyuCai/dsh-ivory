@@ -1,0 +1,20 @@
+node_modules/
+output/
+shots/
+reference/
+lib/assets/fonts/
+PROMPT-*.md
+ADVERSARIAL-*.md
+*.tgz
+.DS_Store
+.env
+.env.*
+.release/
+
+# Keep the reproducible release surface; ignore one-off local research probes.
+scripts/*
+!scripts/build.mjs
+!scripts/qa-lib.mjs
+!scripts/qa-r2-fixes.mjs
+!scripts/release-check.mjs
+!scripts/verify-pack.mjs
