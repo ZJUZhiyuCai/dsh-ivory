@@ -1,98 +1,127 @@
-# Ivory for DSH
+<h1 align="center">Ivory for DSH</h1>
 
-> 一套克制、温暖的 Claude-inspired DeepSeek Harness 界面主题：响应式、可访问，并且不碰你的数据。
+<p align="center">
+  <strong>一套克制、温暖的 DeepSeek Harness 界面主题</strong><br>
+  明暗双主题，兼顾桌面与移动端，支持中英文，全程无遥测。
+</p>
 
-[English](README.md)
+<p align="center">
+  <a href="https://www.npmjs.com/package/dsh-ivory"><img alt="npm 版本" src="https://img.shields.io/npm/v/dsh-ivory?style=flat-square&color=383835"></a>
+  <a href="https://github.com/ZJUZhiyuCai/dsh-ivory/actions/workflows/ci.yml"><img alt="CI 状态" src="https://img.shields.io/github/actions/workflow/status/ZJUZhiyuCai/dsh-ivory/ci.yml?branch=main&style=flat-square&label=CI"></a>
+  <a href="https://github.com/ZJUZhiyuCai/dsh-ivory/releases/latest"><img alt="最新版本" src="https://img.shields.io/github/v/release/ZJUZhiyuCai/dsh-ivory?style=flat-square&color=6f6d68"></a>
+  <a href="https://github.com/ZJUZhiyuCai/dsh-ivory/blob/main/LICENSE"><img alt="MIT 许可证" src="https://img.shields.io/badge/license-MIT-111111?style=flat-square"></a>
+  <img alt="无遥测" src="https://img.shields.io/badge/telemetry-none-2f855a?style=flat-square">
+</p>
 
-[![CI](https://github.com/ZJUZhiyuCai/dsh-ivory/actions/workflows/ci.yml/badge.svg)](https://github.com/ZJUZhiyuCai/dsh-ivory/actions/workflows/ci.yml)
-[![npm](https://img.shields.io/npm/v/dsh-ivory)](https://www.npmjs.com/package/dsh-ivory)
-[![MIT License](https://img.shields.io/badge/license-MIT-111111.svg)](LICENSE)
-[![Node.js](https://img.shields.io/badge/node-%5E22.19%20%7C%7C%20%3E%3D24-3c873a.svg)](package.json)
-[![零运行时依赖](https://img.shields.io/badge/runtime_dependencies-0-111111.svg)](package.json)
+<p align="center">
+  <a href="https://github.com/ZJUZhiyuCai/dsh-ivory/blob/main/README.md">English</a>
+  · <a href="https://github.com/ZJUZhiyuCai/dsh-ivory/blob/main/SECURITY.md">安全说明</a>
+  · <a href="https://github.com/ZJUZhiyuCai/dsh-ivory/blob/main/CHANGELOG.md">更新记录</a>
+</p>
 
 <picture>
-  <source media="(prefers-color-scheme: dark)" srcset="assets/hero-dark.png">
-  <img alt="Ivory for DSH 浅色界面" src="assets/hero-light.png" width="1440">
+  <source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/ZJUZhiyuCai/dsh-ivory/main/assets/hero-dark.png">
+  <img alt="Ivory for DSH 首页" src="https://raw.githubusercontent.com/ZJUZhiyuCai/dsh-ivory/main/assets/hero-light.png" width="1440">
 </picture>
 
-Ivory 用暖中性色、编辑感字体、克制阴影和专注的对话布局重新组织 DSH
-Web 界面，同时保留 DeepSeek 品牌和 DSH 的全部能力，并坚持无遥测。
+Ivory 把 DSH Web 调成更耐看的暖中性界面。长回复有了更舒服的阅读节奏，
+会话区在窄屏手机和宽屏桌面上都能正常使用。DeepSeek 品牌和 DSH 原有能力
+保持不变，主题只处理浏览器里的视觉与交互细节。
 
-## 安装
-
-从 npm 安装已发布版本（推荐）：
+## 快速安装
 
 ```sh
 dsh plugin --profile web add dsh-ivory
 dsh web
 ```
 
-如需绕过 npm 并固定到确切 GitHub 版本：
+安装后使用 `Cmd/Ctrl + Shift + R` 硬刷新页面，再打开
+**设置 → Ivory 主题**。主题默认开启，专注模式默认关闭，按需要选择即可。
+
+<details>
+<summary><strong>固定版本与卸载</strong></summary>
+
+绕过 npm，安装确切的 GitHub 标签版本。
 
 ```sh
 dsh plugin --profile web add github:ZJUZhiyuCai/dsh-ivory#v0.2.0
 ```
 
-安装后硬刷新浏览器（`Cmd/Ctrl + Shift + R`），再打开
-**设置 → Ivory 主题**；可分别开启主题和默认关闭的专注模式。
-
-卸载：
+移除 Ivory，恢复 DSH 原生界面。
 
 ```sh
 dsh plugin --profile web remove dsh-ivory
 ```
 
-## 为什么不只是“换个颜色”
+</details>
 
-- **完整明暗主题**：自动跟随 DSH 当前外观。
-- **响应式契约**：覆盖 375、768、1,440 和 1,920 像素视口。
-- **可访问交互状态**：保留键盘焦点，移除输入卡片的蓝色外沿，并支持
-  reduced-motion 与 forced-colors。
-- **安全 Markdown 文档预览**：只构造 DOM 节点，不注入 HTML；仅允许
-  HTTP(S) 链接，源码视图始终可达。
-- **内容块独立复制**：正文段落、用户文字气泡与代码块均有独立、可访问的
-  复制按钮，并提供剪贴板兼容降级。
-- **原生双语设置**：设置、复制反馈与文档预览控件会跟随 DSH 的中文或英文
-  界面语言。
-- **对称生命周期**：关闭主题时清除观察器、预览节点和墨色小鲸鱼回合标记。
-- **宿主友好的兼容模式**：上游选择器变化时，结构增强自动降级，稳定设计
-  token 仍会继续生效。
+## 每天都用得上的改动
 
-![Ivory 对话界面](assets/conversation-light.png)
-
-<p align="center">
-  <img alt="Ivory 在 390 像素移动端视口下的对话界面" src="assets/mobile-light.png" width="390">
-</p>
-
-## 信任模型
-
-Ivory 是纯浏览器视觉插件，宿主入口刻意保持为空实现。
-
-| 范围 | 行为 |
+| 范围 | Ivory 做了什么 |
 | --- | --- |
-| 捆绑的运行时依赖 | 无；DSH 客户端模块与 React 仅声明为 peer |
-| 宿主文件系统 / 进程访问 | 无 |
-| 网络请求或遥测 | 无 |
-| 持久化数据 | 两个本地 `localStorage` 偏好标记 |
-| Anthropic 资产 | 不捆绑；只使用系统字体栈 |
-| 用户内容处理 | 仅在浏览器内呈现；只有明确点击复制时才写入本机剪贴板 |
+| **界面外观** | 暖中性色明暗主题，搭配克制的阴影、圆角和更适合长文阅读的字体。 |
+| **响应式布局** | 会话区会随视口伸缩，已覆盖 375、768、1,440 和 1,920 像素。 |
+| **阅读与复制** | 正文、用户气泡和代码块都有独立复制按钮，回复结尾带有轻量鲸鱼标记。 |
+| **Markdown 文档** | `.md` 输出可在安全预览与源码之间切换，只允许 HTTP(S) 链接，并限制极端输入规模。 |
+| **可访问性** | 保留键盘焦点，支持 reduced-motion 与 forced-colors，弱化文字达到 WCAG AA 对比度。 |
+| **兼容降级** | DSH 结构选择器变化时，Ivory 会退出结构样式，只保留稳定的主题 token。 |
 
-npm 包采用八文件白名单，并由 CI 校验。具体边界见
-[SECURITY.md](https://github.com/ZJUZhiyuCai/dsh-ivory/blob/main/SECURITY.md) 和 [架构说明](https://github.com/ZJUZhiyuCai/dsh-ivory/blob/main/docs/ARCHITECTURE.md)。
+## 看看实际界面
 
-## 质量门禁
+<table>
+  <tr>
+    <td width="72%"><img alt="Ivory 桌面端会话界面" src="https://raw.githubusercontent.com/ZJUZhiyuCai/dsh-ivory/main/assets/conversation-light.png"></td>
+    <td width="28%"><img alt="Ivory 移动端会话界面" src="https://raw.githubusercontent.com/ZJUZhiyuCai/dsh-ivory/main/assets/mobile-light.png"></td>
+  </tr>
+  <tr>
+    <td align="center"><sub>桌面端专注会话</sub></td>
+    <td align="center"><sub>390 像素移动端布局</sub></td>
+  </tr>
+</table>
+
+## 安静，也有边界
+
+Ivory 是纯浏览器视觉插件，宿主入口保持为空实现。
+
+| 边界 | Ivory 的行为 |
+| --- | --- |
+| 捆绑的运行时依赖 | 无。DSH 客户端模块与 React 只声明为 peer。 |
+| 文件系统与进程访问 | 无。 |
+| 网络请求与遥测 | 无。 |
+| 持久化数据 | 只在 `localStorage` 保存两个本地偏好标记。 |
+| 用户内容 | 只在浏览器内呈现，明确点击复制后才写入本机剪贴板。 |
+| 第三方品牌资产 | 不捆绑 Anthropic 字体、Logo、图标或应用代码。 |
+
+npm 包固定为八个白名单文件，每次 CI 都会检查。完整边界可查看
+[安全说明](https://github.com/ZJUZhiyuCai/dsh-ivory/blob/main/SECURITY.md)、
+[架构说明](https://github.com/ZJUZhiyuCai/dsh-ivory/blob/main/docs/ARCHITECTURE.md)和
+[第三方声明](https://github.com/ZJUZhiyuCai/dsh-ivory/blob/main/THIRD_PARTY_NOTICES.md)。
+
+> [!NOTE]
+> DeepSeek Harness 仍处于开发者预览阶段，UI 可能发生破坏性变化。
+> Ivory 0.2.0 已针对 DSH 0.1.0-rc.6 完成验证。无法确认当前结构契约时，
+> Ivory 会保留 token 级主题，并把布局控制权交还给 DSH。
+
+<details>
+<summary><strong>质量与发布门禁</strong></summary>
 
 ```sh
 npm ci
-npm test          # 可复现构建、静态安全检查、publint、包内容审计
-npm run qa:r2     # 69 项浏览器回归；要求 127.0.0.1:3080 正在运行 DSH
+npm test          # 14 项静态、构建、publint 与包检查
+npm run qa:r2     # 69 项浏览器回归，要求 DSH 运行于 127.0.0.1:3080
 ```
 
-浏览器套件覆盖布局契约、移动端溢出、输入框焦点、Markdown 注入尝试、
-生命周期清理、流式状态、鲸鱼出现时机、内容块复制精度与降级路径、深色模式、
-插件共存、长表格与 reduced-motion。
+浏览器套件覆盖响应式布局、输入框焦点、深色模式、Markdown 注入尝试、
+流式状态、生命周期清理、复制内容精度、插件共存、长表格、reduced-motion
+和 forced-colors。
 
-## 开发
+npm 发布使用 Trusted Publisher 与 GitHub OIDC。仓库不保存长期 npm 发布
+令牌，后续 CI 版本会由 npm 自动生成 provenance。
+
+</details>
+
+<details>
+<summary><strong>本地开发</strong></summary>
 
 ```sh
 npm ci
@@ -102,8 +131,8 @@ dsh plugin --profile web add link:$PWD
 dsh web
 ```
 
-修改 `src/skin.css` 和 `src/client.template.js` 后运行 `npm run build`。
-`lib/client.js` 会提交到仓库，因此 GitHub 安装无需执行构建脚本。
+修改 `src/skin.css` 或 `src/client.template.js` 后运行 `npm run build`。
+生成的 `lib/client.js` 会提交到仓库，因此从 GitHub 安装不需要构建权限。
 
 ```text
 src/skin.css             主题与兼容样式
@@ -114,27 +143,15 @@ cordis.patch.yml         DSH bundle 注册
 scripts/                 构建与质量门禁
 ```
 
-提交 PR 前请阅读 [CONTRIBUTING.md](https://github.com/ZJUZhiyuCai/dsh-ivory/blob/main/CONTRIBUTING.md)。
+提交 PR 前请阅读
+[CONTRIBUTING.md](https://github.com/ZJUZhiyuCai/dsh-ivory/blob/main/CONTRIBUTING.md)。
 
-## 兼容性与限制
+</details>
 
-DeepSeek Harness 仍处于开发者预览阶段，UI 可能发生破坏性变化。Ivory 会在
-运行时验证结构选择器；无法确认兼容性时退化为 token-only 样式。macOS、
-Windows 和 Linux 的系统字体度量会略有不同。专注模式会临时隐藏已支持的
-辅助面板，这是设计行为且默认关闭。0.2.0 版本已针对 DSH 0.1.0-rc.6
-完成验证。
+## 独立社区项目
 
-## 项目状态
+Ivory 是非官方社区项目，不隶属于 Anthropic 或 DeepSeek，也未获其背书或
+赞助。Claude 是 Anthropic PBC 的商标。DeepSeek 与 DeepSeek Harness 可能是
+其权利人的商标。
 
-首个版本刻意保持小而可审计。后续工作通过
-[GitHub Issues](https://github.com/ZJUZhiyuCai/dsh-ivory/issues) 公开跟踪。
-如果 Ivory 确实改善了你的 DSH 使用体验，一个 Star 会帮助更多人发现它。
-
-## 独立性与商标
-
-Ivory 是**非官方**、独立的社区项目，不隶属于 Anthropic 或 DeepSeek，也未获
-其背书或赞助。Claude 是 Anthropic PBC 的商标；DeepSeek 与 DeepSeek Harness
-可能是其权利人的商标。Ivory 不捆绑 Anthropic 字体、Logo、图标或代码。详见
-[THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md)。
-
-项目使用 [MIT License](LICENSE)。
+项目使用 [MIT License](https://github.com/ZJUZhiyuCai/dsh-ivory/blob/main/LICENSE)。
