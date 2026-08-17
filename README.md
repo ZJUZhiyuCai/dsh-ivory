@@ -20,10 +20,10 @@ the DeepSeek identity and every DSH capability intact, with zero telemetry.
 
 ## Install
 
-Install the current GitHub release:
+Install the current tagged GitHub release:
 
 ```sh
-dsh plugin --profile web add github:ZJUZhiyuCai/dsh-ivory
+dsh plugin --profile web add github:ZJUZhiyuCai/dsh-ivory#v0.2.0
 dsh web
 ```
 
@@ -52,6 +52,8 @@ dsh plugin --profile web remove dsh-ivory
   HTML, permits only HTTP(S) links, and keeps source view reachable.
 - **Independent block copying** — prose paragraphs, user bubbles, and code
   fences have their own accessible copy control with a clipboard fallback.
+- **Native bilingual settings** — settings, copy feedback, and document-preview
+  controls follow DSH's English or Simplified Chinese locale.
 - **Symmetric cleanup** — observers, injected views, and the small ink-colored
   whale marker are removed when the theme is disabled.
 - **Host-friendly compatibility mode** — if an upstream selector changes,
@@ -69,7 +71,7 @@ Ivory is a visual client plugin. Its host entry point is deliberately inert.
 
 | Surface | Behavior |
 | --- | --- |
-| Runtime dependencies | None |
+| Bundled runtime dependencies | None; DSH client modules and React are declared as peers |
 | Host filesystem/process access | None |
 | Network requests or telemetry | None |
 | Persistent data | Two local `localStorage` preference flags |
@@ -87,7 +89,7 @@ The repository has two verification layers:
 ```sh
 npm ci
 npm test          # reproducible build, static security checks, publint, tarball audit
-npm run qa:r2     # 67 browser regressions; requires DSH at 127.0.0.1:3080
+npm run qa:r2     # 69 browser regressions; requires DSH at 127.0.0.1:3080
 ```
 
 The browser suite covers layout contracts, mobile overflow, composer focus,
@@ -126,7 +128,8 @@ DeepSeek Harness is currently a developer preview and can make breaking UI
 changes. Ivory validates the structural selector contract at runtime and
 degrades to token-only styling when it cannot prove compatibility. System font
 metrics differ slightly across macOS, Windows, and Linux. Focus mode temporarily
-hides supported auxiliary panels by design; it is off by default.
+hides supported auxiliary panels by design; it is off by default. Release 0.2.0
+is verified against DSH 0.1.0-rc.6.
 
 ## Project status
 

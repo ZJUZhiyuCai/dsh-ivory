@@ -19,10 +19,10 @@ Web 界面，同时保留 DeepSeek 品牌和 DSH 的全部能力，并坚持无�
 
 ## 安装
 
-从 GitHub 安装当前版本：
+从 GitHub 安装当前标签版本：
 
 ```sh
-dsh plugin --profile web add github:ZJUZhiyuCai/dsh-ivory
+dsh plugin --profile web add github:ZJUZhiyuCai/dsh-ivory#v0.2.0
 dsh web
 ```
 
@@ -51,6 +51,8 @@ dsh plugin --profile web remove dsh-ivory
   HTTP(S) 链接，源码视图始终可达。
 - **内容块独立复制**：正文段落、用户文字气泡与代码块均有独立、可访问的
   复制按钮，并提供剪贴板兼容降级。
+- **原生双语设置**：设置、复制反馈与文档预览控件会跟随 DSH 的中文或英文
+  界面语言。
 - **对称生命周期**：关闭主题时清除观察器、预览节点和墨色小鲸鱼回合标记。
 - **宿主友好的兼容模式**：上游选择器变化时，结构增强自动降级，稳定设计
   token 仍会继续生效。
@@ -67,7 +69,7 @@ Ivory 是纯浏览器视觉插件，宿主入口刻意保持为空实现。
 
 | 范围 | 行为 |
 | --- | --- |
-| 运行时依赖 | 无 |
+| 捆绑的运行时依赖 | 无；DSH 客户端模块与 React 仅声明为 peer |
 | 宿主文件系统 / 进程访问 | 无 |
 | 网络请求或遥测 | 无 |
 | 持久化数据 | 两个本地 `localStorage` 偏好标记 |
@@ -82,7 +84,7 @@ npm 包采用八文件白名单，并由 CI 校验。具体边界见
 ```sh
 npm ci
 npm test          # 可复现构建、静态安全检查、publint、包内容审计
-npm run qa:r2     # 67 项浏览器回归；要求 127.0.0.1:3080 正在运行 DSH
+npm run qa:r2     # 69 项浏览器回归；要求 127.0.0.1:3080 正在运行 DSH
 ```
 
 浏览器套件覆盖布局契约、移动端溢出、输入框焦点、Markdown 注入尝试、
@@ -118,7 +120,8 @@ scripts/                 构建与质量门禁
 DeepSeek Harness 仍处于开发者预览阶段，UI 可能发生破坏性变化。Ivory 会在
 运行时验证结构选择器；无法确认兼容性时退化为 token-only 样式。macOS、
 Windows 和 Linux 的系统字体度量会略有不同。专注模式会临时隐藏已支持的
-辅助面板，这是设计行为且默认关闭。
+辅助面板，这是设计行为且默认关闭。0.2.0 版本已针对 DSH 0.1.0-rc.6
+完成验证。
 
 ## 项目状态
 

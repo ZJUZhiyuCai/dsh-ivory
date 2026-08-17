@@ -3,11 +3,18 @@ window.__ModuleLoader__.load({
   id: 'dsh-ivory',
   factory: (require) => {
     const React = require('react');
-    const inject = ['slots'];
+    const inject = ['slots', 'locale'];
 
     const ENABLED_KEY = 'dsh-ivory.enabled';
     const FOCUS_KEY = 'dsh-ivory.focus';
+    const LOCALE_NS = 'dsh-ivory';
     const MAX_MARKDOWN_PREVIEW_CHARS = 250_000;
+    const MAX_MARKDOWN_DEPTH = 32;
+    const MAX_MARKDOWN_LIST_ITEMS = 500;
+    const MAX_MARKDOWN_TABLE_ROWS = 256;
+    const MAX_MARKDOWN_TABLE_COLS = 64;
+    const MAX_MARKDOWN_PARAGRAPH_LINES = 200;
+    const MAX_INLINE_DEPTH = 24;
     const COPY_FEEDBACK_MS = 1_800;
     const CODE_COPY_SELECTOR = [
       '.Sxvs8a_body pre',
@@ -22,6 +29,73 @@ window.__ModuleLoader__.load({
       '.dshcs-md p',
       '.W-zNGW_editorMd p',
     ].join(',');
+
+    const LOCALES = {
+      en: {
+        'settings.nav': 'Ivory Theme',
+        'settings.title': 'Ivory Theme',
+        'settings.description': 'A calm light and dark theme that keeps DeepSeek branding and every DSH panel available.',
+        'settings.enabled.title': 'Enable Ivory Theme',
+        'settings.enabled.description': 'Adjust layout, color, typography, corners, and shadows without sending data or accessing the network.',
+        'settings.focus.title': 'Focus mode',
+        'settings.focus.description': 'Temporarily hide supported auxiliary panels for focused conversations. Off by default.',
+        'copy.code.idle': 'Copy code',
+        'copy.code.pending': 'Copying code',
+        'copy.code.success': 'Code copied',
+        'copy.code.error': 'Could not copy code',
+        'copy.text.idle': 'Copy text',
+        'copy.text.pending': 'Copying text',
+        'copy.text.success': 'Text copied',
+        'copy.text.error': 'Could not copy text',
+        'copy.short.idle': 'Copy',
+        'copy.short.pending': 'Copying',
+        'copy.short.success': 'Copied',
+        'copy.short.error': 'Failed',
+        'copy.empty': 'There is nothing to copy.',
+        'copy.code.announcement': 'Code copied.',
+        'copy.text.announcement': 'Text copied.',
+        'copy.failure': 'Copy failed. Check the browser clipboard permission.',
+        'markdown.toggle.label': 'Switch between Markdown source and preview',
+        'markdown.toggle.preview': 'Preview',
+        'markdown.toggle.source': 'Source',
+        'markdown.oversize': 'This Markdown file is too large to preview safely. Showing source instead.',
+        'markdown.safeSource': 'For safety, raw HTML in this document is shown as source.',
+      },
+      zh: {
+        'settings.nav': 'Ivory 主题',
+        'settings.title': 'Ivory 主题',
+        'settings.description': '温暖、克制的明暗双主题，保留 DeepSeek 品牌与 DSH 的全部功能面板。',
+        'settings.enabled.title': '启用 Ivory 主题',
+        'settings.enabled.description': '调整布局、配色、字体、圆角与阴影；不发送数据，也不访问网络。',
+        'settings.focus.title': '专注模式',
+        'settings.focus.description': '临时隐藏已支持的辅助面板，适合沉浸式对话；默认关闭。',
+        'copy.code.idle': '复制代码',
+        'copy.code.pending': '正在复制代码',
+        'copy.code.success': '代码已复制',
+        'copy.code.error': '代码复制失败',
+        'copy.text.idle': '复制文字',
+        'copy.text.pending': '正在复制文字',
+        'copy.text.success': '文字已复制',
+        'copy.text.error': '文字复制失败',
+        'copy.short.idle': '复制',
+        'copy.short.pending': '复制中',
+        'copy.short.success': '已复制',
+        'copy.short.error': '失败',
+        'copy.empty': '没有可复制的内容。',
+        'copy.code.announcement': '代码已复制。',
+        'copy.text.announcement': '文字已复制。',
+        'copy.failure': '复制失败，请检查浏览器剪贴板权限。',
+        'markdown.toggle.label': '切换 Markdown 源码和预览',
+        'markdown.toggle.preview': '预览',
+        'markdown.toggle.source': '源码',
+        'markdown.oversize': 'Markdown 文件过大，已保留安全源码视图。',
+        'markdown.safeSource': '为保证安全，文档中的原始 HTML 以源码显示。',
+      },
+    };
+    let translate = (key) => LOCALES.en[key] ?? key;
+    let localeRuntime = null;
+    const subscribeLocale = (listener) => localeRuntime?.subscribe(listener) ?? (() => {});
+    const localeRevision = () => localeRuntime?.getSnapshot().revision ?? 0;
 
     const SKIN_CSS = /*__SKIN_CSS__*/;
     // design asset: DSH whale (lib/assets/icons/whale.svg), inlined by the build
@@ -75,10 +149,15 @@ body[data-ds-dark-theme] .dshcs-knob{background:var(--cl-ink)}
 
     function apply(ctx) {
       ensureStyle();
+      ctx.effect(() => ctx.locale.register(LOCALE_NS, LOCALES), 'dsh-ivory: dictionaries');
+      localeRuntime = ctx.locale;
+      translate = ctx.locale.bind(LOCALE_NS);
+      ctx.effect(() => ctx.locale.subscribe(refreshLocalizedEnhancements), 'dsh-ivory: locale updates');
       applyState();
 
       ctx.effect(() => () => {
         disableEnhancements();
+        localeRuntime = null;
         document.body.classList.remove('dsh-ivory', 'dsh-ivory-focus');
       }, 'dsh-ivory: cleanup');
 
@@ -87,7 +166,7 @@ body[data-ds-dark-theme] .dshcs-knob{background:var(--cl-ink)}
         name: 'settings.section',
         id: 'ivory-theme',
         order: 25,
-        label: () => 'Ivory 主题',
+        label: () => translate('settings.nav'),
       }, IvorySettings));
     }
 
@@ -122,6 +201,19 @@ body[data-ds-dark-theme] .dshcs-knob{background:var(--cl-ink)}
       if (closest) out.add(closest);
       for (const child of el.querySelectorAll(selector)) out.add(child);
       return out;
+    }
+
+    function isStreamingMessage(message) {
+      if (!message) return false;
+      const streaming = message.getAttribute('data-streaming');
+      return message.getAttribute('aria-busy') === 'true'
+        || (streaming !== null && streaming !== 'false')
+        || message.getAttribute('data-state') === 'streaming'
+        || Boolean(message.querySelector('[aria-busy="true"], [data-streaming="true"], [data-state="streaming"]'));
+    }
+
+    function isInsideStreamingMessage(element) {
+      return isStreamingMessage(element.closest?.('.Sxvs8a_root'));
     }
 
     // ---- per-block copy controls ----
@@ -233,19 +325,26 @@ body[data-ds-dark-theme] .dshcs-knob{background:var(--cl-ink)}
     }
 
     function setCopyButtonState(button, state) {
-      const kind = button.dataset.copyKind === 'code' ? '代码' : '文字';
-      const labels = {
-        idle: `复制${kind}`,
-        pending: `正在复制${kind}`,
-        success: `${kind}已复制`,
-        error: `${kind}复制失败`,
-      };
-      const shortLabels = { idle: '复制', pending: '复制中', success: '已复制', error: '失败' };
+      const kind = button.dataset.copyKind === 'code' ? 'code' : 'text';
       button.dataset.copyState = state;
-      button.dataset.label = shortLabels[state];
-      button.setAttribute('aria-label', labels[state]);
-      button.title = labels[state];
+      button.dataset.label = translate(`copy.short.${state}`);
+      button.setAttribute('aria-label', translate(`copy.${kind}.${state}`));
+      button.title = translate(`copy.${kind}.${state}`);
       button.replaceChildren(copyIcon(state));
+    }
+
+    function refreshLocalizedEnhancements() {
+      if (!isEnabled()) return;
+      for (const button of document.querySelectorAll('.dshcs-copy-button')) {
+        setCopyButtonState(button, button.dataset.copyState || 'idle');
+      }
+      for (const toggle of document.querySelectorAll('.dshcs-md-toggle')) {
+        const showingSource = toggle.dataset.dshcsShowSource === '1';
+        toggle.setAttribute('aria-label', translate('markdown.toggle.label'));
+        toggle.textContent = translate(showingSource ? 'markdown.toggle.preview' : 'markdown.toggle.source');
+      }
+      for (const pre of document.querySelectorAll('pre[data-dshcs="oversize"]')) pre.title = translate('markdown.oversize');
+      for (const note of document.querySelectorAll('.dshcs-safe-source-note')) note.textContent = translate('markdown.safeSource');
     }
 
     function makeCopyButton(kind, getText) {
@@ -266,18 +365,18 @@ body[data-ds-dark-theme] .dshcs-knob{background:var(--cl-ink)}
         const text = getText();
         if (!text) {
           setCopyButtonState(button, 'error');
-          announceCopy('没有可复制的内容');
+          announceCopy(translate('copy.empty'));
         } else {
           setCopyButtonState(button, 'pending');
           try {
             await writeClipboard(text);
             if (!button.isConnected || !isEnabled()) return;
             setCopyButtonState(button, 'success');
-            announceCopy(kind === 'code' ? '代码已复制' : '文字已复制');
+            announceCopy(translate(`copy.${kind}.announcement`));
           } catch (error) {
             if (!button.isConnected || !isEnabled()) return;
             setCopyButtonState(button, 'error');
-            announceCopy('复制失败，请检查浏览器剪贴板权限');
+            announceCopy(translate('copy.failure'));
             console.warn('[dsh-ivory] Unable to copy block.', error);
           }
         }
@@ -297,7 +396,7 @@ body[data-ds-dark-theme] .dshcs-knob{background:var(--cl-ink)}
       if (!isEnabled()) return;
       ensureCopyStatus();
       for (const pre of collectNear(root, CODE_COPY_SELECTOR)) {
-        if (pre.dataset.dshcsCopyCode) continue;
+        if (pre.dataset.dshcsCopyCode || isInsideStreamingMessage(pre)) continue;
         const parent = pre.parentNode;
         if (!parent) continue;
         const wrap = document.createElement('div');
@@ -309,6 +408,7 @@ body[data-ds-dark-theme] .dshcs-knob{background:var(--cl-ink)}
         wrap.appendChild(makeCopyButton('code', () => textForCopy(pre, true)));
       }
       for (const target of collectNear(root, TEXT_COPY_SELECTOR)) {
+        if (isInsideStreamingMessage(target)) continue;
         const existing = target.querySelector(':scope > .dshcs-copy-text');
         if ((target.dataset.dshcsCopyText && existing) || !(target.textContent || '').trim()) continue;
         target.dataset.dshcsCopyText = '1';
@@ -325,8 +425,12 @@ body[data-ds-dark-theme] .dshcs-knob{background:var(--cl-ink)}
       } catch { return null; }
     }
 
-    function appendInline(parent, source) {
+    function appendInline(parent, source, depth = 0) {
       let rest = String(source ?? '');
+      if (depth > MAX_INLINE_DEPTH) {
+        parent.appendChild(document.createTextNode(rest));
+        return;
+      }
       const patterns = [
         { kind: 'code', re: /`([^`\n]+)`/ },
         { kind: 'link', re: /\[([^\]\n]+)\]\(([^)\s]+)\)/ },
@@ -361,16 +465,22 @@ body[data-ds-dark-theme] .dshcs-knob{background:var(--cl-ink)}
           const tag = token.kind === 'code' ? 'code' : token.kind === 'strong' ? 'strong' : 'em';
           const node = document.createElement(tag);
           if (token.kind === 'code') node.textContent = token.match[1];
-          else appendInline(node, token.match[1]);
+          else appendInline(node, token.match[1], depth + 1);
           parent.appendChild(node);
         }
         rest = rest.slice(token.match.index + whole.length);
       }
     }
 
-    function renderMarkdown(src) {
+    function renderMarkdown(src, depth = 0) {
       const lines = String(src ?? '').replace(/\r\n?/g, '\n').split('\n');
       const out = document.createDocumentFragment();
+      if (depth > MAX_MARKDOWN_DEPTH) {
+        const fallback = document.createElement('p');
+        fallback.textContent = lines.join(' ').slice(0, 4_000);
+        out.appendChild(fallback);
+        return out;
+      }
       let i = 0;
       while (i < lines.length) {
         const l = lines[i];
@@ -400,16 +510,20 @@ body[data-ds-dark-theme] .dshcs-knob{background:var(--cl-ink)}
           const buf = [];
           while (i < lines.length && /^>\s?/.test(lines[i])) buf.push(lines[i++].replace(/^>\s?/, ''));
           const quote = document.createElement('blockquote');
-          quote.appendChild(renderMarkdown(buf.join('\n')));
+          quote.appendChild(renderMarkdown(buf.join('\n'), depth + 1));
           out.appendChild(quote);
           continue;
         }
         if (/^\s*\|.*\|\s*$/.test(l) && i + 1 < lines.length && /^\s*\|[\s:|-]+\|\s*$/.test(lines[i + 1])) {
-          const parseRow = (r) => r.trim().replace(/^\||\|$/g, '').split('|').map((c) => c.trim());
+          const parseRow = (r) => r.trim().replace(/^\||\|$/g, '').split('|').map((c) => c.trim()).slice(0, MAX_MARKDOWN_TABLE_COLS);
           const head = parseRow(lines[i]);
           i += 2;
           const rows = [];
-          while (i < lines.length && /^\s*\|.*\|\s*$/.test(lines[i])) rows.push(parseRow(lines[i++]));
+          while (i < lines.length && rows.length < MAX_MARKDOWN_TABLE_ROWS && /^\s*\|.*\|\s*$/.test(lines[i])) rows.push(parseRow(lines[i++]));
+          if (i < lines.length && /^\s*\|.*\|\s*$/.test(lines[i])) {
+            while (i < lines.length && /^\s*\|.*\|\s*$/.test(lines[i])) i++;
+            rows.push(['…']);
+          }
           const table = document.createElement('table');
           const thead = document.createElement('thead');
           const headRow = document.createElement('tr');
@@ -436,7 +550,11 @@ body[data-ds-dark-theme] .dshcs-knob{background:var(--cl-ink)}
         }
         if (/^\s*[-*+]\s+/.test(l)) {
           const buf = [];
-          while (i < lines.length && /^\s*[-*+]\s+/.test(lines[i])) buf.push(lines[i++].replace(/^\s*[-*+]\s+/, ''));
+          while (i < lines.length && buf.length < MAX_MARKDOWN_LIST_ITEMS && /^\s*[-*+]\s+/.test(lines[i])) buf.push(lines[i++].replace(/^\s*[-*+]\s+/, ''));
+          if (i < lines.length && /^\s*[-*+]\s+/.test(lines[i])) {
+            while (i < lines.length && /^\s*[-*+]\s+/.test(lines[i])) i++;
+            buf.push('…');
+          }
           const list = document.createElement('ul');
           for (const value of buf) {
             const item = document.createElement('li');
@@ -448,7 +566,11 @@ body[data-ds-dark-theme] .dshcs-knob{background:var(--cl-ink)}
         }
         if (/^\s*\d+[.)]\s+/.test(l)) {
           const buf = [];
-          while (i < lines.length && /^\s*\d+[.)]\s+/.test(lines[i])) buf.push(lines[i++].replace(/^\s*\d+[.)]\s+/, ''));
+          while (i < lines.length && buf.length < MAX_MARKDOWN_LIST_ITEMS && /^\s*\d+[.)]\s+/.test(lines[i])) buf.push(lines[i++].replace(/^\s*\d+[.)]\s+/, ''));
+          if (i < lines.length && /^\s*\d+[.)]\s+/.test(lines[i])) {
+            while (i < lines.length && /^\s*\d+[.)]\s+/.test(lines[i])) i++;
+            buf.push('…');
+          }
           const list = document.createElement('ol');
           for (const value of buf) {
             const item = document.createElement('li');
@@ -461,7 +583,14 @@ body[data-ds-dark-theme] .dshcs-knob{background:var(--cl-ink)}
         if (!l.trim()) { i++; continue; }
         const buf = [l];
         i++;
-        while (i < lines.length && lines[i].trim() && !/^(#{1,6}\s|```|\s*[-*+]\s|\s*\d+[.)]\s|\s*\||>)/.test(lines[i])) buf.push(lines[i++]);
+        const continuation = /^(#{1,6}\s|```|\s*[-*+]\s|\s*\d+[.)]\s|\s*\||>)/;
+        let truncated = false;
+        while (i < lines.length && lines[i].trim() && !continuation.test(lines[i])) {
+          if (buf.length < MAX_MARKDOWN_PARAGRAPH_LINES) buf.push(lines[i]);
+          else truncated = true;
+          i++;
+        }
+        if (truncated) buf.push('…');
         const paragraph = document.createElement('p');
         buf.forEach((value, index) => {
           if (index) paragraph.appendChild(document.createElement('br'));
@@ -480,14 +609,16 @@ body[data-ds-dark-theme] .dshcs-knob{background:var(--cl-ink)}
         // ("markdown 复制"), or the enclosing tool row reads a *.md file
         const block = pre.closest('[class*="code-block"]');
         const banner = block ? [...block.children].find((c) => !c.contains(pre)) : null;
-        const lang = ((banner && banner.textContent) || '').replace(/复制.*$/, '').trim().toLowerCase();
+        const lang = ((banner && banner.textContent) || '').replace(/(?:复制|copy|copied).*$/i, '').trim().toLowerCase();
         const callRow = pre.closest('[class*="callRow"]');
         const rowLabel = callRow ? callRow.textContent.slice(0, 100) : '';
         if (!(lang === 'markdown' || lang === 'md' || /\.md\b/i.test(rowLabel))) continue;
         const source = pre.textContent || '';
         if (source.length > MAX_MARKDOWN_PREVIEW_CHARS) {
           pre.dataset.dshcs = 'oversize';
-          pre.title = 'Markdown 文件过大，已保留安全源码视图';
+          pre.dataset.dshcsOriginalTitle = pre.getAttribute('title') ?? '';
+          pre.dataset.dshcsOriginalTitlePresent = pre.hasAttribute('title') ? '1' : '0';
+          pre.title = translate('markdown.oversize');
           continue;
         }
         const seat = pre.parentElement;
@@ -501,12 +632,13 @@ body[data-ds-dark-theme] .dshcs-knob{background:var(--cl-ink)}
         const toggle = document.createElement('button');
         toggle.className = 'dshcs-md-toggle';
         toggle.type = 'button';
-        toggle.setAttribute('aria-label', '切换 Markdown 源码和预览');
+        toggle.setAttribute('aria-label', translate('markdown.toggle.label'));
         let showSrc = false;
         const apply2 = () => {
           pre.style.display = showSrc ? '' : 'none';
           view.style.display = showSrc ? 'none' : '';
-          toggle.textContent = showSrc ? '预览' : '源码';
+          toggle.dataset.dshcsShowSource = showSrc ? '1' : '0';
+          toggle.textContent = translate(showSrc ? 'markdown.toggle.preview' : 'markdown.toggle.source');
         };
         toggle.addEventListener('click', () => { showSrc = !showSrc; apply2(); });
         seat.insertBefore(toggle, pre);
@@ -523,7 +655,7 @@ body[data-ds-dark-theme] .dshcs-knob{background:var(--cl-ink)}
         if (!/<(?:a|div|img|picture|source|span|table)\b/i.test(pane.textContent || '')) continue;
         const note = document.createElement('div');
         note.className = 'dshcs-safe-source-note';
-        note.textContent = '为保证安全，文档中的原始 HTML 以源码显示。';
+        note.textContent = translate('markdown.safeSource');
         pane.insertBefore(note, pane.firstChild);
       }
     }
@@ -540,9 +672,7 @@ body[data-ds-dark-theme] .dshcs-knob{background:var(--cl-ink)}
     function enhanceTurnMarks(root = document) {
       if (!isEnabled()) return;
       for (const msg of collectNear(root, '.Sxvs8a_root')) {
-        const streaming = msg.matches('[aria-busy="true"], [data-streaming="true"], [data-state="streaming"]')
-          || msg.querySelector('[aria-busy="true"], [data-streaming="true"], [data-state="streaming"]');
-        if (streaming) {
+        if (isStreamingMessage(msg)) {
           msg.querySelectorAll('.dshcs-turn-mark').forEach((mark) => mark.remove());
           continue;
         }
@@ -620,6 +750,12 @@ body[data-ds-dark-theme] .dshcs-knob{background:var(--cl-ink)}
             if (element) pendingRoots.add(element);
           }
         }
+        if (document.body.dataset.dshcsCompat !== 'ok'
+          && document.querySelector('.pI_x6G_frame')
+          && document.querySelector('.pI_x6G_centerCol')) {
+          contractAttempts = 0;
+          validateHostContract();
+        }
         if (!flowFrame) flowFrame = requestAnimationFrame(flushEnhancements);
       });
       flowObserver.observe(document.body, {
@@ -641,6 +777,8 @@ body[data-ds-dark-theme] .dshcs-knob{background:var(--cl-ink)}
         document.body.dataset.dshcsCompat = 'pending';
         return;
       }
+      clearTimeout(contractTimer);
+      contractTimer = 0;
       const ok = missing.length === 0;
       document.body.dataset.dshcsCompat = ok ? 'ok' : 'token-only';
       document.body.classList.toggle('dshcs-contract-mismatch', !ok);
@@ -662,7 +800,10 @@ body[data-ds-dark-theme] .dshcs-knob{background:var(--cl-ink)}
       }
       for (const pre of document.querySelectorAll('pre[data-dshcs="oversize"]')) {
         delete pre.dataset.dshcs;
-        if (pre.title === 'Markdown 文件过大，已保留安全源码视图') pre.removeAttribute('title');
+        if (pre.dataset.dshcsOriginalTitlePresent === '1') pre.setAttribute('title', pre.dataset.dshcsOriginalTitle ?? '');
+        else pre.removeAttribute('title');
+        delete pre.dataset.dshcsOriginalTitle;
+        delete pre.dataset.dshcsOriginalTitlePresent;
       }
     }
 
@@ -721,6 +862,7 @@ body[data-ds-dark-theme] .dshcs-knob{background:var(--cl-ink)}
     }
 
     function IvorySettings() {
+      React.useSyncExternalStore(subscribeLocale, localeRevision, localeRevision);
       const [enabled, setEnabled] = React.useState(() => readFlag(ENABLED_KEY, true));
       const [focus, setFocus] = React.useState(() => readFlag(FOCUS_KEY, false));
 
@@ -754,11 +896,11 @@ body[data-ds-dark-theme] .dshcs-knob{background:var(--cl-ink)}
 
       return React.createElement('div', { className: 'dshcs-settings' },
         React.createElement('div', { className: 'dshcs-head' },
-          React.createElement('div', { className: 'dshcs-title' }, 'Ivory 主题'),
+          React.createElement('div', { className: 'dshcs-title' }, translate('settings.title')),
           React.createElement('div', { className: 'dshcs-desc' },
-            '温暖、克制的 Claude-inspired 明暗双主题；保留 DeepSeek 品牌与全部功能面板。')),
-        row('启用 Ivory 主题', '调整布局、配色、字体、圆角与阴影；不发送数据，也不访问网络', enabled, toggleEnabled),
-        row('专注模式', '临时隐藏 aion / better-sidebar 扩展面板，适合沉浸式对话（默认关闭）', focus, toggleFocus, !enabled));
+            translate('settings.description'))),
+        row(translate('settings.enabled.title'), translate('settings.enabled.description'), enabled, toggleEnabled),
+        row(translate('settings.focus.title'), translate('settings.focus.description'), focus, toggleFocus, !enabled));
     }
 
     return { apply, inject };

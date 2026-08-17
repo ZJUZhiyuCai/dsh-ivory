@@ -9,10 +9,11 @@ body.dsh-ivory {
   --cl-ink: #0b0b0b;             /* --cds-text-primary */
   --cl-ink-soft: #383835;        /* sidebar nav item text (measured) */
   --cl-ink-strong: #52514e;      /* --cds-text-secondary */
-  --cl-muted: #898781;           /* --cds-text-muted */
+  --cl-muted: #6f6d68;           /* --cds-text-muted (AA ≥4.5:1 on --cl-page) */
   --cl-border: hsl(0 0% 4.3% / 10%);
   --cl-border-strong: hsl(0 0% 4.3% / 20%);
   --cl-border-stronger: hsl(0 0% 4.3% / 40%);
+  --cl-mask-drop: rgb(255 255 255 / 70%);
   --cl-hover: hsl(0 0% 4.3% / 5%);
   --cl-active: #f6f6f4;          /* recents active item bg (measured) */
   --cl-card: #ffffff;
@@ -42,6 +43,7 @@ body.dsh-ivory[data-ds-dark-theme] {
   --cl-border: hsl(0 0% 100% / 10%);
   --cl-border-strong: hsl(0 0% 100% / 20%);
   --cl-border-stronger: hsl(0 0% 100% / 40%);
+  --cl-mask-drop: rgb(0 0 0 / 60%);
   --cl-hover: hsl(0 0% 100% / 5%);
   --cl-active: #111111;          /* dark active item bg (measured) */
   --cl-card: #20201f;
@@ -74,7 +76,7 @@ body.dsh-ivory {
   --dsw-alias-bg-mask-2: rgb(0 0 0 / 12%);
   --dsw-alias-bg-mask-3: rgb(0 0 0 / 48%);
   --dsw-alias-bg-mask-photo: rgb(0 0 0 / 88%);
-  --dsw-alias-bg-mask-drop: rgb(255 255 255 / 70%);
+  --dsw-alias-bg-mask-drop: var(--cl-mask-drop);
 
   --dsw-alias-label-primary: var(--cl-ink);
   --dsw-alias-label-primary-bluish: var(--cl-ink);
@@ -166,44 +168,44 @@ body.dsh-ivory {
  * does not override grid-template-columns: that solver is what protects the
  * chat at tablet/mobile widths and when Better Sidebar is open. Focus mode is
  * the only exception because it hides the details/extensions for comparison. */
-body.dsh-ivory.dsh-ivory-focus .pI_x6G_frame {
+body.dsh-ivory:not(.dshcs-contract-mismatch).dsh-ivory-focus .pI_x6G_frame {
   grid-template-columns: 288px minmax(0, 1fr) 0px !important;
 }
-body.dsh-ivory.dsh-ivory-focus .pI_x6G_frame[data-sidebar-collapsed="true"] {
+body.dsh-ivory:not(.dshcs-contract-mismatch).dsh-ivory-focus .pI_x6G_frame[data-sidebar-collapsed="true"] {
   grid-template-columns: 56px minmax(0, 1fr) 0px !important;
 }
-html:has(body.dsh-ivory.dsh-ivory-focus) {
+html:has(body.dsh-ivory:not(.dshcs-contract-mismatch).dsh-ivory-focus) {
   --dsh-sidebar-width: 0px !important;
   --dsh-sidebar-height: 0px !important;
 }
-body.dsh-ivory.dsh-ivory-focus #root {
+body.dsh-ivory:not(.dshcs-contract-mismatch).dsh-ivory-focus #root {
   width: 100vw !important;
   max-width: 100vw !important;
 }
-body.dsh-ivory.dsh-ivory-focus .aionui-explorer-col,
-body.dsh-ivory.dsh-ivory-focus .W-zNGW_panel,
-body.dsh-ivory.dsh-ivory-focus .W-zNGW_toggleCluster,
-body.dsh-ivory.dsh-ivory-focus .W-zNGW_bottomPanel,
-body.dsh-ivory.dsh-ivory-focus .kz2Bea_summon {
+body.dsh-ivory:not(.dshcs-contract-mismatch).dsh-ivory-focus .aionui-explorer-col,
+body.dsh-ivory:not(.dshcs-contract-mismatch).dsh-ivory-focus .W-zNGW_panel,
+body.dsh-ivory:not(.dshcs-contract-mismatch).dsh-ivory-focus .W-zNGW_toggleCluster,
+body.dsh-ivory:not(.dshcs-contract-mismatch).dsh-ivory-focus .W-zNGW_bottomPanel,
+body.dsh-ivory:not(.dshcs-contract-mismatch).dsh-ivory-focus .kz2Bea_summon {
   display: none !important;
 }
-body.dsh-ivory .pI_x6G_sidebarCol {
+body.dsh-ivory:not(.dshcs-contract-mismatch) .pI_x6G_sidebarCol {
   background: var(--cl-page) !important;
   border-right: 0.5px solid var(--cl-border) !important;
 }
-body.dsh-ivory .pI_x6G_centerCol {
+body.dsh-ivory:not(.dshcs-contract-mismatch) .pI_x6G_centerCol {
   min-width: 0;
 }
 
 /* ---------- sidebar ---------- */
-body.dsh-ivory .hHd-Xa_root {
+body.dsh-ivory:not(.dshcs-contract-mismatch) .hHd-Xa_root {
   background: var(--cl-page) !important;
 }
 /* Keep the DeepSeek wordmark — only align position, never replace branding. */
-body.dsh-ivory .hHd-Xa_root {
+body.dsh-ivory:not(.dshcs-contract-mismatch) .hHd-Xa_root {
   padding: 0 !important;
 }
-body.dsh-ivory .hHd-Xa_logoRow {
+body.dsh-ivory:not(.dshcs-contract-mismatch) .hHd-Xa_logoRow {
   height: 48px !important;
   min-height: 48px !important;
   margin: 0 !important;
@@ -211,29 +213,29 @@ body.dsh-ivory .hHd-Xa_logoRow {
   box-sizing: border-box;
 }
 /* Keep the DeepSeek wordmark — only align position, never replace branding. */
-body.dsh-ivory .hHd-Xa_brand {
+body.dsh-ivory:not(.dshcs-contract-mismatch) .hHd-Xa_brand {
   padding: 0 !important;
   color: var(--cl-ink) !important;
   justify-content: flex-start !important;
 }
-body.dsh-ivory .hHd-Xa_brand svg {
+body.dsh-ivory:not(.dshcs-contract-mismatch) .hHd-Xa_brand svg {
   display: block !important;
   width: auto !important;
   height: 20px !important;
   flex: none;
 }
-body.dsh-ivory .hHd-Xa_iconButton {
+body.dsh-ivory:not(.dshcs-contract-mismatch) .hHd-Xa_iconButton {
   width: 24px !important;
   height: 24px !important;
   border-radius: 6px !important;
   color: var(--cl-ink-strong) !important;
 }
-body.dsh-ivory .hHd-Xa_iconButton:hover {
+body.dsh-ivory:not(.dshcs-contract-mismatch) .hHd-Xa_iconButton:hover {
   background: var(--cl-hover) !important;
 }
 
 /* New chat — Claude sidebar item: 272x32, radius 9, 14px/20px left-aligned */
-body.dsh-ivory .hHd-Xa_newSession {
+body.dsh-ivory:not(.dshcs-contract-mismatch) .hHd-Xa_newSession {
   width: 272px !important;
   height: 32px !important;
   margin: 8px !important;
@@ -249,22 +251,22 @@ body.dsh-ivory .hHd-Xa_newSession {
   gap: 12px !important;
   box-shadow: none !important;
 }
-body.dsh-ivory .hHd-Xa_newSession:hover {
+body.dsh-ivory:not(.dshcs-contract-mismatch) .hHd-Xa_newSession:hover {
   background: var(--cl-hover) !important;
 }
-body.dsh-ivory .hHd-Xa_newSession svg {
+body.dsh-ivory:not(.dshcs-contract-mismatch) .hHd-Xa_newSession svg {
   width: 20px !important;
   height: 20px !important;
   flex: none;
 }
-body.dsh-ivory .hHd-Xa_newSessionLabel {
+body.dsh-ivory:not(.dshcs-contract-mismatch) .hHd-Xa_newSessionLabel {
   font: inherit !important;
   color: inherit !important;
 }
 
 /* plugin nav entries (task board / ssh) get the same row treatment */
-body.dsh-ivory ._7D6uKa_entry,
-body.dsh-ivory .mL8Uca_entry {
+body.dsh-ivory:not(.dshcs-contract-mismatch) ._7D6uKa_entry,
+body.dsh-ivory:not(.dshcs-contract-mismatch) .mL8Uca_entry {
   height: 32px !important;
   margin: 0 8px !important;
   padding: 6px 16px !important;
@@ -276,24 +278,24 @@ body.dsh-ivory .mL8Uca_entry {
   justify-content: flex-start !important;
   gap: 12px !important;
 }
-body.dsh-ivory ._7D6uKa_entry:hover,
-body.dsh-ivory .mL8Uca_entry:hover {
+body.dsh-ivory:not(.dshcs-contract-mismatch) ._7D6uKa_entry:hover,
+body.dsh-ivory:not(.dshcs-contract-mismatch) .mL8Uca_entry:hover {
   background: var(--cl-hover) !important;
 }
-body.dsh-ivory ._7D6uKa_entryIcon,
-body.dsh-ivory .mL8Uca_entryIcon {
+body.dsh-ivory:not(.dshcs-contract-mismatch) ._7D6uKa_entryIcon,
+body.dsh-ivory:not(.dshcs-contract-mismatch) .mL8Uca_entryIcon {
   width: 20px !important;
   height: 20px !important;
 }
 
 /* section headers — 12px/16px muted */
-body.dsh-ivory .qDHVXG_sectionHeader {
+body.dsh-ivory:not(.dshcs-contract-mismatch) .qDHVXG_sectionHeader {
   height: auto !important;
   min-height: 24px !important;
   padding: 4px 16px 4px 16px !important;
   color: var(--cl-muted) !important;
 }
-body.dsh-ivory .qDHVXG_sectionLabel {
+body.dsh-ivory:not(.dshcs-contract-mismatch) .qDHVXG_sectionLabel {
   font-family: var(--cl-sans) !important;
   font-size: 12px !important;
   line-height: 16px !important;
@@ -301,11 +303,11 @@ body.dsh-ivory .qDHVXG_sectionLabel {
 }
 
 /* workspace + session rows — Claude item geometry */
-body.dsh-ivory .qDHVXG_groupSection {
+body.dsh-ivory:not(.dshcs-contract-mismatch) .qDHVXG_groupSection {
   padding: 0 8px !important;
 }
-body.dsh-ivory .YDXeBa_projectRow,
-body.dsh-ivory .YDXeBa_sessionRow {
+body.dsh-ivory:not(.dshcs-contract-mismatch) .YDXeBa_projectRow,
+body.dsh-ivory:not(.dshcs-contract-mismatch) .YDXeBa_sessionRow {
   box-sizing: border-box !important;
   height: 32px !important;
   min-height: 32px !important;
@@ -316,33 +318,33 @@ body.dsh-ivory .YDXeBa_sessionRow {
   font-size: 14px !important;
   line-height: 20px !important;
 }
-body.dsh-ivory .YDXeBa_projectRow:hover,
-body.dsh-ivory .YDXeBa_sessionRow:hover {
+body.dsh-ivory:not(.dshcs-contract-mismatch) .YDXeBa_projectRow:hover,
+body.dsh-ivory:not(.dshcs-contract-mismatch) .YDXeBa_sessionRow:hover {
   background: var(--cl-hover) !important;
 }
-body.dsh-ivory .YDXeBa_sessionRow[aria-current="true"],
-body.dsh-ivory .YDXeBa_sessionRow[data-active="true"] {
+body.dsh-ivory:not(.dshcs-contract-mismatch) .YDXeBa_sessionRow[aria-current="true"],
+body.dsh-ivory:not(.dshcs-contract-mismatch) .YDXeBa_sessionRow[data-active="true"] {
   background: var(--cl-active) !important;
   color: var(--cl-ink) !important;
 }
-body.dsh-ivory .YDXeBa_time {
+body.dsh-ivory:not(.dshcs-contract-mismatch) .YDXeBa_time {
   color: var(--cl-muted) !important;
   font-size: 12px !important;
   line-height: 16px !important;
 }
-body.dsh-ivory .qDHVXG_iconButton,
-body.dsh-ivory .qDHVXG_searchButton {
+body.dsh-ivory:not(.dshcs-contract-mismatch) .qDHVXG_iconButton,
+body.dsh-ivory:not(.dshcs-contract-mismatch) .qDHVXG_searchButton {
   width: 24px !important;
   height: 24px !important;
   border-radius: 6px !important;
   color: var(--cl-ink-strong) !important;
 }
-body.dsh-ivory .qDHVXG_iconButton:hover {
+body.dsh-ivory:not(.dshcs-contract-mismatch) .qDHVXG_iconButton:hover {
   background: var(--cl-hover) !important;
 }
 
 /* bottom settings row — Claude user-menu-like footer */
-body.dsh-ivory .fThDlq_entryRow {
+body.dsh-ivory:not(.dshcs-contract-mismatch) .fThDlq_entryRow {
   height: 64px !important;
   min-height: 64px !important;
   border-top: 0.5px solid var(--cl-border) !important;
@@ -353,28 +355,28 @@ body.dsh-ivory .fThDlq_entryRow {
 }
 
 /* ---------- center column / chat ---------- */
-body.dsh-ivory .wSkVaW_root,
-body.dsh-ivory .wSkVaW_scrollBody {
+body.dsh-ivory:not(.dshcs-contract-mismatch) .wSkVaW_root,
+body.dsh-ivory:not(.dshcs-contract-mismatch) .wSkVaW_scrollBody {
   background: var(--cl-page) !important;
   scrollbar-gutter: auto !important;
 }
-body.dsh-ivory .wSkVaW_viewArea,
-body.dsh-ivory .wSkVaW_composerSeat,
-body.dsh-ivory .wSkVaW_composerStack {
+body.dsh-ivory:not(.dshcs-contract-mismatch) .wSkVaW_viewArea,
+body.dsh-ivory:not(.dshcs-contract-mismatch) .wSkVaW_composerSeat,
+body.dsh-ivory:not(.dshcs-contract-mismatch) .wSkVaW_composerStack {
   width: 100% !important;
   scrollbar-gutter: auto !important;
 }
 
 /* Claude conversation header: title only, no DSH tabs */
-body.dsh-ivory .wSkVaW_header {
+body.dsh-ivory:not(.dshcs-contract-mismatch) .wSkVaW_header {
   display: block !important;
   padding: 10px 24px 0 24px !important;
 }
-body.dsh-ivory .wSkVaW_titleRow {
+body.dsh-ivory:not(.dshcs-contract-mismatch) .wSkVaW_titleRow {
   padding: 0 !important;
 }
-body.dsh-ivory .wSkVaW_crumbs,
-body.dsh-ivory .wSkVaW_crumb {
+body.dsh-ivory:not(.dshcs-contract-mismatch) .wSkVaW_crumbs,
+body.dsh-ivory:not(.dshcs-contract-mismatch) .wSkVaW_crumb {
   font-family: var(--cl-sans) !important;
   font-size: 15px !important;
   line-height: 20px !important;
@@ -383,12 +385,12 @@ body.dsh-ivory .wSkVaW_crumb {
   border: 0 !important;
   padding: 0 !important;
 }
-body.dsh-ivory .wSkVaW_crumb {
+body.dsh-ivory:not(.dshcs-contract-mismatch) .wSkVaW_crumb {
   min-height: 24px !important;
   display: inline-flex !important;
   align-items: center !important;
 }
-body.dsh-ivory .wSkVaW_headerActions {
+body.dsh-ivory:not(.dshcs-contract-mismatch) .wSkVaW_headerActions {
   color: var(--cl-muted) !important;
 }
 /* keep the DSH "对话轨迹" tab bar visible */
@@ -396,43 +398,43 @@ body.dsh-ivory .wSkVaW_headerActions {
 /* ---------- hero (new chat) ---------- */
 /* DSH hero mascot/badge stay visible; the decorative glow layer is removed above. */
 /* claude.ai home vertical rhythm: greeting 240, card 320, chips ~456 */
-body.dsh-ivory .wSkVaW_composerHero {
+body.dsh-ivory:not(.dshcs-contract-mismatch) .wSkVaW_composerHero {
   width: min(672px, 100%) !important;
   margin-inline: auto !important;
 }
-body.dsh-ivory .wSkVaW_scrollBody:has(.wSkVaW_composerHero) {
+body.dsh-ivory:not(.dshcs-contract-mismatch) .wSkVaW_scrollBody:has(.wSkVaW_composerHero) {
   justify-content: flex-start !important;
 }
-body.dsh-ivory .wSkVaW_composerHero > .pXSMma_root {
+body.dsh-ivory:not(.dshcs-contract-mismatch) .wSkVaW_composerHero > .pXSMma_root {
   order: 0 !important;
   height: auto !important;
   margin-top: 229px !important;
 }
-body.dsh-ivory .wSkVaW_composerHero > div:has(.uV2eYG_root) {
+body.dsh-ivory:not(.dshcs-contract-mismatch) .wSkVaW_composerHero > div:has(.uV2eYG_root) {
   order: 1 !important;
   margin-top: 36px !important;
 }
-body.dsh-ivory .wSkVaW_composerHero .uV2eYG_root {
+body.dsh-ivory:not(.dshcs-contract-mismatch) .wSkVaW_composerHero .uV2eYG_root {
   margin-top: 0 !important;
   padding-top: 12px !important;
   padding-inline: 0 !important;
 }
-body.dsh-ivory .wSkVaW_composerHero > .wSkVaW_heroWorkspaceRow {
+body.dsh-ivory:not(.dshcs-contract-mismatch) .wSkVaW_composerHero > .wSkVaW_heroWorkspaceRow {
   order: 2 !important;
   width: min(672px, 100%) !important;
   margin: 8px auto 0 !important;
 }
-body.dsh-ivory .pXSMma_root,
-body.dsh-ivory .pXSMma_stack {
+body.dsh-ivory:not(.dshcs-contract-mismatch) .pXSMma_root,
+body.dsh-ivory:not(.dshcs-contract-mismatch) .pXSMma_stack {
   width: auto !important;
   max-width: 752px !important;
   margin-inline: auto !important;
 }
-body.dsh-ivory .pXSMma_headline {
+body.dsh-ivory:not(.dshcs-contract-mismatch) .pXSMma_headline {
   height: 48px !important;
   justify-content: center !important;
 }
-body.dsh-ivory .pXSMma_headlineText {
+body.dsh-ivory:not(.dshcs-contract-mismatch) .pXSMma_headlineText {
   font-family: var(--cl-serif) !important;
   font-size: 38px !important;
   font-weight: 330 !important;
@@ -443,7 +445,7 @@ body.dsh-ivory .pXSMma_headlineText {
 /* The preview label is supporting metadata, not a second accent. Resolve its
  * paint from the active Ivory palette so the light-blue host badge cannot
  * clash with the warm light theme or become low-contrast in dark mode. */
-body.dsh-ivory .pXSMma_previewBadge {
+body.dsh-ivory:not(.dshcs-contract-mismatch) .pXSMma_previewBadge {
   background-color: var(--cl-hover) !important;
   background-image: none !important;
   color: var(--cl-ink-strong) !important;
@@ -451,11 +453,11 @@ body.dsh-ivory .pXSMma_previewBadge {
   border-color: var(--cl-border) !important;
   box-shadow: none !important;
 }
-body.dsh-ivory .wSkVaW_heroWorkspaceRow {
+body.dsh-ivory:not(.dshcs-contract-mismatch) .wSkVaW_heroWorkspaceRow {
   justify-content: center !important;
 }
-body.dsh-ivory .pXSMma_workspace,
-body.dsh-ivory .cubgiG_seat {
+body.dsh-ivory:not(.dshcs-contract-mismatch) .pXSMma_workspace,
+body.dsh-ivory:not(.dshcs-contract-mismatch) .cubgiG_seat {
   border-radius: 8px !important;
   background: transparent !important;
   border: 0.5px solid var(--cl-border) !important;
@@ -466,19 +468,19 @@ body.dsh-ivory .cubgiG_seat {
   padding: 0 12px !important;
   height: 32px !important;
 }
-body.dsh-ivory .pXSMma_workspaceLabel {
+body.dsh-ivory:not(.dshcs-contract-mismatch) .pXSMma_workspaceLabel {
   font: inherit !important;
   color: inherit !important;
 }
 
 /* ---------- composer ---------- */
-body.dsh-ivory .wSkVaW_composerSeat {
+body.dsh-ivory:not(.dshcs-contract-mismatch) .wSkVaW_composerSeat {
   width: 100% !important;
 }
-body.dsh-ivory .wSkVaW_composerStack {
+body.dsh-ivory:not(.dshcs-contract-mismatch) .wSkVaW_composerStack {
   width: 100% !important;
 }
-body.dsh-ivory .uV2eYG_root {
+body.dsh-ivory:not(.dshcs-contract-mismatch) .uV2eYG_root {
   box-sizing: border-box !important;
   width: 100% !important;
   max-width: 752px !important;
@@ -487,22 +489,22 @@ body.dsh-ivory .uV2eYG_root {
 /* The host gives the root 16px inline padding. Keep that breathing room in the
  * normal plugin layout, but remove it in pixel-comparison focus mode so the
  * visible conversation card—not only its invisible wrapper—is 752px wide. */
-body.dsh-ivory.dsh-ivory-focus .uV2eYG_root {
+body.dsh-ivory:not(.dshcs-contract-mismatch).dsh-ivory-focus .uV2eYG_root {
   padding-inline: 0 !important;
 }
-body.dsh-ivory .uV2eYG_card {
+body.dsh-ivory:not(.dshcs-contract-mismatch) .uV2eYG_card {
   min-height: 100px !important;
   border-radius: 20px !important;
   border: 1px solid transparent !important;
   background: var(--cl-card) !important;
   box-shadow: var(--cl-shadow-card) !important;
 }
-body.dsh-ivory .wSkVaW_composerHero .uV2eYG_card {
+body.dsh-ivory:not(.dshcs-contract-mismatch) .wSkVaW_composerHero .uV2eYG_card {
   max-width: min(672px, 100%) !important;
   min-height: 120px !important;
   margin-inline: auto !important;
 }
-body.dsh-ivory .uV2eYG_input {
+body.dsh-ivory:not(.dshcs-contract-mismatch) .uV2eYG_input {
   font-family: var(--cl-sans) !important;
   font-size: 15px !important;
   line-height: 20px !important;
@@ -515,7 +517,7 @@ body.dsh-ivory .uV2eYG_input {
   caret-color: var(--cl-accent) !important;
   padding-left: 16px !important;
 }
-body.dsh-ivory .uV2eYG_backdrop {
+body.dsh-ivory:not(.dshcs-contract-mismatch) .uV2eYG_backdrop {
   font-family: DshChipCell, var(--cl-sans) !important;
   font-size: 15px !important;
   line-height: 20px !important;
@@ -523,7 +525,7 @@ body.dsh-ivory .uV2eYG_backdrop {
   color: var(--cl-ink) !important;
   -webkit-text-fill-color: currentColor !important;
 }
-body.dsh-ivory .uV2eYG_mirror {
+body.dsh-ivory:not(.dshcs-contract-mismatch) .uV2eYG_mirror {
   font-family: DshChipCell, var(--cl-sans) !important;
   font-size: 15px !important;
   line-height: 20px !important;
@@ -531,62 +533,62 @@ body.dsh-ivory .uV2eYG_mirror {
   color: transparent !important;
   visibility: hidden !important;
 }
-body.dsh-ivory .uV2eYG_input::placeholder {
+body.dsh-ivory:not(.dshcs-contract-mismatch) .uV2eYG_input::placeholder {
   color: var(--cl-muted) !important;
   -webkit-text-fill-color: var(--cl-muted) !important;
 }
-body.dsh-ivory .uV2eYG_row {
+body.dsh-ivory:not(.dshcs-contract-mismatch) .uV2eYG_row {
   padding: 2px 12px 8px !important;
   gap: 8px !important;
   min-width: 0 !important;
 }
-body.dsh-ivory .uV2eYG_tools,
-body.dsh-ivory .uV2eYG_modes,
-body.dsh-ivory .uV2eYG_trailing,
-body.dsh-ivory ._7KE1Ra_root,
-body.dsh-ivory ._7KE1Ra_trigger {
+body.dsh-ivory:not(.dshcs-contract-mismatch) .uV2eYG_tools,
+body.dsh-ivory:not(.dshcs-contract-mismatch) .uV2eYG_modes,
+body.dsh-ivory:not(.dshcs-contract-mismatch) .uV2eYG_trailing,
+body.dsh-ivory:not(.dshcs-contract-mismatch) ._7KE1Ra_root,
+body.dsh-ivory:not(.dshcs-contract-mismatch) ._7KE1Ra_trigger {
   min-width: 0 !important;
 }
-body.dsh-ivory ._7KE1Ra_triggerLabel {
+body.dsh-ivory:not(.dshcs-contract-mismatch) ._7KE1Ra_triggerLabel {
   min-width: 0 !important;
   overflow: hidden !important;
   text-overflow: ellipsis !important;
   white-space: nowrap !important;
 }
-body.dsh-ivory .uV2eYG_tools button,
-body.dsh-ivory .uV2eYG_trailing button {
+body.dsh-ivory:not(.dshcs-contract-mismatch) .uV2eYG_tools button,
+body.dsh-ivory:not(.dshcs-contract-mismatch) .uV2eYG_trailing button {
   border-radius: 8px !important;
   color: var(--cl-ink) !important;
 }
-body.dsh-ivory .uV2eYG_tools button:hover,
-body.dsh-ivory .uV2eYG_trailing button:hover {
+body.dsh-ivory:not(.dshcs-contract-mismatch) .uV2eYG_tools button:hover,
+body.dsh-ivory:not(.dshcs-contract-mismatch) .uV2eYG_trailing button:hover {
   background: var(--cl-hover) !important;
 }
 
 /* ---------- conversation messages ---------- */
 /* F1 responsive: fluid column — full width up to Claude's 720px cap, so narrow
  * viewports never clip messages (was fixed width:720px). */
-body.dsh-ivory .Md3f7G_scroll {
+body.dsh-ivory:not(.dshcs-contract-mismatch) .Md3f7G_scroll {
   max-width: 720px !important;
   width: 100% !important;
   margin-inline: auto !important;
   padding: 0 !important;
 }
-body.dsh-ivory .Md3f7G_column {
+body.dsh-ivory:not(.dshcs-contract-mismatch) .Md3f7G_column {
   width: 100% !important;
   max-width: 720px !important;
   margin: 0 auto !important;
 }
 /* user message: right-aligned neutral bubble, 12px radius, 15/20 sans */
-body.dsh-ivory .gdEzaW_userRow {
+body.dsh-ivory:not(.dshcs-contract-mismatch) .gdEzaW_userRow {
   width: 100% !important;
   max-width: 720px !important;
 }
-body.dsh-ivory .gdEzaW_userStack {
+body.dsh-ivory:not(.dshcs-contract-mismatch) .gdEzaW_userStack {
   margin-left: auto !important;
   max-width: 85% !important;
 }
-body.dsh-ivory .gdEzaW_bubble {
+body.dsh-ivory:not(.dshcs-contract-mismatch) .gdEzaW_bubble {
   border-radius: 12px !important;
   background: var(--cl-user-bubble) !important;
   color: var(--cl-ink) !important;
@@ -596,26 +598,26 @@ body.dsh-ivory .gdEzaW_bubble {
   line-height: 20px !important;
   font-weight: 400 !important;
 }
-body.dsh-ivory .gdEzaW_bubble * {
+body.dsh-ivory:not(.dshcs-contract-mismatch) .gdEzaW_bubble * {
   font-family: var(--cl-sans) !important;
   font-size: 15px !important;
   line-height: 20px !important;
   color: var(--cl-ink) !important;
 }
 /* assistant text: serif 16/26.4, right padding for action room */
-body.dsh-ivory .Sxvs8a_root,
-body.dsh-ivory .Sxvs8a_body {
+body.dsh-ivory:not(.dshcs-contract-mismatch) .Sxvs8a_root,
+body.dsh-ivory:not(.dshcs-contract-mismatch) .Sxvs8a_body {
   font-family: var(--cl-serif) !important;
   font-size: 16px !important;
   line-height: 26.4px !important;
   color: var(--cl-ink) !important;
 }
-body.dsh-ivory .Sxvs8a_body > * {
+body.dsh-ivory:not(.dshcs-contract-mismatch) .Sxvs8a_body > * {
   font-family: inherit !important;
 }
 /* tool call rows — quiet 13px muted */
-body.dsh-ivory .Md3f7G_callRow,
-body.dsh-ivory .ztWv_q_callRow {
+body.dsh-ivory:not(.dshcs-contract-mismatch) .Md3f7G_callRow,
+body.dsh-ivory:not(.dshcs-contract-mismatch) .ztWv_q_callRow {
   border-radius: 8px !important;
   color: var(--cl-muted) !important;
   font-family: var(--cl-sans) !important;
@@ -623,19 +625,19 @@ body.dsh-ivory .ztWv_q_callRow {
   line-height: 20px !important;
   background: transparent !important;
 }
-body.dsh-ivory .osXY9a_root,
-body.dsh-ivory .p-xYUq_actions {
+body.dsh-ivory:not(.dshcs-contract-mismatch) .osXY9a_root,
+body.dsh-ivory:not(.dshcs-contract-mismatch) .p-xYUq_actions {
   color: var(--cl-muted) !important;
 }
-body.dsh-ivory .osXY9a_actions,
-body.dsh-ivory .p-xYUq_actions {
+body.dsh-ivory:not(.dshcs-contract-mismatch) .osXY9a_actions,
+body.dsh-ivory:not(.dshcs-contract-mismatch) .p-xYUq_actions {
   box-sizing: border-box !important;
   margin-inline: 0 !important;
   width: 100% !important;
   max-width: 100% !important;
   min-width: 0 !important;
 }
-body.dsh-ivory .p-xYUq_timeEnd {
+body.dsh-ivory:not(.dshcs-contract-mismatch) .p-xYUq_timeEnd {
   min-width: 0 !important;
   max-width: 100% !important;
   overflow: hidden !important;
@@ -748,50 +750,50 @@ body.dsh-ivory .dshcs-copy-status {
   }
 }
 @media (hover: hover) and (pointer: fine) {
-  body.dsh-ivory .Md3f7G_flowItem .osXY9a_actions,
-  body.dsh-ivory .Md3f7G_flowItem .p-xYUq_actions {
+  body.dsh-ivory:not(.dshcs-contract-mismatch) .Md3f7G_flowItem .osXY9a_actions,
+  body.dsh-ivory:not(.dshcs-contract-mismatch) .Md3f7G_flowItem .p-xYUq_actions {
     opacity: 0;
     pointer-events: none;
     transition: opacity 150ms ease;
   }
-  body.dsh-ivory .Md3f7G_flowItem:hover .osXY9a_actions,
-  body.dsh-ivory .Md3f7G_flowItem:hover .p-xYUq_actions,
-  body.dsh-ivory .Md3f7G_flowItem:focus-within .osXY9a_actions,
-  body.dsh-ivory .Md3f7G_flowItem:focus-within .p-xYUq_actions {
+  body.dsh-ivory:not(.dshcs-contract-mismatch) .Md3f7G_flowItem:hover .osXY9a_actions,
+  body.dsh-ivory:not(.dshcs-contract-mismatch) .Md3f7G_flowItem:hover .p-xYUq_actions,
+  body.dsh-ivory:not(.dshcs-contract-mismatch) .Md3f7G_flowItem:focus-within .osXY9a_actions,
+  body.dsh-ivory:not(.dshcs-contract-mismatch) .Md3f7G_flowItem:focus-within .p-xYUq_actions {
     opacity: 1;
     pointer-events: auto;
   }
 }
 
 /* inline markdown code + links */
-body.dsh-ivory ._markdown_1nba0_5 a {
+body.dsh-ivory:not(.dshcs-contract-mismatch) ._markdown_1nba0_5 a {
   color: var(--cl-accent-text) !important;
 }
 
 /* Claude uses native overlay scrollbars — no reserved gutter width.
  * Focus mode (pixel comparison) hides bars entirely; normal mode keeps a thin
  * Claude-style overlay bar so long lists/code stay navigable. */
-body.dsh-ivory.dsh-ivory-focus ::-webkit-scrollbar {
+body.dsh-ivory:not(.dshcs-contract-mismatch).dsh-ivory-focus ::-webkit-scrollbar {
   width: 0 !important;
   height: 0 !important;
 }
-body.dsh-ivory.dsh-ivory-focus * {
+body.dsh-ivory:not(.dshcs-contract-mismatch).dsh-ivory-focus * {
   scrollbar-width: none;
 }
-body.dsh-ivory:not(.dsh-ivory-focus) ::-webkit-scrollbar {
+body.dsh-ivory:not(.dshcs-contract-mismatch):not(.dsh-ivory-focus) ::-webkit-scrollbar {
   width: 10px !important;
   height: 10px !important;
 }
-body.dsh-ivory:not(.dsh-ivory-focus) ::-webkit-scrollbar-track {
+body.dsh-ivory:not(.dshcs-contract-mismatch):not(.dsh-ivory-focus) ::-webkit-scrollbar-track {
   background: transparent !important;
 }
-body.dsh-ivory:not(.dsh-ivory-focus) ::-webkit-scrollbar-thumb {
+body.dsh-ivory:not(.dshcs-contract-mismatch):not(.dsh-ivory-focus) ::-webkit-scrollbar-thumb {
   background: var(--cl-border-strong) !important;
   border-radius: 5px !important;
   border: 3px solid transparent !important;
   background-clip: content-box !important;
 }
-body.dsh-ivory {
+body.dsh-ivory:not(.dshcs-contract-mismatch) {
   --dsh-scrollbar-width: 0px;
 }
 
@@ -800,28 +802,28 @@ body.dsh-ivory {
 /* F1 hero glow: the DSH decorative glow SVG tints the whole hero zone blue and
  * pushes dark-home chrome diff over budget. Claude's home is flat — remove the
  * glow layer only; the mascot fish (.pXSMma_fish) is separate and stays. */
-body.dsh-ivory .wSkVaW_heroGlow {
+body.dsh-ivory:not(.dshcs-contract-mismatch) .wSkVaW_heroGlow {
   display: none !important;
 }
 
 /* F2 dark tooltip text: bubble bg flips to ivory in dark, but the bubble text
  * stays hardcoded white → unreadable. Flip text along with the surface. */
-body.dsh-ivory[data-ds-dark-theme] [class^="_bubble_"],
-body.dsh-ivory[data-ds-dark-theme] [class*=" _bubble_"] {
+body.dsh-ivory:not(.dshcs-contract-mismatch)[data-ds-dark-theme] [class^="_bubble_"],
+body.dsh-ivory:not(.dshcs-contract-mismatch)[data-ds-dark-theme] [class*=" _bubble_"] {
   color: var(--cl-page) !important;
 }
 
 /* F3 selected session row: DSH marks it with .YDXeBa_selected + aria-selected,
  * not aria-current/data-active — Claude active bg never applied before. */
-body.dsh-ivory .YDXeBa_sessionRow.YDXeBa_selected,
-body.dsh-ivory .YDXeBa_sessionRow[aria-selected="true"] {
+body.dsh-ivory:not(.dshcs-contract-mismatch) .YDXeBa_sessionRow.YDXeBa_selected,
+body.dsh-ivory:not(.dshcs-contract-mismatch) .YDXeBa_sessionRow[aria-selected="true"] {
   background: var(--cl-active) !important;
   color: var(--cl-ink) !important;
 }
 
 /* Keep the composer visually steady while typing: focus must not add a blue
  * outer ring or shift the card's perceived size. */
-body.dsh-ivory .uV2eYG_card:focus-within {
+body.dsh-ivory:not(.dshcs-contract-mismatch) .uV2eYG_card:focus-within {
   outline: none !important;
   outline-offset: 0 !important;
 }
@@ -830,10 +832,10 @@ body.dsh-ivory .uV2eYG_card:focus-within {
  * the quiet arrow into a filled black/ivory disc. Keep every paint property
  * identical before and after text entry; the host still owns clickability and
  * assistive technology receives the real disabled state. */
-body.dsh-ivory button.uV2eYG_primary,
-body.dsh-ivory button.uV2eYG_primary:hover:not(:disabled),
-body.dsh-ivory button.uV2eYG_primary:active:not(:disabled),
-body.dsh-ivory button.uV2eYG_primary:disabled {
+body.dsh-ivory:not(.dshcs-contract-mismatch) button.uV2eYG_primary,
+body.dsh-ivory:not(.dshcs-contract-mismatch) button.uV2eYG_primary:hover:not(:disabled),
+body.dsh-ivory:not(.dshcs-contract-mismatch) button.uV2eYG_primary:active:not(:disabled),
+body.dsh-ivory:not(.dshcs-contract-mismatch) button.uV2eYG_primary:disabled {
   background: transparent !important;
   color: var(--cl-ink-strong) !important;
   border-color: transparent !important;
@@ -846,10 +848,10 @@ body.dsh-ivory button.uV2eYG_primary:disabled {
 /* Only animate paint-only properties. `transition: all` caused a card repaint on
  * every textarea resize, while disabling all transitions removed useful state
  * feedback. */
-body.dsh-ivory .uV2eYG_card {
+body.dsh-ivory:not(.dshcs-contract-mismatch) .uV2eYG_card {
   transition: background-color 150ms ease, border-color 150ms ease, box-shadow 150ms ease !important;
 }
-body.dsh-ivory .uV2eYG_cardWorkspaceTrigger::after {
+body.dsh-ivory:not(.dshcs-contract-mismatch) .uV2eYG_cardWorkspaceTrigger::after {
   transition: opacity 150ms ease, border-color 150ms ease !important;
 }
 
@@ -862,10 +864,10 @@ body.dsh-ivory .uV2eYG_cardWorkspaceTrigger::after {
     scroll-behavior: auto !important;
     transition-duration: 0.001ms !important;
   }
-  body.dsh-ivory .uV2eYG_card,
-  body.dsh-ivory .uV2eYG_cardWorkspaceTrigger::after,
-  body.dsh-ivory .Md3f7G_flowItem .osXY9a_actions,
-  body.dsh-ivory .Md3f7G_flowItem .p-xYUq_actions {
+  body.dsh-ivory:not(.dshcs-contract-mismatch) .uV2eYG_card,
+  body.dsh-ivory:not(.dshcs-contract-mismatch) .uV2eYG_cardWorkspaceTrigger::after,
+  body.dsh-ivory:not(.dshcs-contract-mismatch) .Md3f7G_flowItem .osXY9a_actions,
+  body.dsh-ivory:not(.dshcs-contract-mismatch) .Md3f7G_flowItem .p-xYUq_actions {
     transition-duration: 0.001ms !important;
   }
 }
@@ -873,109 +875,109 @@ body.dsh-ivory .uV2eYG_cardWorkspaceTrigger::after {
 /* Plugin panels: inherit typography at the component root, then adapt semantic
  * controls/roles. Avoid styling every descendant div/span: that leaked into
  * third-party canvases and made future plugin upgrades brittle. */
-body.dsh-ivory .aionui-explorer-col,
-body.dsh-ivory .aionui-preview-col {
+body.dsh-ivory:not(.dshcs-contract-mismatch) .aionui-explorer-col,
+body.dsh-ivory:not(.dshcs-contract-mismatch) .aionui-preview-col {
   background: var(--cl-page) !important;
   border-left: 0.5px solid var(--cl-border) !important;
   font-family: var(--cl-sans) !important;
   color: var(--cl-ink) !important;
 }
-body.dsh-ivory .aionui-explorer-col button,
-body.dsh-ivory .aionui-preview-col button {
+body.dsh-ivory:not(.dshcs-contract-mismatch) .aionui-explorer-col button,
+body.dsh-ivory:not(.dshcs-contract-mismatch) .aionui-preview-col button {
   color: var(--cl-ink-strong) !important;
   border-radius: 6px !important;
   font: inherit !important;
 }
-body.dsh-ivory .aionui-explorer-col button:hover,
-body.dsh-ivory .aionui-preview-col button:hover,
-body.dsh-ivory .aionui-explorer-col [role="treeitem"]:hover {
+body.dsh-ivory:not(.dshcs-contract-mismatch) .aionui-explorer-col button:hover,
+body.dsh-ivory:not(.dshcs-contract-mismatch) .aionui-preview-col button:hover,
+body.dsh-ivory:not(.dshcs-contract-mismatch) .aionui-explorer-col [role="treeitem"]:hover {
   background: var(--cl-hover) !important;
 }
-body.dsh-ivory .aionui-explorer-col :is([role="tab"], [role="treeitem"])[aria-selected="true"],
-body.dsh-ivory .aionui-preview-col [role="tab"][aria-selected="true"] {
+body.dsh-ivory:not(.dshcs-contract-mismatch) .aionui-explorer-col :is([role="tab"], [role="treeitem"])[aria-selected="true"],
+body.dsh-ivory:not(.dshcs-contract-mismatch) .aionui-preview-col [role="tab"][aria-selected="true"] {
   background: var(--cl-active) !important;
   color: var(--cl-ink) !important;
 }
-body.dsh-ivory .aionui-explorer-col :is(input, [role="searchbox"]),
-body.dsh-ivory .aionui-preview-col :is(input, [role="searchbox"]) {
+body.dsh-ivory:not(.dshcs-contract-mismatch) .aionui-explorer-col :is(input, [role="searchbox"]),
+body.dsh-ivory:not(.dshcs-contract-mismatch) .aionui-preview-col :is(input, [role="searchbox"]) {
   background: var(--cl-surface) !important;
   border: 0.5px solid var(--cl-border-strong) !important;
   color: var(--cl-ink) !important;
   border-radius: 8px !important;
 }
-body.dsh-ivory .aionui-preview-col :is(pre, table) {
+body.dsh-ivory:not(.dshcs-contract-mismatch) .aionui-preview-col :is(pre, table) {
   max-width: 100% !important;
   overflow: auto !important;
 }
 
-body.dsh-ivory .W-zNGW_panel {
+body.dsh-ivory:not(.dshcs-contract-mismatch) .W-zNGW_panel {
   font-family: var(--cl-sans) !important;
   color: var(--cl-ink) !important;
   background: var(--cl-page) !important;
 }
-body.dsh-ivory .W-zNGW_tabActive {
+body.dsh-ivory:not(.dshcs-contract-mismatch) .W-zNGW_tabActive {
   color: var(--cl-ink) !important;
   background: var(--cl-active) !important;
 }
-body.dsh-ivory .W-zNGW_explorerRow:hover {
+body.dsh-ivory:not(.dshcs-contract-mismatch) .W-zNGW_explorerRow:hover {
   background: var(--cl-hover) !important;
 }
-body.dsh-ivory .W-zNGW_explorerRow {
+body.dsh-ivory:not(.dshcs-contract-mismatch) .W-zNGW_explorerRow {
   box-sizing: border-box !important;
   width: 100% !important;
   max-width: 100% !important;
   min-width: 0 !important;
   overflow: hidden !important;
 }
-body.dsh-ivory .W-zNGW_explorerRow > *,
-body.dsh-ivory .W-zNGW_explorerName,
-body.dsh-ivory .W-zNGW_paneContent,
-body.dsh-ivory .W-zNGW_editorMd {
+body.dsh-ivory:not(.dshcs-contract-mismatch) .W-zNGW_explorerRow > *,
+body.dsh-ivory:not(.dshcs-contract-mismatch) .W-zNGW_explorerName,
+body.dsh-ivory:not(.dshcs-contract-mismatch) .W-zNGW_paneContent,
+body.dsh-ivory:not(.dshcs-contract-mismatch) .W-zNGW_editorMd {
   min-width: 0 !important;
   max-width: 100% !important;
 }
-body.dsh-ivory .W-zNGW_explorerName {
+body.dsh-ivory:not(.dshcs-contract-mismatch) .W-zNGW_explorerName {
   overflow: hidden !important;
   text-overflow: ellipsis !important;
   white-space: nowrap !important;
 }
-body.dsh-ivory .W-zNGW_editorMd {
+body.dsh-ivory:not(.dshcs-contract-mismatch) .W-zNGW_editorMd {
   overflow-x: hidden !important;
 }
-body.dsh-ivory .W-zNGW_editorMd ._markdown_1nba0_5 table,
-body.dsh-ivory .W-zNGW_editorMd table {
+body.dsh-ivory:not(.dshcs-contract-mismatch) .W-zNGW_editorMd ._markdown_1nba0_5 table,
+body.dsh-ivory:not(.dshcs-contract-mismatch) .W-zNGW_editorMd table {
   box-sizing: border-box !important;
   display: block !important;
   width: max-content !important;
   max-width: 100% !important;
   overflow-x: auto !important;
 }
-body.dsh-ivory .W-zNGW_tabClose,
-body.dsh-ivory .W-zNGW_tabBarPlus,
-body.dsh-ivory .W-zNGW_editorModeButton,
-body.dsh-ivory .W-zNGW_cardGear {
+body.dsh-ivory:not(.dshcs-contract-mismatch) .W-zNGW_tabClose,
+body.dsh-ivory:not(.dshcs-contract-mismatch) .W-zNGW_tabBarPlus,
+body.dsh-ivory:not(.dshcs-contract-mismatch) .W-zNGW_editorModeButton,
+body.dsh-ivory:not(.dshcs-contract-mismatch) .W-zNGW_cardGear {
   box-sizing: border-box !important;
   min-width: 24px !important;
   min-height: 24px !important;
 }
-body.dsh-ivory .W-zNGW_tabClose,
-body.dsh-ivory .W-zNGW_tabBarPlus {
+body.dsh-ivory:not(.dshcs-contract-mismatch) .W-zNGW_tabClose,
+body.dsh-ivory:not(.dshcs-contract-mismatch) .W-zNGW_tabBarPlus {
   width: 24px !important;
   height: 24px !important;
 }
-body.dsh-ivory .W-zNGW_editorModeButton {
+body.dsh-ivory:not(.dshcs-contract-mismatch) .W-zNGW_editorModeButton {
   height: 24px !important;
   padding-inline: 8px !important;
 }
 
 /* F9 context-injection cards in the flow: read like Claude's quiet small rows,
  * not 16px body text. */
-body.dsh-ivory .Md3f7G_flowItem .pC0e7a_root {
+body.dsh-ivory:not(.dshcs-contract-mismatch) .Md3f7G_flowItem .pC0e7a_root {
   font-size: 13px !important;
   line-height: 20px !important;
   color: var(--cl-ink-strong) !important;
 }
-body.dsh-ivory .Md3f7G_flowItem .pC0e7a_root :is(div, span, p) {
+body.dsh-ivory:not(.dshcs-contract-mismatch) .Md3f7G_flowItem .pC0e7a_root :is(div, span, p) {
   color: inherit !important;
 }
 
@@ -983,7 +985,7 @@ body.dsh-ivory .Md3f7G_flowItem .pC0e7a_root :is(div, span, p) {
  * composer top (the client updates --dshcs-composer-clearance via ResizeObserver)
  * so the primary send/model/permission controls remain hit-testable even when
  * the composer grows to multiple lines. */
-body.dsh-ivory .d5Qffq_panel {
+body.dsh-ivory:not(.dshcs-contract-mismatch) .d5Qffq_panel {
   box-sizing: border-box !important;
   top: auto !important;
   right: clamp(16px, 3vw, 30px) !important;
@@ -995,98 +997,159 @@ body.dsh-ivory .d5Qffq_panel {
   border-color: var(--cl-border-strong) !important;
   color: var(--cl-ink) !important;
 }
-body.dsh-ivory .d5Qffq_panel :is(input, [role="searchbox"]) {
+body.dsh-ivory:not(.dshcs-contract-mismatch) .d5Qffq_panel :is(input, [role="searchbox"]) {
   background: var(--cl-page) !important;
   border-color: var(--cl-border) !important;
   color: var(--cl-ink) !important;
 }
-body.dsh-ivory .d5Qffq_item:hover,
-body.dsh-ivory .d5Qffq_item[aria-current="true"] {
+body.dsh-ivory:not(.dshcs-contract-mismatch) .d5Qffq_item:hover,
+body.dsh-ivory:not(.dshcs-contract-mismatch) .d5Qffq_item[aria-current="true"] {
   background: var(--cl-hover) !important;
 }
 
 /* Settings extensions: use the same quiet surfaces, borders and controls as
  * the main settings shell while retaining semantic text and all functionality. */
-body.dsh-ivory .dvt-settings,
-body.dsh-ivory .Pz1RTq_section {
+body.dsh-ivory:not(.dshcs-contract-mismatch) .dvt-settings,
+body.dsh-ivory:not(.dshcs-contract-mismatch) .Pz1RTq_section {
   font-family: var(--cl-sans) !important;
   color: var(--cl-ink) !important;
 }
-body.dsh-ivory .dvt-panel,
-body.dsh-ivory .dvt-advanced,
-body.dsh-ivory .Pz1RTq_group {
+body.dsh-ivory:not(.dshcs-contract-mismatch) .dvt-panel,
+body.dsh-ivory:not(.dshcs-contract-mismatch) .dvt-advanced,
+body.dsh-ivory:not(.dshcs-contract-mismatch) .Pz1RTq_group {
   background: var(--cl-surface) !important;
   border: 0.5px solid var(--cl-border) !important;
   border-radius: 14px !important;
   box-shadow: none !important;
 }
-body.dsh-ivory .dvt-panel.dvt-essential {
+body.dsh-ivory:not(.dshcs-contract-mismatch) .dvt-panel.dvt-essential {
   border-color: var(--cl-border-strong) !important;
 }
-body.dsh-ivory .dvt-alert.notice {
+body.dsh-ivory:not(.dshcs-contract-mismatch) .dvt-alert.notice {
   background: var(--cl-surface-0) !important;
   border: 0.5px solid var(--cl-border) !important;
   color: var(--cl-ink-strong) !important;
 }
-body.dsh-ivory .dvt-badge,
-body.dsh-ivory .dvt-badge.error,
-body.dsh-ivory .dvt-badge.ok {
+body.dsh-ivory:not(.dshcs-contract-mismatch) .dvt-badge,
+body.dsh-ivory:not(.dshcs-contract-mismatch) .dvt-badge.error,
+body.dsh-ivory:not(.dshcs-contract-mismatch) .dvt-badge.ok {
   background: var(--cl-active) !important;
   border: 0.5px solid var(--cl-border) !important;
   color: var(--cl-ink-strong) !important;
 }
-body.dsh-ivory .dvt-runtime-facts,
-body.dsh-ivory .dvt-release {
+body.dsh-ivory:not(.dshcs-contract-mismatch) .dvt-runtime-facts,
+body.dsh-ivory:not(.dshcs-contract-mismatch) .dvt-release {
   background: var(--cl-surface-0) !important;
   border: 0.5px solid var(--cl-border) !important;
   color: var(--cl-ink-strong) !important;
 }
-body.dsh-ivory .dvt-kicker,
-body.dsh-ivory .dvt-muted,
-body.dsh-ivory .Pz1RTq_intro,
-body.dsh-ivory .Pz1RTq_desc,
-body.dsh-ivory .Pz1RTq_count,
-body.dsh-ivory .Pz1RTq_cardDesc {
+body.dsh-ivory:not(.dshcs-contract-mismatch) .dvt-kicker,
+body.dsh-ivory:not(.dshcs-contract-mismatch) .dvt-muted,
+body.dsh-ivory:not(.dshcs-contract-mismatch) .Pz1RTq_intro,
+body.dsh-ivory:not(.dshcs-contract-mismatch) .Pz1RTq_desc,
+body.dsh-ivory:not(.dshcs-contract-mismatch) .Pz1RTq_count,
+body.dsh-ivory:not(.dshcs-contract-mismatch) .Pz1RTq_cardDesc {
   color: var(--cl-muted) !important;
 }
-body.dsh-ivory .Pz1RTq_card,
-body.dsh-ivory .Pz1RTq_addCard {
+body.dsh-ivory:not(.dshcs-contract-mismatch) .Pz1RTq_card,
+body.dsh-ivory:not(.dshcs-contract-mismatch) .Pz1RTq_addCard {
   background: transparent !important;
   border: 0.5px solid var(--cl-border) !important;
   border-radius: 12px !important;
   box-shadow: none !important;
 }
-body.dsh-ivory .Pz1RTq_card:hover,
-body.dsh-ivory .Pz1RTq_addCard:hover {
+body.dsh-ivory:not(.dshcs-contract-mismatch) .Pz1RTq_card:hover,
+body.dsh-ivory:not(.dshcs-contract-mismatch) .Pz1RTq_addCard:hover {
   background: var(--cl-hover) !important;
   border-color: var(--cl-border-strong) !important;
 }
-body.dsh-ivory .Pz1RTq_card.Pz1RTq_cardOn {
+body.dsh-ivory:not(.dshcs-contract-mismatch) .Pz1RTq_card.Pz1RTq_cardOn {
   background: var(--cl-hover) !important;
   border-color: var(--cl-border-strong) !important;
 }
-body.dsh-ivory .Pz1RTq_cardIconChip {
+body.dsh-ivory:not(.dshcs-contract-mismatch) .Pz1RTq_cardIconChip {
   background: var(--cl-active) !important;
   border: 0.5px solid var(--cl-border) !important;
   color: var(--cl-ink-strong) !important;
 }
-body.dsh-ivory .Pz1RTq_cardCheck {
+body.dsh-ivory:not(.dshcs-contract-mismatch) .Pz1RTq_cardCheck {
   background: var(--cl-primary-fill) !important;
   color: var(--cl-page) !important;
 }
-body.dsh-ivory .Pz1RTq_switchTrack {
+body.dsh-ivory:not(.dshcs-contract-mismatch) .Pz1RTq_switchTrack {
   background: var(--cl-active) !important;
   border-color: var(--cl-border-strong) !important;
 }
-body.dsh-ivory .Pz1RTq_switchInput:checked + .Pz1RTq_switchTrack {
+body.dsh-ivory:not(.dshcs-contract-mismatch) .Pz1RTq_switchInput:checked + .Pz1RTq_switchTrack {
   background: var(--cl-primary-fill) !important;
   border-color: var(--cl-primary-fill) !important;
 }
-body.dsh-ivory .Pz1RTq_switchThumb {
+body.dsh-ivory:not(.dshcs-contract-mismatch) .Pz1RTq_switchThumb {
   background: var(--cl-surface) !important;
   box-shadow: 0 1px 2px hsl(0 0% 0% / 18%) !important;
 }
-body.dsh-ivory .Pz1RTq_cardGear {
+body.dsh-ivory:not(.dshcs-contract-mismatch) .Pz1RTq_cardGear {
+  box-sizing: border-box !important;
+  width: 24px !important;
+  height: 24px !important;
+}
+
+/* Current DSH revision renders the same "side cards" settings with _2vuxea
+ * class names. Mirror the neutral treatment so the suite keeps testing the
+ * live markup instead of a dead selector contract. */
+body.dsh-ivory:not(.dshcs-contract-mismatch) ._2vuxea_section {
+  font-family: var(--cl-sans) !important;
+  color: var(--cl-ink) !important;
+}
+body.dsh-ivory:not(.dshcs-contract-mismatch) ._2vuxea_group {
+  background: var(--cl-surface) !important;
+  border: 0.5px solid var(--cl-border) !important;
+  border-radius: 14px !important;
+  box-shadow: none !important;
+}
+body.dsh-ivory:not(.dshcs-contract-mismatch) ._2vuxea_intro,
+body.dsh-ivory:not(.dshcs-contract-mismatch) ._2vuxea_desc,
+body.dsh-ivory:not(.dshcs-contract-mismatch) ._2vuxea_count {
+  color: var(--cl-muted) !important;
+}
+body.dsh-ivory:not(.dshcs-contract-mismatch) ._2vuxea_card,
+body.dsh-ivory:not(.dshcs-contract-mismatch) ._2vuxea_addCard {
+  background: transparent !important;
+  border: 0.5px solid var(--cl-border) !important;
+  border-radius: 12px !important;
+  box-shadow: none !important;
+}
+body.dsh-ivory:not(.dshcs-contract-mismatch) ._2vuxea_card:hover,
+body.dsh-ivory:not(.dshcs-contract-mismatch) ._2vuxea_addCard:hover {
+  background: var(--cl-hover) !important;
+  border-color: var(--cl-border-strong) !important;
+}
+body.dsh-ivory:not(.dshcs-contract-mismatch) ._2vuxea_card._2vuxea_cardOn {
+  background: var(--cl-hover) !important;
+  border-color: var(--cl-border-strong) !important;
+}
+body.dsh-ivory:not(.dshcs-contract-mismatch) ._2vuxea_cardIconChip {
+  background: var(--cl-active) !important;
+  border: 0.5px solid var(--cl-border) !important;
+  color: var(--cl-ink-strong) !important;
+}
+body.dsh-ivory:not(.dshcs-contract-mismatch) ._2vuxea_cardCheck {
+  background: var(--cl-primary-fill) !important;
+  color: var(--cl-page) !important;
+}
+body.dsh-ivory:not(.dshcs-contract-mismatch) ._2vuxea_switchTrack {
+  background: var(--cl-active) !important;
+  border-color: var(--cl-border-strong) !important;
+}
+body.dsh-ivory:not(.dshcs-contract-mismatch) ._2vuxea_switchInput:checked + ._2vuxea_switchTrack {
+  background: var(--cl-primary-fill) !important;
+  border-color: var(--cl-primary-fill) !important;
+}
+body.dsh-ivory:not(.dshcs-contract-mismatch) ._2vuxea_switchThumb {
+  background: var(--cl-surface) !important;
+  box-shadow: 0 1px 2px hsl(0 0% 0% / 18%) !important;
+}
+body.dsh-ivory:not(.dshcs-contract-mismatch) ._2vuxea_cardGear {
   box-sizing: border-box !important;
   width: 24px !important;
   height: 24px !important;
@@ -1104,66 +1167,66 @@ body.dsh-ivory .uV2eYG_input:focus-visible {
 }
 
 @media (max-width: 720px) {
-  body.dsh-ivory .wSkVaW_header {
+  body.dsh-ivory:not(.dshcs-contract-mismatch) .wSkVaW_header {
     padding-inline: 12px !important;
   }
-  body.dsh-ivory .wSkVaW_titleCluster,
-  body.dsh-ivory .wSkVaW_crumbs,
-  body.dsh-ivory .wSkVaW_crumbSeg,
-  body.dsh-ivory .wSkVaW_crumb,
-  body.dsh-ivory .wSkVaW_headerActions,
-  body.dsh-ivory .SVAs4q_label {
+  body.dsh-ivory:not(.dshcs-contract-mismatch) .wSkVaW_titleCluster,
+  body.dsh-ivory:not(.dshcs-contract-mismatch) .wSkVaW_crumbs,
+  body.dsh-ivory:not(.dshcs-contract-mismatch) .wSkVaW_crumbSeg,
+  body.dsh-ivory:not(.dshcs-contract-mismatch) .wSkVaW_crumb,
+  body.dsh-ivory:not(.dshcs-contract-mismatch) .wSkVaW_headerActions,
+  body.dsh-ivory:not(.dshcs-contract-mismatch) .SVAs4q_label {
     min-width: 0 !important;
   }
-  body.dsh-ivory .wSkVaW_titleCluster {
+  body.dsh-ivory:not(.dshcs-contract-mismatch) .wSkVaW_titleCluster {
     gap: 8px !important;
     overflow: hidden !important;
   }
-  body.dsh-ivory .wSkVaW_crumbs {
+  body.dsh-ivory:not(.dshcs-contract-mismatch) .wSkVaW_crumbs {
     flex: 1 1 auto !important;
   }
-  body.dsh-ivory .wSkVaW_crumbSeg,
-  body.dsh-ivory .wSkVaW_crumb {
+  body.dsh-ivory:not(.dshcs-contract-mismatch) .wSkVaW_crumbSeg,
+  body.dsh-ivory:not(.dshcs-contract-mismatch) .wSkVaW_crumb {
     width: 100% !important;
     max-width: 100% !important;
     overflow: hidden !important;
     text-overflow: ellipsis !important;
     white-space: nowrap !important;
   }
-  body.dsh-ivory .wSkVaW_headerActions {
+  body.dsh-ivory:not(.dshcs-contract-mismatch) .wSkVaW_headerActions {
     flex: 0 1 110px !important;
     max-width: 110px !important;
     overflow: hidden !important;
   }
-  body.dsh-ivory .SVAs4q_label {
+  body.dsh-ivory:not(.dshcs-contract-mismatch) .SVAs4q_label {
     max-width: 100% !important;
     overflow: hidden !important;
     text-overflow: ellipsis !important;
     white-space: nowrap !important;
   }
-  body.dsh-ivory .wSkVaW_composerHero > .pXSMma_root {
+  body.dsh-ivory:not(.dshcs-contract-mismatch) .wSkVaW_composerHero > .pXSMma_root {
     margin-top: clamp(104px, 20vh, 180px) !important;
   }
-  body.dsh-ivory .wSkVaW_composerHero > div:has(.uV2eYG_root) {
+  body.dsh-ivory:not(.dshcs-contract-mismatch) .wSkVaW_composerHero > div:has(.uV2eYG_root) {
     margin-top: 24px !important;
   }
-  body.dsh-ivory .wSkVaW_composerHero {
+  body.dsh-ivory:not(.dshcs-contract-mismatch) .wSkVaW_composerHero {
     width: calc(100% - 24px) !important;
   }
-  body.dsh-ivory .d5Qffq_edgeTrigger {
+  body.dsh-ivory:not(.dshcs-contract-mismatch) .d5Qffq_edgeTrigger {
     top: 64px !important;
     right: 8px !important;
     bottom: auto !important;
   }
-  body.dsh-ivory .uV2eYG_row {
+  body.dsh-ivory:not(.dshcs-contract-mismatch) .uV2eYG_row {
     padding-inline: 8px !important;
     gap: 6px !important;
   }
-  body.dsh-ivory .uV2eYG_tools,
-  body.dsh-ivory .uV2eYG_trailing {
+  body.dsh-ivory:not(.dshcs-contract-mismatch) .uV2eYG_tools,
+  body.dsh-ivory:not(.dshcs-contract-mismatch) .uV2eYG_trailing {
     gap: 4px !important;
   }
-  body.dsh-ivory .Sh0Q9G_trigger {
+  body.dsh-ivory:not(.dshcs-contract-mismatch) .Sh0Q9G_trigger {
     position: relative !important;
     box-sizing: border-box !important;
     width: 32px !important;
@@ -1171,7 +1234,7 @@ body.dsh-ivory .uV2eYG_input:focus-visible {
     padding-inline: 6px !important;
     justify-content: center !important;
   }
-  body.dsh-ivory .Sh0Q9G_triggerLabel {
+  body.dsh-ivory:not(.dshcs-contract-mismatch) .Sh0Q9G_triggerLabel {
     position: absolute !important;
     width: 1px !important;
     height: 1px !important;
@@ -1179,57 +1242,58 @@ body.dsh-ivory .uV2eYG_input:focus-visible {
     clip-path: inset(50%) !important;
     white-space: nowrap !important;
   }
-  body.dsh-ivory .Sh0Q9G_chevron {
+  body.dsh-ivory:not(.dshcs-contract-mismatch) .Sh0Q9G_chevron {
     display: none !important;
   }
-  body.dsh-ivory ._7KE1Ra_trigger {
+  body.dsh-ivory:not(.dshcs-contract-mismatch) ._7KE1Ra_trigger {
     max-width: min(132px, 40vw) !important;
     padding-inline: 6px !important;
   }
-  body.dsh-ivory .wSkVaW_heroWorkspaceRow {
+  body.dsh-ivory:not(.dshcs-contract-mismatch) .wSkVaW_heroWorkspaceRow {
     flex-wrap: wrap !important;
     padding-inline: 12px !important;
   }
-  body.dsh-ivory .Pz1RTq_grid,
-  body.dsh-ivory .dvt-form-grid {
+  body.dsh-ivory:not(.dshcs-contract-mismatch) .Pz1RTq_grid,
+  body.dsh-ivory:not(.dshcs-contract-mismatch) ._2vuxea_grid,
+  body.dsh-ivory:not(.dshcs-contract-mismatch) .dvt-form-grid {
     grid-template-columns: minmax(0, 1fr) !important;
   }
 }
 
 @media (max-width: 420px) {
-  body.dsh-ivory .uV2eYG_card {
+  body.dsh-ivory:not(.dshcs-contract-mismatch) .uV2eYG_card {
     border-radius: 16px !important;
   }
-  body.dsh-ivory .uV2eYG_row {
+  body.dsh-ivory:not(.dshcs-contract-mismatch) .uV2eYG_row {
     gap: 4px !important;
   }
-  body.dsh-ivory ._7KE1Ra_trigger {
+  body.dsh-ivory:not(.dshcs-contract-mismatch) ._7KE1Ra_trigger {
     max-width: 118px !important;
   }
-  body.dsh-ivory .pXSMma_headline {
+  body.dsh-ivory:not(.dshcs-contract-mismatch) .pXSMma_headline {
     width: 100% !important;
     height: auto !important;
     gap: 6px !important;
     flex-wrap: nowrap !important;
   }
-  body.dsh-ivory .pXSMma_headlineText {
+  body.dsh-ivory:not(.dshcs-contract-mismatch) .pXSMma_headlineText {
     min-width: 0 !important;
     font-size: 30px !important;
     line-height: 38px !important;
     white-space: nowrap !important;
   }
-  body.dsh-ivory .pXSMma_previewBadge {
+  body.dsh-ivory:not(.dshcs-contract-mismatch) .pXSMma_previewBadge {
     flex: none !important;
     font-size: 11px !important;
   }
-  body.dsh-ivory .nL4_yW_sessionLogButton {
+  body.dsh-ivory:not(.dshcs-contract-mismatch) .nL4_yW_sessionLogButton {
     position: relative !important;
     box-sizing: border-box !important;
     width: 36px !important;
     min-width: 36px !important;
     padding-inline: 10px !important;
   }
-  body.dsh-ivory .nL4_yW_sessionLogButton > span {
+  body.dsh-ivory:not(.dshcs-contract-mismatch) .nL4_yW_sessionLogButton > span {
     position: absolute !important;
     width: 1px !important;
     height: 1px !important;
@@ -1247,20 +1311,20 @@ body.dsh-ivory .uV2eYG_input:focus-visible {
 
 /* F10 icon consistency: one size + one stroke color per zone, like Claude's
  * Iconography set (nav icons 20/16px ink-soft, composer icons ink). */
-body.dsh-ivory .YDXeBa_sessionRow svg,
-body.dsh-ivory .YDXeBa_projectRow svg {
+body.dsh-ivory:not(.dshcs-contract-mismatch) .YDXeBa_sessionRow svg,
+body.dsh-ivory:not(.dshcs-contract-mismatch) .YDXeBa_projectRow svg {
   width: 16px !important;
   height: 16px !important;
   color: var(--cl-ink-strong) !important;
 }
-body.dsh-ivory .hHd-Xa_iconButton svg,
-body.dsh-ivory .qDHVXG_iconButton svg,
-body.dsh-ivory .qDHVXG_searchButton svg {
+body.dsh-ivory:not(.dshcs-contract-mismatch) .hHd-Xa_iconButton svg,
+body.dsh-ivory:not(.dshcs-contract-mismatch) .qDHVXG_iconButton svg,
+body.dsh-ivory:not(.dshcs-contract-mismatch) .qDHVXG_searchButton svg {
   width: 18px !important;
   height: 18px !important;
 }
-body.dsh-ivory ._7D6uKa_entryIcon svg,
-body.dsh-ivory .mL8Uca_entryIcon svg {
+body.dsh-ivory:not(.dshcs-contract-mismatch) ._7D6uKa_entryIcon svg,
+body.dsh-ivory:not(.dshcs-contract-mismatch) .mL8Uca_entryIcon svg {
   width: 20px !important;
   height: 20px !important;
   color: var(--cl-ink-soft) !important;
@@ -1268,19 +1332,19 @@ body.dsh-ivory .mL8Uca_entryIcon svg {
 
 /* F11 sidebar item typography to Claude: 400 weight, 21px line, primary ink
  * for recents (measured from claude.ai tokens). */
-body.dsh-ivory .hHd-Xa_newSession,
-body.dsh-ivory .YDXeBa_sessionRow,
-body.dsh-ivory .YDXeBa_projectRow {
+body.dsh-ivory:not(.dshcs-contract-mismatch) .hHd-Xa_newSession,
+body.dsh-ivory:not(.dshcs-contract-mismatch) .YDXeBa_sessionRow,
+body.dsh-ivory:not(.dshcs-contract-mismatch) .YDXeBa_projectRow {
   font-weight: 400 !important;
 }
-body.dsh-ivory .YDXeBa_sessionRow {
+body.dsh-ivory:not(.dshcs-contract-mismatch) .YDXeBa_sessionRow {
   line-height: 21px !important;
   color: var(--cl-ink) !important;
 }
 
 /* F5b composer add/tools buttons: transparent like Claude's icon buttons. */
-body.dsh-ivory .uV2eYG_add,
-body.dsh-ivory .uV2eYG_tools button {
+body.dsh-ivory:not(.dshcs-contract-mismatch) .uV2eYG_add,
+body.dsh-ivory:not(.dshcs-contract-mismatch) .uV2eYG_tools button {
   background: transparent !important;
   color: var(--cl-ink) !important;
 }
