@@ -11,7 +11,7 @@ const paths = pack.files.map((file) => file.path).sort();
 const expected = [
   'LICENSE',
   'README.md',
-  'README.zh-CN.md',
+  'README_zh-CN.md',
   'THIRD_PARTY_NOTICES.md',
   'cordis.patch.yml',
   'lib/client.js',

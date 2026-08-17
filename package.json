@@ -1,6 +1,6 @@
 {
   "name": "dsh-ivory",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "description": "An unofficial Claude-inspired light/dark theme for DeepSeek Harness with responsive layout, safe Markdown preview, and zero telemetry.",
   "keywords": [
     "dsh-plugin",
@@ -38,7 +38,7 @@
     "lib/index.js",
     "lib/client.js",
     "README.md",
-    "README.zh-CN.md",
+    "README_zh-CN.md",
     "LICENSE",
     "THIRD_PARTY_NOTICES.md",
     "cordis.patch.yml"
