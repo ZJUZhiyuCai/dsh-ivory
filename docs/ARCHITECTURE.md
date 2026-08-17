@@ -39,7 +39,8 @@ settings section stores only the enabled and focus preferences. When enabled:
 
 If the selector contract cannot be proven after a bounded retry period, Ivory
 adds a mismatch state and keeps only token-level styling. This prefers a less
-complete theme over a broken host layout.
+complete theme over a broken host layout. The observer revalidates immediately
+when a valid frame later appears, including after leaving a stale session URL.
 
 ## Markdown preview
 
@@ -55,8 +56,17 @@ Ivory adds independent copy controls to prose paragraphs, user text bubbles,
 and code blocks without replacing DSH's whole-message action. Clipboard writes
 run only in response to a button click. The modern Clipboard API is attempted
 first, followed by a local selection-based fallback; neither path makes a
-network request. Copy controls, wrappers, live-status nodes, and pending visual
-feedback timers are removed when the theme is disabled.
+network request. Assistant controls are not inserted while the host marks a
+message as streaming, which avoids modifying React-owned Markdown during an
+update. Copy controls, wrappers, live-status nodes, and pending visual feedback
+timers are removed when the theme is disabled.
+
+## Localization
+
+Ivory registers one English/Simplified Chinese dictionary with DSH's locale
+service. Settings labels, clipboard feedback, and Markdown preview controls bind
+to that service and update when the host locale changes. No browser-language
+heuristic or separate preference is stored.
 
 ## Assets and typography
 

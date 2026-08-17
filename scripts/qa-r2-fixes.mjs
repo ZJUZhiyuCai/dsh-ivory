@@ -45,6 +45,17 @@ try {
       const rect = (element) => { if (!element) return null; const r = element.getBoundingClientRect(); return [r.x, r.y, r.width, r.height, r.right, r.bottom].map(Math.round); };
       const frame = document.querySelector('.pI_x6G_frame');
       const center = document.querySelector('.pI_x6G_centerCol');
+      // The mismatch class must actually drop host-dependent structural styles.
+      // Sidebar background cannot prove this because the host repaints it from
+      // our token aliases; geometry (272px new-chat row) only comes from Ivory.
+      const nav = document.querySelector('.hHd-Xa_newSession');
+      const gating = nav ? (() => {
+        const before = getComputedStyle(nav).width;
+        document.body.classList.add('dshcs-contract-mismatch');
+        const during = getComputedStyle(nav).width;
+        document.body.classList.remove('dshcs-contract-mismatch');
+        return { before, during };
+      })() : null;
       return {
         compat: document.body.dataset.dshcsCompat,
         tracks: getComputedStyle(frame).gridTemplateColumns.trim().split(/\s+/),
@@ -52,11 +63,16 @@ try {
         center: rect(center),
         viewport: [innerWidth, innerHeight],
         bodyWidth: document.body.scrollWidth,
+        gating,
       };
     });
     check(`frame-${width}-three-tracks`, geometry.tracks.length === 3, geometry);
     check(`frame-${width}-center-usable`, geometry.center?.[2] >= minimumCenter, geometry.center);
-    check(`frame-${width}-contract`, geometry.compat === 'ok' && errors.length === 0, { compat: geometry.compat, errors });
+    check(`frame-${width}-contract`, geometry.compat === 'ok'
+      && geometry.gating
+      && geometry.gating.before !== geometry.gating.during
+      && errors.length === 0,
+    { compat: geometry.compat, gating: geometry.gating, errors });
     await page.screenshot({ path: `${OUT}/frame-${width}.png` });
     await page.close();
   }
@@ -462,7 +478,10 @@ try {
       document.body.appendChild(message);
     });
     await page.waitForTimeout(250);
-    const during = await page.locator('.dshcs-stream-fixture .dshcs-turn-mark').count();
+    const during = await page.evaluate(() => ({
+      marks: document.querySelectorAll('.dshcs-stream-fixture .dshcs-turn-mark').length,
+      copyControls: document.querySelectorAll('.dshcs-stream-fixture .dshcs-copy-button').length,
+    }));
     await page.locator('.dshcs-stream-fixture').evaluate((element) => element.removeAttribute('aria-busy'));
     await page.waitForTimeout(250);
     const completed = await page.evaluate(() => {
@@ -481,14 +500,17 @@ try {
         color: style.color,
         ink,
         hidden: mark.getAttribute('aria-hidden'),
+        copyControls: document.querySelectorAll('.dshcs-stream-fixture .dshcs-copy-button').length,
       };
     });
-    check('whale-hidden-during-streaming', during === 0, during);
+    check('whale-hidden-during-streaming', during.marks === 0, during);
+    check('copy-controls-deferred-during-streaming', during.copyControls === 0, during);
     check('whale-appears-on-completion-in-theme-ink', completed
       && Math.abs(completed.width - 18) < 0.1
       && Math.abs(completed.height - 13.5) < 0.1
       && completed.color === completed.ink
       && completed.hidden === 'true', completed);
+    check('copy-controls-appear-after-streaming', completed?.copyControls === 1, completed);
     check('whale-state-no-page-errors', errors.length === 0, errors);
     await page.close();
   }
@@ -503,8 +525,8 @@ try {
     }));
     await page.locator('.VOzbGW_trigger').last().click();
     await page.waitForTimeout(300);
-    await page.getByRole('button', { name: 'Ivory 主题' }).click();
-    const enabledSwitch = page.getByRole('switch', { name: '启用 Ivory 主题' });
+    await page.getByRole('button', { name: 'Ivory 主题', exact: true }).click();
+    const enabledSwitch = page.getByRole('switch', { name: '启用 Ivory 主题', exact: true });
     await enabledSwitch.click();
     await page.waitForTimeout(250);
     const off = await page.evaluate(() => ({
@@ -625,9 +647,10 @@ try {
     await page.waitForTimeout(150);
     const sidecards = await page.evaluate(() => {
       const rect = (element) => { if (!element) return null; const r = element.getBoundingClientRect(); return [r.x, r.y, r.width, r.height, r.right, r.bottom].map(Math.round); };
-      const group = document.querySelector('.Pz1RTq_group');
-      const card = document.querySelector('.Pz1RTq_cardOn');
-      const gear = document.querySelector('.Pz1RTq_cardGear');
+      // DSH renamed the section from Pz1RTq to _2vuxea; probe both contracts.
+      const group = document.querySelector('._2vuxea_group') || document.querySelector('.Pz1RTq_group');
+      const card = document.querySelector('._2vuxea_cardOn') || document.querySelector('.Pz1RTq_cardOn');
+      const gear = document.querySelector('._2vuxea_cardGear') || document.querySelector('.Pz1RTq_cardGear');
       return {
         group: group && { bg: getComputedStyle(group).backgroundColor, border: getComputedStyle(group).borderTopColor },
         card: card && { bg: getComputedStyle(card).backgroundColor, border: getComputedStyle(card).borderTopColor },
@@ -636,7 +659,7 @@ try {
     });
     check(`settings-sidecards-neutral-${tag}`, Boolean(sidecards.group && sidecards.card) && (!sidecards.gear || (sidecards.gear[2] >= 24 && sidecards.gear[3] >= 24)), sidecards);
     await page.screenshot({ path: `${OUT}/settings-sidecards-${tag}.png` });
-    await page.getByRole('button', { name: 'Ivory 主题' }).click();
+    await page.getByRole('button', { name: 'Ivory 主题', exact: true }).click();
     await page.waitForTimeout(150);
     const ivorySwitches = await page.evaluate(() => {
       const color = (value) => {

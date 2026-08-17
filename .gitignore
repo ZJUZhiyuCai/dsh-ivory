@@ -2,6 +2,8 @@ node_modules/
 output/
 shots/
 reference/
+# Local-only Anthropic font reference — intentionally kept for local use and
+# excluded from Git/npm by design. Do not delete the directory.
 lib/assets/fonts/
 PROMPT-*.md
 ADVERSARIAL-*.md
