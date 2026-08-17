@@ -5,6 +5,8 @@ All notable changes to Ivory are documented here. The project follows
 
 ## [Unreleased]
 
+## [0.2.1] - 2026-08-17
+
 ### Changed
 
 - Make npm the recommended install path and move the release workflow to npm
@@ -13,6 +15,8 @@ All notable changes to Ivory are documented here. The project follows
 - Redesign both README front pages with a centered project header, compact
   feature and trust sections, a responsive screenshot gallery, and absolute
   image URLs that also render on npm.
+- Rename the localized README so npm consistently selects the English
+  `README.md` as the package front page.
 
 ## [0.2.0] - 2026-08-17
 
@@ -81,7 +85,8 @@ All notable changes to Ivory are documented here. The project follows
 - Explicit npm file allowlist, MIT license, third-party notices, and bilingual
   documentation.
 
-[Unreleased]: https://github.com/ZJUZhiyuCai/dsh-ivory/compare/v0.2.0...HEAD
+[Unreleased]: https://github.com/ZJUZhiyuCai/dsh-ivory/compare/v0.2.1...HEAD
+[0.2.1]: https://github.com/ZJUZhiyuCai/dsh-ivory/compare/v0.2.0...v0.2.1
 [0.2.0]: https://github.com/ZJUZhiyuCai/dsh-ivory/compare/v0.1.2...v0.2.0
 [0.1.2]: https://github.com/ZJUZhiyuCai/dsh-ivory/compare/v0.1.1...v0.1.2
 [0.1.1]: https://github.com/ZJUZhiyuCai/dsh-ivory/compare/v0.1.0...v0.1.1

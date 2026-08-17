@@ -31,7 +31,7 @@ const [packageText, patch, host, template, css, whale, built, readme, readmeZh, 
   read('lib/assets/icons/whale.svg'),
   read('lib/client.js'),
   read('README.md'),
-  read('README.zh-CN.md'),
+  read('README_zh-CN.md'),
   read('THIRD_PARTY_NOTICES.md'),
   read('.github/workflows/publish-npm.yml'),
 ]);
@@ -39,7 +39,7 @@ const pkg = JSON.parse(packageText);
 
 check('package metadata', () => {
   assert.equal(pkg.name, 'dsh-ivory');
-  assert.equal(pkg.version, '0.2.0');
+  assert.equal(pkg.version, '0.2.1');
   assert.equal(pkg.private, undefined);
   assert.equal(pkg.license, 'MIT');
   assert.equal(pkg.publishConfig?.access, 'public');
@@ -54,7 +54,7 @@ check('package metadata', () => {
 
 check('minimal publish allowlist', () => {
   const files = new Set(pkg.files);
-  for (const required of ['lib/index.js', 'lib/client.js', 'cordis.patch.yml', 'README.md', 'README.zh-CN.md', 'LICENSE', 'THIRD_PARTY_NOTICES.md']) {
+  for (const required of ['lib/index.js', 'lib/client.js', 'cordis.patch.yml', 'README.md', 'README_zh-CN.md', 'LICENSE', 'THIRD_PARTY_NOTICES.md']) {
     assert.ok(files.has(required), `missing ${required}`);
   }
   assert.ok(!files.has('lib'));
