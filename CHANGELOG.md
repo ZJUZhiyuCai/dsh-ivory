@@ -10,6 +10,9 @@ All notable changes to Ivory are documented here. The project follows
 - Make npm the recommended install path and move the release workflow to npm
   Trusted Publisher, so future releases use GitHub OIDC without a stored npm
   token.
+- Redesign both README front pages with a centered project header, compact
+  feature and trust sections, a responsive screenshot gallery, and absolute
+  image URLs that also render on npm.
 
 ## [0.2.0] - 2026-08-17
 
