@@ -81,6 +81,9 @@ the MIT-licensed DSH whale; its notice is retained in
 bundler. `scripts/release-check.mjs` independently recreates the artifact and
 requires byte equality. `scripts/verify-pack.mjs` then rejects any tarball file
 outside the explicit release manifest as well as unexpected package growth.
+The npm release workflow uses GitHub OIDC through npm Trusted Publisher; it
+stores no long-lived npm publish token, and npm generates provenance for those
+CI releases automatically.
 
 Any future feature that needs a network request, host service, secret, new
 persistent field, runtime dependency, or third-party asset changes this trust

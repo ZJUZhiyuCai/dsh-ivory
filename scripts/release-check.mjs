@@ -22,7 +22,7 @@ const contrastRatio = (a, b) => {
   return (lighter + 0.05) / (darker + 0.05);
 };
 
-const [packageText, patch, host, template, css, whale, built, readme, readmeZh, notices] = await Promise.all([
+const [packageText, patch, host, template, css, whale, built, readme, readmeZh, notices, publishWorkflow] = await Promise.all([
   read('package.json'),
   read('cordis.patch.yml'),
   read('lib/index.js'),
@@ -33,6 +33,7 @@ const [packageText, patch, host, template, css, whale, built, readme, readmeZh, 
   read('README.md'),
   read('README.zh-CN.md'),
   read('THIRD_PARTY_NOTICES.md'),
+  read('.github/workflows/publish-npm.yml'),
 ]);
 const pkg = JSON.parse(packageText);
 
@@ -131,6 +132,14 @@ check('documentation contract', () => {
     assert.match(doc, /unofficial|非官方/i);
     assert.match(doc, /zero telemetry|无遥测/i);
   }
+});
+
+check('tokenless npm publishing', () => {
+  assert.match(publishWorkflow, /id-token:\s*write/);
+  assert.match(publishWorkflow, /environment:\s*npm/);
+  assert.match(publishWorkflow, /package-manager-cache:\s*false/);
+  assert.match(publishWorkflow, /npm publish --access public/);
+  assert.doesNotMatch(publishWorkflow, /NPM_TOKEN|NODE_AUTH_TOKEN|--provenance/);
 });
 
 check('token-only degradation is wired into the CSS', () => {

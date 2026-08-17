@@ -5,6 +5,12 @@ All notable changes to Ivory are documented here. The project follows
 
 ## [Unreleased]
 
+### Changed
+
+- Make npm the recommended install path and move the release workflow to npm
+  Trusted Publisher, so future releases use GitHub OIDC without a stored npm
+  token.
+
 ## [0.2.0] - 2026-08-17
 
 ### Added

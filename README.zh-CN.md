@@ -5,6 +5,7 @@
 [English](README.md)
 
 [![CI](https://github.com/ZJUZhiyuCai/dsh-ivory/actions/workflows/ci.yml/badge.svg)](https://github.com/ZJUZhiyuCai/dsh-ivory/actions/workflows/ci.yml)
+[![npm](https://img.shields.io/npm/v/dsh-ivory)](https://www.npmjs.com/package/dsh-ivory)
 [![MIT License](https://img.shields.io/badge/license-MIT-111111.svg)](LICENSE)
 [![Node.js](https://img.shields.io/badge/node-%5E22.19%20%7C%7C%20%3E%3D24-3c873a.svg)](package.json)
 [![零运行时依赖](https://img.shields.io/badge/runtime_dependencies-0-111111.svg)](package.json)
@@ -19,17 +20,17 @@ Web 界面，同时保留 DeepSeek 品牌和 DSH 的全部能力，并坚持无�
 
 ## 安装
 
-从 GitHub 安装当前标签版本：
-
-```sh
-dsh plugin --profile web add github:ZJUZhiyuCai/dsh-ivory#v0.2.0
-dsh web
-```
-
-npm 包上线后可使用更短的命令：
+从 npm 安装已发布版本（推荐）：
 
 ```sh
 dsh plugin --profile web add dsh-ivory
+dsh web
+```
+
+如需绕过 npm 并固定到确切 GitHub 版本：
+
+```sh
+dsh plugin --profile web add github:ZJUZhiyuCai/dsh-ivory#v0.2.0
 ```
 
 安装后硬刷新浏览器（`Cmd/Ctrl + Shift + R`），再打开

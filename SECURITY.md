@@ -32,6 +32,8 @@ Ivory deliberately keeps a narrow boundary:
 - Disabling the theme removes its observers and injected nodes.
 - `npm test` verifies source/bundle reproducibility, forbidden browser and host
   capabilities, package metadata, and an explicit tarball file allowlist.
+- npm releases use GitHub OIDC through Trusted Publisher; the repository does
+  not store a long-lived npm publish token.
 
 This policy covers Ivory itself. Vulnerabilities in DeepSeek Harness or another
 plugin should be reported to that project's maintainers.
