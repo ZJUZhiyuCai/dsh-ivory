@@ -16,6 +16,7 @@ jobs:
   publish:
     runs-on: ubuntu-latest
     environment: npm
+    timeout-minutes: 10
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
@@ -24,12 +25,10 @@ jobs:
         with:
           node-version: 24
           registry-url: https://registry.npmjs.org
-          cache: npm
+          package-manager-cache: false
       - run: npm ci
       - run: npm test
       - name: Verify requested version
         run: test "$(node -p "require('./package.json').version")" = "${{ inputs.confirm_version }}"
-      - name: Publish with provenance
-        run: npm publish --access public --provenance
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+      - name: Publish with npm Trusted Publisher
+        run: npm publish --access public

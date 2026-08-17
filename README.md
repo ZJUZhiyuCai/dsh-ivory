@@ -5,6 +5,7 @@
 [简体中文](README.zh-CN.md)
 
 [![CI](https://github.com/ZJUZhiyuCai/dsh-ivory/actions/workflows/ci.yml/badge.svg)](https://github.com/ZJUZhiyuCai/dsh-ivory/actions/workflows/ci.yml)
+[![npm](https://img.shields.io/npm/v/dsh-ivory)](https://www.npmjs.com/package/dsh-ivory)
 [![MIT License](https://img.shields.io/badge/license-MIT-111111.svg)](LICENSE)
 [![Node.js](https://img.shields.io/badge/node-%5E22.19%20%7C%7C%20%3E%3D24-3c873a.svg)](package.json)
 [![zero runtime dependencies](https://img.shields.io/badge/runtime_dependencies-0-111111.svg)](package.json)
@@ -20,17 +21,17 @@ the DeepSeek identity and every DSH capability intact, with zero telemetry.
 
 ## Install
 
-Install the current tagged GitHub release:
-
-```sh
-dsh plugin --profile web add github:ZJUZhiyuCai/dsh-ivory#v0.2.0
-dsh web
-```
-
-Once the npm package is available, the shorter install is:
+Install the published package (recommended):
 
 ```sh
 dsh plugin --profile web add dsh-ivory
+dsh web
+```
+
+To pin the exact GitHub release without using npm:
+
+```sh
+dsh plugin --profile web add github:ZJUZhiyuCai/dsh-ivory#v0.2.0
 ```
 
 Hard-refresh the browser after installation (`Cmd/Ctrl + Shift + R`). Open
