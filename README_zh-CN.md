@@ -109,6 +109,8 @@ npm 包固定为八个白名单文件，每次 CI 都会检查。完整边界可
 npm ci
 npm test          # 14 项静态、构建、publint 与包检查
 npm run qa:r2     # 69 项浏览器回归，要求 DSH 运行于 127.0.0.1:3080
+npm run qa:adversarial  # 25 项压测：宿主协调安全、开关/resize 风暴、降级模式
+npm run qa:activity     # 13 项思考/工具调用行、图标与终端打磨检查
 ```
 
 浏览器套件覆盖响应式布局、输入框焦点、深色模式、Markdown 注入尝试、

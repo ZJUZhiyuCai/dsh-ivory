@@ -5,6 +5,13 @@ All notable changes to Ivory are documented here. The project follows
 
 ## [Unreleased]
 
+### Changed
+
+- Polish DSH thinking and tool-call activity rows with Claude-style compact
+  typography, paint-only mask icons for thinking and bash calls, quiet
+  running/error states, refined expanded terminal panels, and reduced-motion
+  coverage.
+
 ## [0.2.2] - 2026-08-18
 
 ### Fixed

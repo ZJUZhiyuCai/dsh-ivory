@@ -51,6 +51,7 @@
     "test": "npm run build && npm run check && npm run check:publint && npm run check:pack",
     "qa:r2": "node scripts/qa-r2-fixes.mjs",
     "qa:adversarial": "node scripts/qa-adversarial.mjs",
+    "qa:activity": "node scripts/qa-verify-activity.mjs",
     "prepack": "npm run build && npm run check"
   },
   "devDependencies": {

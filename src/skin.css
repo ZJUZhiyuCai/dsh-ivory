@@ -1444,3 +1444,226 @@ body.dsh-ivory .dshcs-safe-source-note {
   color: var(--cl-muted);
   font: 400 12px/18px var(--cl-sans);
 }
+
+/* ---------- activity rows: thinking + tool calls ----------
+ * Claude-style quiet meta rows: sans 13px, one soft accent while running, and
+ * icons redrawn as 1.3px strokes via CSS masks. No host nodes are moved or
+ * replaced — every enhancement is paint-only, so React reconciliation never
+ * touches plugin state. */
+body.dsh-ivory:not(.dshcs-contract-mismatch) .CY-8Ka_root,
+body.dsh-ivory:not(.dshcs-contract-mismatch) .QWLzlG_row {
+  font-family: var(--cl-sans) !important;
+  font-size: 13px !important;
+  line-height: 20px !important;
+  color: var(--cl-muted) !important;
+  border-radius: 8px !important;
+}
+body.dsh-ivory:not(.dshcs-contract-mismatch) .CY-8Ka_title,
+body.dsh-ivory:not(.dshcs-contract-mismatch) .QWLzlG_title {
+  font: 500 13px/20px var(--cl-sans) !important;
+  color: var(--cl-ink-strong) !important;
+  letter-spacing: 0 !important;
+}
+body.dsh-ivory:not(.dshcs-contract-mismatch) .CY-8Ka_summary {
+  font: 400 13px/20px var(--cl-sans) !important;
+  color: var(--cl-muted) !important;
+  overflow: hidden !important;
+  text-overflow: ellipsis !important;
+  white-space: nowrap !important;
+}
+body.dsh-ivory:not(.dshcs-contract-mismatch) .CY-8Ka_sep {
+  color: var(--cl-border-strong) !important;
+}
+body.dsh-ivory:not(.dshcs-contract-mismatch) .CY-8Ka_leading,
+body.dsh-ivory:not(.dshcs-contract-mismatch) .QWLzlG_leading {
+  position: relative !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  width: 16px !important;
+  height: 16px !important;
+  flex: none !important;
+  overflow: visible !important;
+  color: var(--cl-muted) !important;
+}
+
+/* redrawn icons: the host svg keeps its place (visibility hidden) while a
+ * mask-painted ::after carries the Claude-style stroke artwork. Scoped to the
+ * bash variant — other tool variants keep the host icon untouched. The host
+ * only mounts .CY-8Ka_iconIdle in some states, so the leading slot also
+ * paints the icon whenever it holds neither an iconIdle wrapper nor a
+ * chevron. Chevrons are never masked. */
+body.dsh-ivory:not(.dshcs-contract-mismatch) .CY-8Ka_iconIdle,
+body.dsh-ivory:not(.dshcs-contract-mismatch) .QWLzlG_root [class*="_iconIdle_"] {
+  position: relative !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  width: 16px !important;
+  height: 16px !important;
+}
+body.dsh-ivory:not(.dshcs-contract-mismatch) .CY-8Ka_root[data-sample="bash"] .CY-8Ka_leading svg:not(.CY-8Ka_chevron),
+body.dsh-ivory:not(.dshcs-contract-mismatch) .QWLzlG_leading svg:not(.QWLzlG_chevron) {
+  visibility: hidden !important;
+}
+body.dsh-ivory:not(.dshcs-contract-mismatch) .CY-8Ka_root[data-sample="bash"] .CY-8Ka_leading {
+  --dshcs-icon: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Cg fill='none' stroke='black' stroke-width='1.3' stroke-linecap='round' stroke-linejoin='round'%3E%3Crect x='1.75' y='2.75' width='12.5' height='10.5' rx='2.5'/%3E%3Cpath d='M4.75 6.25 6.9 8l-2.15 1.75'/%3E%3Cpath d='M8.4 10.4h2.85'/%3E%3C/g%3E%3C/svg%3E");
+}
+body.dsh-ivory:not(.dshcs-contract-mismatch) .QWLzlG_leading {
+  --dshcs-icon: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Cpath fill='black' d='M8 1.9c.5 1.85 1.12 3.05 1.95 3.87.83.83 2.03 1.46 3.9 1.98-1.87.52-3.07 1.15-3.9 1.98-.83.82-1.45 2.02-1.95 3.87-.5-1.85-1.12-3.05-1.95-3.87-.83-.83-2.03-1.46-3.9-1.98 1.87-.52 3.07-1.15 3.9-1.98.83-.82 1.45-2.02 1.95-3.87z'/%3E%3Cpath fill='black' d='M12.4 10.7c.24.9.54 1.48.94 1.88.4.4.98.7 1.88.94-.9.24-1.48.54-1.88.94-.4.4-.7.98-.94 1.88-.24-.9-.54-1.48-.94-1.88-.4-.4-.98-.7-1.88-.94.9-.24 1.48-.54 1.88-.94.4-.4.7-.98.94-1.88z'/%3E%3C/svg%3E");
+}
+body.dsh-ivory:not(.dshcs-contract-mismatch) .CY-8Ka_root[data-sample="bash"] .CY-8Ka_leading:not(:has(.CY-8Ka_iconIdle)):not(:has(.CY-8Ka_chevron))::after,
+body.dsh-ivory:not(.dshcs-contract-mismatch) .QWLzlG_leading:not(:has([class*="_iconIdle_"])):not(:has(.QWLzlG_chevron))::after,
+body.dsh-ivory:not(.dshcs-contract-mismatch) .CY-8Ka_root[data-sample="bash"] .CY-8Ka_iconIdle::after,
+body.dsh-ivory:not(.dshcs-contract-mismatch) .QWLzlG_root [class*="_iconIdle_"]::after {
+  content: '' !important;
+  position: absolute;
+  inset: 0;
+  margin: auto;
+  width: 16px;
+  height: 16px;
+  background: currentColor;
+  -webkit-mask: var(--dshcs-icon, none) center / contain no-repeat;
+  mask: var(--dshcs-icon, none) center / contain no-repeat;
+}
+
+/* running: one soft accent — the icon breathes inside a thin orbiting ring */
+@keyframes dshcs-breathe {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.4; }
+}
+@keyframes dshcs-orbit {
+  to { transform: rotate(360deg); }
+}
+body.dsh-ivory:not(.dshcs-contract-mismatch) .CY-8Ka_root[data-state="running"] .CY-8Ka_leading,
+body.dsh-ivory:not(.dshcs-contract-mismatch) .QWLzlG_root[data-state="running"] .QWLzlG_leading {
+  color: var(--cl-accent-text) !important;
+}
+body.dsh-ivory:not(.dshcs-contract-mismatch) .CY-8Ka_root[data-state="running"][data-sample="bash"] .CY-8Ka_iconIdle::after,
+body.dsh-ivory:not(.dshcs-contract-mismatch) .QWLzlG_root[data-state="running"] [class*="_iconIdle_"]::after {
+  animation: dshcs-breathe 1.7s ease-in-out infinite !important;
+}
+body.dsh-ivory:not(.dshcs-contract-mismatch) .CY-8Ka_root[data-state="running"] .CY-8Ka_leading::before,
+body.dsh-ivory:not(.dshcs-contract-mismatch) .QWLzlG_root[data-state="running"] .QWLzlG_leading::before {
+  content: '' !important;
+  position: absolute;
+  inset: -3px;
+  border-radius: 50%;
+  border: 1px solid transparent;
+  border-top-color: color-mix(in srgb, var(--cl-accent-text) 65%, transparent);
+  animation: dshcs-orbit 0.9s linear infinite !important;
+}
+body.dsh-ivory:not(.dshcs-contract-mismatch) .CY-8Ka_root[data-state="running"] .CY-8Ka_title {
+  color: var(--cl-ink-strong) !important;
+}
+body.dsh-ivory:not(.dshcs-contract-mismatch) .CY-8Ka_root[data-state="running"] .CY-8Ka_summary {
+  color: var(--cl-muted) !important;
+  -webkit-mask-image: linear-gradient(90deg, #000 calc(100% - 44px), transparent);
+  mask-image: linear-gradient(90deg, #000 calc(100% - 44px), transparent);
+}
+
+/* failed calls read as quiet danger, never a shout */
+body.dsh-ivory:not(.dshcs-contract-mismatch) .CY-8Ka_root[data-state="error"] .CY-8Ka_leading {
+  color: #b14543 !important;
+}
+body.dsh-ivory[data-ds-dark-theme]:not(.dshcs-contract-mismatch) .CY-8Ka_root[data-state="error"] .CY-8Ka_leading {
+  color: #e2908e !important;
+}
+body.dsh-ivory:not(.dshcs-contract-mismatch) .CY-8Ka_root[data-state="error"] .CY-8Ka_title {
+  color: #9c3f3d !important;
+}
+body.dsh-ivory[data-ds-dark-theme]:not(.dshcs-contract-mismatch) .CY-8Ka_root[data-state="error"] .CY-8Ka_title {
+  color: #e8a5a3 !important;
+}
+
+/* expanded terminal: a quiet Claude-style console card */
+body.dsh-ivory:not(.dshcs-contract-mismatch) .CY-8Ka_bodyWrap [data-terminal] {
+  box-sizing: border-box !important;
+  background: var(--cl-surface-0) !important;
+  border: 0.5px solid var(--cl-border) !important;
+  border-radius: 10px !important;
+  box-shadow: none !important;
+  font-family: var(--cl-mono) !important;
+  overflow: hidden !important;
+}
+body.dsh-ivory:not(.dshcs-contract-mismatch) .CY-8Ka_bodyWrap [data-terminal] [class*="_header"] {
+  background: transparent !important;
+  border-bottom: 0.5px solid var(--cl-border) !important;
+  color: var(--cl-ink-strong) !important;
+}
+body.dsh-ivory:not(.dshcs-contract-mismatch) .CY-8Ka_bodyWrap [data-terminal] [class*="_runStateLabel"] {
+  font: 500 11px/16px var(--cl-sans) !important;
+  color: var(--cl-muted) !important;
+}
+body.dsh-ivory:not(.dshcs-contract-mismatch) .CY-8Ka_bodyWrap [data-terminal] [class*="_dot_"][data-state="done"] {
+  background: #4c8759 !important;
+}
+body.dsh-ivory:not(.dshcs-contract-mismatch) .CY-8Ka_bodyWrap [data-terminal] [class*="_dot_"][data-state="error"] {
+  background: #b14543 !important;
+}
+body.dsh-ivory:not(.dshcs-contract-mismatch) .CY-8Ka_bodyWrap [data-terminal] [class*="_dot_"][data-state="running"] {
+  background: var(--cl-accent) !important;
+  animation: dshcs-breathe 1.2s ease-in-out infinite !important;
+}
+body.dsh-ivory:not(.dshcs-contract-mismatch) .CY-8Ka_bodyWrap [data-terminal] [class*="_cwd"] {
+  color: var(--cl-muted) !important;
+}
+body.dsh-ivory:not(.dshcs-contract-mismatch) .CY-8Ka_bodyWrap [data-terminal] [class*="_command"] {
+  color: var(--cl-ink) !important;
+}
+body.dsh-ivory:not(.dshcs-contract-mismatch) .CY-8Ka_bodyWrap [data-terminal] [class*="_copyButton"] {
+  font: 500 11px/16px var(--cl-sans) !important;
+  color: var(--cl-muted) !important;
+  background: transparent !important;
+  border: 0.5px solid var(--cl-border) !important;
+  border-radius: 6px !important;
+}
+body.dsh-ivory:not(.dshcs-contract-mismatch) .CY-8Ka_bodyWrap [data-terminal] [class*="_copyButton"]:hover {
+  background: var(--cl-hover) !important;
+  color: var(--cl-ink-strong) !important;
+}
+body.dsh-ivory:not(.dshcs-contract-mismatch) .CY-8Ka_bodyWrap [data-terminal] [class*="_output"],
+body.dsh-ivory:not(.dshcs-contract-mismatch) .CY-8Ka_bodyWrap [data-terminal] [class*="_line"] {
+  color: var(--cl-ink-strong) !important;
+  font-family: var(--cl-mono) !important;
+}
+
+/* thinking disclosure: quiet sans body under a whisper-thin rail */
+body.dsh-ivory:not(.dshcs-contract-mismatch) .QWLzlG_thinkBody {
+  font-family: var(--cl-sans) !important;
+  font-size: 13px !important;
+  line-height: 22px !important;
+  color: var(--cl-muted) !important;
+  margin: 2px 0 6px 24px !important;
+  padding: 1px 0 1px 12px !important;
+  border-left: 2px solid var(--cl-border) !important;
+  white-space: pre-wrap !important;
+  word-break: break-word !important;
+}
+body.dsh-ivory:not(.dshcs-contract-mismatch) .QWLzlG_root[data-state="running"] .QWLzlG_thinkBody {
+  -webkit-mask-image: linear-gradient(180deg, #000 calc(100% - 26px), transparent);
+  mask-image: linear-gradient(180deg, #000 calc(100% - 26px), transparent);
+}
+/* the chevron turns instead of jumping */
+body.dsh-ivory:not(.dshcs-contract-mismatch) .CY-8Ka_chevron,
+body.dsh-ivory:not(.dshcs-contract-mismatch) .QWLzlG_chevron {
+  transition: transform 150ms ease !important;
+  color: var(--cl-muted) !important;
+}
+body.dsh-ivory:not(.dshcs-contract-mismatch) [aria-expanded="true"] .CY-8Ka_chevron,
+body.dsh-ivory:not(.dshcs-contract-mismatch) [aria-expanded="true"] .QWLzlG_chevron {
+  color: var(--cl-ink-strong) !important;
+}
+
+/* Reduced motion also silences the activity-row orbit/breathe cues. Selectors
+ * mirror the animation rules' specificity so source order decides the winner. */
+@media (prefers-reduced-motion: reduce) {
+  body.dsh-ivory:not(.dshcs-contract-mismatch) .CY-8Ka_root[data-state="running"] .CY-8Ka_leading::before,
+  body.dsh-ivory:not(.dshcs-contract-mismatch) .QWLzlG_root[data-state="running"] .QWLzlG_leading::before,
+  body.dsh-ivory:not(.dshcs-contract-mismatch) .CY-8Ka_root[data-state="running"][data-sample="bash"] .CY-8Ka_iconIdle::after,
+  body.dsh-ivory:not(.dshcs-contract-mismatch) .QWLzlG_root[data-state="running"] [class*="_iconIdle_"]::after,
+  body.dsh-ivory:not(.dshcs-contract-mismatch) [data-terminal] [class*="_dot_"][data-state="running"] {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+  }
+}
