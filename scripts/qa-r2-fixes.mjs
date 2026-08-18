@@ -389,7 +389,7 @@ try {
     const controls = await page.evaluate(() => ({
       code: document.querySelectorAll('.dshcs-copy-fixture .dshcs-copy-code').length,
       text: document.querySelectorAll('.dshcs-copy-fixture-text > .dshcs-copy-text, .dshcs-copy-fixture-bubble > .dshcs-copy-text').length,
-      wraps: document.querySelectorAll('.dshcs-copy-fixture .dshcs-code-copy-wrap').length,
+      wraps: document.querySelectorAll('.dshcs-copy-fixture .dshcs-code-copy-host').length,
       status: document.querySelectorAll('.dshcs-copy-status[role="status"]').length,
     }));
     check('copy-controls-injected-once', controls.code === 1 && controls.text === 2 && controls.wraps === 1 && controls.status === 1, controls);
@@ -535,7 +535,7 @@ try {
       previews: document.querySelectorAll('.dshcs-md, .dshcs-md-toggle, .dshcs-safe-source-note').length,
       compat: document.body.dataset.dshcsCompat,
       clearance: document.body.style.getPropertyValue('--dshcs-composer-clearance'),
-      copyControls: document.querySelectorAll('.dshcs-copy-button, .dshcs-copy-status, [data-dshcs-copy-wrap], [data-dshcs-copy-text]').length,
+      copyControls: document.querySelectorAll('.dshcs-copy-button, .dshcs-copy-status, .dshcs-code-copy-host, [data-dshcs-copy-text]').length,
     }));
     check('skin-off-removes-enhancements', !off.bodyClass.includes('dsh-ivory') && off.marks === 0 && off.previews === 0 && off.copyControls === 0 && !off.compat && off.clearance === '', { before, off });
     await enabledSwitch.click();

@@ -5,6 +5,19 @@ All notable changes to Ivory are documented here. The project follows
 
 ## [Unreleased]
 
+### Fixed
+
+- Stop reparenting host-owned code `<pre>` nodes for per-block copy controls:
+  the copy button is now inserted as a sibling with only a class marker on the
+  parent, so DSH/React re-renders (theme switches and skin toggles) no longer
+  throw `NotFoundError` and drop the Ivory styling.
+- Rebuild the Markdown preview when the host swaps or edits a source block in
+  place instead of leaving a stale or duplicate preview.
+- Remove the resize listener with the same throttled callback it was
+  registered with, and reset per-panel bookkeeping when the skin is disabled.
+- Re-probe a token-only selector contract on added-node mutations at most once
+  every five seconds instead of scanning on every mutation batch.
+
 ## [0.2.1] - 2026-08-17
 
 ### Changed

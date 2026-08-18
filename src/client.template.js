@@ -119,8 +119,11 @@ body[data-ds-dark-theme] .dshcs-knob{background:var(--cl-ink)}
     function readFlag(key, fallback) {
       try {
         const raw = localStorage.getItem(key);
-        if (raw === null) return fallback;
-        return raw !== '0' && raw !== 'false';
+        // Only the values writeFlag produces are valid; anything else is
+        // corrupted storage and falls back to the documented default.
+        if (raw === '1' || raw === 'true') return true;
+        if (raw === '0' || raw === 'false') return false;
+        return fallback;
       } catch { return fallback; }
     }
 
@@ -180,11 +183,15 @@ body[data-ds-dark-theme] .dshcs-knob{background:var(--cl-ink)}
     let composerObserver = null;
     let observedComposer = null;
     let resizeListening = false;
+    let composerSyncFrame = 0;
     let contractTimer = 0;
     let contractAttempts = 0;
+    let contractProbeAt = 0;
+    let checkedPanes = new WeakSet();
     let whaleNode = null;
     let copyStatusNode = null;
     const copyResetTimers = new Set();
+    const mdSeats = new WeakMap();
 
     const isEnabled = () => document.body.classList.contains('dsh-ivory');
 
@@ -398,14 +405,14 @@ body[data-ds-dark-theme] .dshcs-knob{background:var(--cl-ink)}
       for (const pre of collectNear(root, CODE_COPY_SELECTOR)) {
         if (pre.dataset.dshcsCopyCode || isInsideStreamingMessage(pre)) continue;
         const parent = pre.parentNode;
-        if (!parent) continue;
-        const wrap = document.createElement('div');
-        wrap.className = 'dshcs-code-copy-wrap';
-        wrap.dataset.dshcsCopyWrap = '1';
-        parent.insertBefore(wrap, pre);
-        wrap.appendChild(pre);
+        if (!parent || parent.nodeType !== Node.ELEMENT_NODE) continue;
+        // Never reparent the host-owned <pre>: React reconciles against its own
+        // fiber tree, so moving the node into a plugin wrapper would make the
+        // host's next commit throw NotFoundError. Mark the parent and insert
+        // the button as a sibling instead.
         pre.dataset.dshcsCopyCode = '1';
-        wrap.appendChild(makeCopyButton('code', () => textForCopy(pre, true)));
+        parent.classList.add('dshcs-code-copy-host');
+        parent.insertBefore(makeCopyButton('code', () => textForCopy(pre, true)), pre.nextSibling);
       }
       for (const target of collectNear(root, TEXT_COPY_SELECTOR)) {
         if (isInsideStreamingMessage(target)) continue;
@@ -601,18 +608,48 @@ body[data-ds-dark-theme] .dshcs-knob{background:var(--cl-ink)}
       return out;
     }
 
+    function isMarkdownSource(pre) {
+      // markdown detection: the block banner names the fence language
+      // ("markdown 复制"), or the enclosing tool row reads a *.md file
+      const block = pre.closest('[class*="code-block"]');
+      const banner = block ? [...block.children].find((c) => !c.contains(pre)) : null;
+      const lang = ((banner && banner.textContent) || '').replace(/(?:复制|copy|copied).*$/i, '').trim().toLowerCase();
+      const callRow = pre.closest('[class*="callRow"]');
+      const rowLabel = callRow ? callRow.textContent.slice(0, 100) : '';
+      return lang === 'markdown' || lang === 'md' || /\.md\b/i.test(rowLabel);
+    }
+
+    function resetMdSeat(seat, state) {
+      state?.view?.remove();
+      state?.toggle?.remove();
+      const pre = state?.pre;
+      if (pre) {
+        pre.style.display = pre.dataset.dshcsOriginalDisplay || '';
+        delete pre.dataset.dshcs;
+        delete pre.dataset.dshcsOriginalDisplay;
+      }
+      delete seat.dataset.dshcsSeat;
+      mdSeats.delete(seat);
+    }
+
     function enhanceMarkdown(root = document) {
       if (!isEnabled()) return;
       for (const pre of collectNear(root, 'pre[class*=shiki]')) {
-        if (pre.dataset.dshcs) continue;
-        // markdown detection: the block banner names the fence language
-        // ("markdown 复制"), or the enclosing tool row reads a *.md file
-        const block = pre.closest('[class*="code-block"]');
-        const banner = block ? [...block.children].find((c) => !c.contains(pre)) : null;
-        const lang = ((banner && banner.textContent) || '').replace(/(?:复制|copy|copied).*$/i, '').trim().toLowerCase();
-        const callRow = pre.closest('[class*="callRow"]');
-        const rowLabel = callRow ? callRow.textContent.slice(0, 100) : '';
-        if (!(lang === 'markdown' || lang === 'md' || /\.md\b/i.test(rowLabel))) continue;
+        if (isInsideStreamingMessage(pre)) continue;
+        const seat = pre.parentElement;
+        if (!seat) continue;
+        const existing = mdSeats.get(seat);
+        if (existing) {
+          if (existing.pre !== pre) {
+            // The host swapped the source block: drop the stale preview and
+            // re-enhance the new one below.
+            resetMdSeat(seat, existing);
+          } else if ((pre.textContent || '').length !== existing.sourceLength) {
+            // Source changed in place: rebuild against the new content.
+            resetMdSeat(seat, existing);
+          } else continue;
+        }
+        if (pre.dataset.dshcs || !isMarkdownSource(pre)) continue;
         const source = pre.textContent || '';
         if (source.length > MAX_MARKDOWN_PREVIEW_CHARS) {
           pre.dataset.dshcs = 'oversize';
@@ -621,8 +658,7 @@ body[data-ds-dark-theme] .dshcs-knob{background:var(--cl-ink)}
           pre.title = translate('markdown.oversize');
           continue;
         }
-        const seat = pre.parentElement;
-        if (!seat || seat.dataset.dshcsSeat) continue;
+        if (seat.dataset.dshcsSeat) continue;
         pre.dataset.dshcs = 'md';
         pre.dataset.dshcsOriginalDisplay = pre.style.display || '';
         seat.dataset.dshcsSeat = '1';
@@ -644,6 +680,7 @@ body[data-ds-dark-theme] .dshcs-knob{background:var(--cl-ink)}
         seat.insertBefore(toggle, pre);
         seat.insertBefore(view, pre);
         apply2();
+        mdSeats.set(seat, { pre, view, toggle, sourceLength: source.length });
         enhanceCopyControls(seat);
       }
     }
@@ -652,6 +689,10 @@ body[data-ds-dark-theme] .dshcs-knob{background:var(--cl-ink)}
       if (!isEnabled()) return;
       for (const pane of collectNear(root, '.W-zNGW_editorMd')) {
         if (pane.querySelector(':scope > .dshcs-safe-source-note')) continue;
+        // One detection pass per mounted panel: the note is decorative and the
+        // full-text scan must not run on every keystroke mutation.
+        if (checkedPanes.has(pane)) continue;
+        checkedPanes.add(pane);
         if (!/<(?:a|div|img|picture|source|span|table)\b/i.test(pane.textContent || '')) continue;
         const note = document.createElement('div');
         note.className = 'dshcs-safe-source-note';
@@ -680,7 +721,7 @@ body[data-ds-dark-theme] .dshcs-knob{background:var(--cl-ink)}
         const body = msg.querySelector('.Sxvs8a_body');
         if (!body || !(body.textContent || '').trim()) continue;
         const blocks = [...body.querySelectorAll('p, h1, h2, h3, h4, h5, h6, li')]
-          .filter((node) => (node.textContent || '').trim());
+          .filter((node) => (node.textContent || '').trim() && !node.closest('.dshcs-md'));
         const host = blocks.at(-1) ?? body;
         if (host.querySelector('.dshcs-turn-mark')) continue;
         const svg = getWhaleNode();
@@ -694,34 +735,40 @@ body[data-ds-dark-theme] .dshcs-knob{background:var(--cl-ink)}
     }
 
     function syncComposerClearance() {
+      composerSyncFrame = 0;
       if (!isEnabled()) return;
-      const composers = [...document.querySelectorAll('.uV2eYG_root')]
-        .filter((node) => {
-          const rect = node.getBoundingClientRect();
-          return rect.width > 0 && rect.height > 0 && rect.bottom > 0 && rect.top < innerHeight;
-        });
-      const composer = composers.sort((a, b) => a.getBoundingClientRect().bottom - b.getBoundingClientRect().bottom).at(-1);
-      if (!composer) {
+      const rects = [...document.querySelectorAll('.uV2eYG_root')]
+        .map((node) => ({ node, rect: node.getBoundingClientRect() }))
+        .filter(({ rect }) => rect.width > 0 && rect.height > 0 && rect.bottom > 0 && rect.top < innerHeight);
+      if (!rects.length) {
         document.body.style.removeProperty('--dshcs-composer-clearance');
         return;
       }
-      if (composerObserver && observedComposer !== composer) {
+      rects.sort((a, b) => a.rect.bottom - b.rect.bottom);
+      const composer = rects.at(-1);
+      if (composerObserver && observedComposer !== composer.node) {
         composerObserver.disconnect();
-        composerObserver.observe(composer);
-        observedComposer = composer;
+        composerObserver.observe(composer.node);
+        observedComposer = composer.node;
       }
-      const rect = composer.getBoundingClientRect();
-      const clearance = Math.max(144, Math.ceil(innerHeight - rect.top + 12));
+      const clearance = Math.max(144, Math.ceil(innerHeight - composer.rect.top + 12));
       document.body.style.setProperty('--dshcs-composer-clearance', clearance + 'px');
     }
 
+    // All composer-clearance triggers (resize, ResizeObserver, enhancement
+    // flushes) merge into one rAF so a drag-resize never stacks layout reads.
+    function scheduleComposerSync() {
+      if (!isEnabled() || composerSyncFrame) return;
+      composerSyncFrame = requestAnimationFrame(syncComposerClearance);
+    }
+
     function observeComposer() {
-      if (!composerObserver && typeof ResizeObserver === 'function') composerObserver = new ResizeObserver(syncComposerClearance);
+      if (!composerObserver && typeof ResizeObserver === 'function') composerObserver = new ResizeObserver(scheduleComposerSync);
       if (!resizeListening) {
-        window.addEventListener('resize', syncComposerClearance, { passive: true });
+        window.addEventListener('resize', scheduleComposerSync, { passive: true });
         resizeListening = true;
       }
-      syncComposerClearance();
+      scheduleComposerSync();
     }
 
     function flushEnhancements() {
@@ -736,13 +783,15 @@ body[data-ds-dark-theme] .dshcs-knob{background:var(--cl-ink)}
         enhanceTurnMarks(root);
         enhanceSafeSourceNotes(root);
       }
-      syncComposerClearance();
+      scheduleComposerSync();
     }
 
     function observeFlow() {
       if (flowObserver) return;
       flowObserver = new MutationObserver((records) => {
+        let hasAddedNodes = false;
         for (const record of records) {
+          if (record.addedNodes.length) hasAddedNodes = true;
           const target = record.target.nodeType === Node.ELEMENT_NODE ? record.target : record.target.parentElement;
           if (target) pendingRoots.add(target);
           for (const node of record.addedNodes) {
@@ -751,10 +800,18 @@ body[data-ds-dark-theme] .dshcs-knob{background:var(--cl-ink)}
           }
         }
         if (document.body.dataset.dshcsCompat !== 'ok'
+          && document.body.dataset.dshcsCompat !== 'token-only'
           && document.querySelector('.pI_x6G_frame')
           && document.querySelector('.pI_x6G_centerCol')) {
           contractAttempts = 0;
           validateHostContract();
+        }
+        if (document.body.dataset.dshcsCompat === 'token-only' && hasAddedNodes && Date.now() >= contractProbeAt) {
+          contractProbeAt = Date.now() + 5_000;
+          if (document.querySelector('.pI_x6G_frame') && document.querySelector('.pI_x6G_centerCol')) {
+            contractAttempts = 0;
+            validateHostContract();
+          }
         }
         if (!flowFrame) flowFrame = requestAnimationFrame(flushEnhancements);
       });
@@ -782,20 +839,32 @@ body[data-ds-dark-theme] .dshcs-knob{background:var(--cl-ink)}
       const ok = missing.length === 0;
       document.body.dataset.dshcsCompat = ok ? 'ok' : 'token-only';
       document.body.classList.toggle('dshcs-contract-mismatch', !ok);
-      if (!ok) console.warn('[dsh-ivory] Selector contract mismatch; layout enhancements degraded to token-only.', missing);
+      if (!ok) {
+        // Degraded mode self-heals via a throttled re-probe instead of scanning
+        // the whole document on every mutation batch.
+        contractProbeAt = Date.now() + 5_000;
+        console.warn('[dsh-ivory] Selector contract mismatch; layout enhancements degraded to token-only.', missing);
+      }
     }
 
     function cleanupMarkdown() {
       for (const seat of document.querySelectorAll('[data-dshcs-seat]')) {
         const scrollTop = seat.scrollTop;
+        const state = mdSeats.get(seat);
+        if (state) {
+          state.view?.remove();
+          state.toggle?.remove();
+        } else {
+          seat.querySelectorAll(':scope > .dshcs-md, :scope > .dshcs-md-toggle').forEach((node) => node.remove());
+        }
         const pre = seat.querySelector('pre[data-dshcs="md"]');
-        seat.querySelectorAll(':scope > .dshcs-md, :scope > .dshcs-md-toggle').forEach((node) => node.remove());
         if (pre) {
           pre.style.display = pre.dataset.dshcsOriginalDisplay || '';
           delete pre.dataset.dshcs;
           delete pre.dataset.dshcsOriginalDisplay;
         }
         delete seat.dataset.dshcsSeat;
+        mdSeats.delete(seat);
         seat.scrollTop = scrollTop;
       }
       for (const pre of document.querySelectorAll('pre[data-dshcs="oversize"]')) {
@@ -815,14 +884,8 @@ body[data-ds-dark-theme] .dshcs-knob{background:var(--cl-ink)}
         target.classList.remove('dshcs-copy-text-target');
       });
       document.querySelectorAll('.dshcs-copy-button').forEach((button) => button.remove());
-      const wraps = [...document.querySelectorAll('[data-dshcs-copy-wrap]')].reverse();
-      for (const wrap of wraps) {
-        const pre = wrap.querySelector(':scope > pre[data-dshcs-copy-code]');
-        if (pre) delete pre.dataset.dshcsCopyCode;
-        if (!wrap.parentNode) continue;
-        while (wrap.firstChild) wrap.parentNode.insertBefore(wrap.firstChild, wrap);
-        wrap.remove();
-      }
+      document.querySelectorAll('pre[data-dshcs-copy-code]').forEach((pre) => delete pre.dataset.dshcsCopyCode);
+      document.querySelectorAll('.dshcs-code-copy-host').forEach((host) => host.classList.remove('dshcs-code-copy-host'));
       copyStatusNode?.remove();
       copyStatusNode = null;
     }
@@ -845,14 +908,18 @@ body[data-ds-dark-theme] .dshcs-knob{background:var(--cl-ink)}
       contractTimer = 0;
       if (flowFrame) cancelAnimationFrame(flowFrame);
       flowFrame = 0;
+      if (composerSyncFrame) cancelAnimationFrame(composerSyncFrame);
+      composerSyncFrame = 0;
       pendingRoots.clear();
       if (flowObserver) { flowObserver.disconnect(); flowObserver = null; }
       if (composerObserver) { composerObserver.disconnect(); composerObserver = null; }
       observedComposer = null;
       if (resizeListening) {
-        window.removeEventListener('resize', syncComposerClearance);
+        window.removeEventListener('resize', scheduleComposerSync);
         resizeListening = false;
       }
+      checkedPanes = new WeakSet();
+      contractProbeAt = 0;
       cleanupMarkdown();
       cleanupCopyControls();
       document.querySelectorAll('.dshcs-turn-mark, .dshcs-safe-source-note').forEach((node) => node.remove());
