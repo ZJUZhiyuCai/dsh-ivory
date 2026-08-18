@@ -114,6 +114,8 @@ and [third-party notices](https://github.com/ZJUZhiyuCai/dsh-ivory/blob/main/THI
 npm ci
 npm test          # 14 static, build, publint, and package checks
 npm run qa:r2     # 69 browser regressions; DSH must run at 127.0.0.1:3080
+npm run qa:adversarial  # 25 stress checks: reconciliation safety, toggle/resize storms, degraded mode
+npm run qa:activity     # 13 checks for thinking/tool-call rows, icons, and terminal polish
 ```
 
 The browser suite covers responsive layout, composer focus, dark mode,

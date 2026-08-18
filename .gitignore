@@ -19,5 +19,6 @@ scripts/*
 !scripts/qa-lib.mjs
 !scripts/qa-adversarial.mjs
 !scripts/qa-r2-fixes.mjs
+!scripts/qa-verify-activity.mjs
 !scripts/release-check.mjs
 !scripts/verify-pack.mjs
