@@ -5,6 +5,12 @@ All notable changes to Ivory are documented here. The project follows
 
 ## [Unreleased]
 
+### Fixed
+
+- Restore the Ivory body class automatically if the host rewrites
+  `document.body.className` during appearance or session transitions, preventing
+  the light theme from falling back to the native white page background.
+
 ## [0.2.3] - 2026-08-18
 
 ### Changed

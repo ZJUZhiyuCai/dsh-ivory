@@ -150,6 +150,45 @@ body[data-ds-dark-theme] .dshcs-knob{background:var(--cl-ink)}
       else disableEnhancements();
     }
 
+    function scheduleStateSync() {
+      if (stateFrame) return;
+      stateFrame = requestAnimationFrame(() => {
+        stateFrame = 0;
+        const enabled = readFlag(ENABLED_KEY, true);
+        const focus = readFlag(FOCUS_KEY, false);
+        const wantsFocus = enabled && focus;
+        if (document.body.classList.contains('dsh-ivory') !== enabled
+          || document.body.classList.contains('dsh-ivory-focus') !== wantsFocus) {
+          applyState();
+        }
+      });
+    }
+
+    function handleStateStorage(event) {
+      if (event.key === ENABLED_KEY || event.key === FOCUS_KEY) scheduleStateSync();
+    }
+
+    function observeState() {
+      if (!stateObserver) {
+        stateObserver = new MutationObserver(scheduleStateSync);
+        stateObserver.observe(document.body, { attributes: true, attributeFilter: ['class'] });
+      }
+      if (!stateStorageListening) {
+        window.addEventListener('storage', handleStateStorage);
+        stateStorageListening = true;
+      }
+    }
+
+    function cleanupStateObserver() {
+      if (stateFrame) cancelAnimationFrame(stateFrame);
+      stateFrame = 0;
+      if (stateObserver) { stateObserver.disconnect(); stateObserver = null; }
+      if (stateStorageListening) {
+        window.removeEventListener('storage', handleStateStorage);
+        stateStorageListening = false;
+      }
+    }
+
     function apply(ctx) {
       ensureStyle();
       ctx.effect(() => ctx.locale.register(LOCALE_NS, LOCALES), 'dsh-ivory: dictionaries');
@@ -157,8 +196,10 @@ body[data-ds-dark-theme] .dshcs-knob{background:var(--cl-ink)}
       translate = ctx.locale.bind(LOCALE_NS);
       ctx.effect(() => ctx.locale.subscribe(refreshLocalizedEnhancements), 'dsh-ivory: locale updates');
       applyState();
+      observeState();
 
       ctx.effect(() => () => {
+        cleanupStateObserver();
         disableEnhancements();
         localeRuntime = null;
         document.body.classList.remove('dsh-ivory', 'dsh-ivory-focus');
@@ -179,6 +220,9 @@ body[data-ds-dark-theme] .dshcs-knob{background:var(--cl-ink)}
     // a 源码/预览 toggle — the source block always stays reachable (never hidden).
     let flowObserver = null;
     let flowFrame = 0;
+    let stateObserver = null;
+    let stateFrame = 0;
+    let stateStorageListening = false;
     let pendingRoots = new Set();
     let composerObserver = null;
     let observedComposer = null;

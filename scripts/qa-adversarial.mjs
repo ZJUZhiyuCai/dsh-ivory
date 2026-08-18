@@ -230,6 +230,42 @@ try {
     await page.close();
   }
 
+  // A6b: host theme modules sometimes rewrite document.body.className as a
+  // whole string during appearance/session transitions. The skin must heal its
+  // state from localStorage instead of staying unthemed on a white page.
+  {
+    const { page, errors } = await openPage(browser, { w: 1440, h: 900, focus: false });
+    const before = await page.evaluate(() => ({
+      enabled: document.body.classList.contains('dsh-ivory'),
+      bg: getComputedStyle(document.body).backgroundColor,
+      clPage: getComputedStyle(document.body).getPropertyValue('--cl-page').trim(),
+      compat: document.body.dataset.dshcsCompat,
+    }));
+    await page.evaluate(() => {
+      document.body.className = 'host-theme-repaint';
+    });
+    await page.waitForTimeout(500);
+    const healed = await page.evaluate(() => ({
+      className: document.body.className,
+      enabled: document.body.classList.contains('dsh-ivory'),
+      focus: document.body.classList.contains('dsh-ivory-focus'),
+      bg: getComputedStyle(document.body).backgroundColor,
+      clPage: getComputedStyle(document.body).getPropertyValue('--cl-page').trim(),
+      compat: document.body.dataset.dshcsCompat,
+      copyControls: document.querySelectorAll('.dshcs-copy-button').length,
+    }));
+    check('body-class-clobber-self-heals',
+      before.enabled
+      && healed.enabled
+      && !healed.focus
+      && healed.bg === before.bg
+      && healed.clPage === before.clPage
+      && healed.compat === 'ok',
+      { before, healed });
+    check('body-class-clobber-no-page-errors', errors.length === 0, errors);
+    await page.close();
+  }
+
   // A7: resize storm — drag-like viewport churn must not throw and the outline
   // clearance must settle at a sane value.
   {
