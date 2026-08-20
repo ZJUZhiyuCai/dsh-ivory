@@ -24,7 +24,6 @@ window.__ModuleLoader__.load({
       '.aionui-preview-col pre',
     ].join(',');
     const TEXT_COPY_SELECTOR = [
-      '.Sxvs8a_body p',
       '.gdEzaW_bubble',
       '.dshcs-md p',
       '.W-zNGW_editorMd p',
@@ -131,7 +130,8 @@ body[data-ds-dark-theme] .dshcs-knob{background:var(--cl-ink)}
       try { localStorage.setItem(key, value ? '1' : '0'); } catch { /* storage unavailable */ }
     }
 
-    // inject stylesheet once (loader removes plugin-owned tags on HMR unload)
+    // inject stylesheet once (loader removes plugin-owned tags on HMR unload;
+    // theme switches and plugin reloads can also drop it — callers re-heal it)
     function ensureStyle() {
       if (document.querySelector('style[data-plugin-css="dsh-ivory"]') !== null) return;
       const style = document.createElement('style');
@@ -141,25 +141,54 @@ body[data-ds-dark-theme] .dshcs-knob{background:var(--cl-ink)}
       document.head.appendChild(style);
     }
 
+    function ivoryStyleMissing() {
+      return document.querySelector('style[data-plugin-css="dsh-ivory"]') === null;
+    }
+
     function applyState() {
       const enabled = readFlag(ENABLED_KEY, true);
       const focus = readFlag(FOCUS_KEY, false);
       document.body.classList.toggle('dsh-ivory', enabled);
       document.body.classList.toggle('dsh-ivory-focus', enabled && focus);
-      if (enabled) enableEnhancements();
-      else disableEnhancements();
+      if (enabled) {
+        // While the body class survives theme flips, the style tag may not —
+        // without it every alias falls back to host tokens (plain white page).
+        ensureStyle();
+        enableEnhancements();
+      } else {
+        disableEnhancements();
+      }
     }
 
-    function scheduleStateSync() {
+    function scheduleStateSync(reprobeContract = false) {
+      if (reprobeContract) stateWantsReprobe = true;
       if (stateFrame) return;
       stateFrame = requestAnimationFrame(() => {
         stateFrame = 0;
+        const reprobeNow = stateWantsReprobe;
+        stateWantsReprobe = false;
         const enabled = readFlag(ENABLED_KEY, true);
         const focus = readFlag(FOCUS_KEY, false);
         const wantsFocus = enabled && focus;
         if (document.body.classList.contains('dsh-ivory') !== enabled
           || document.body.classList.contains('dsh-ivory-focus') !== wantsFocus) {
           applyState();
+          return;
+        }
+        // Self-heal only the stylesheet. Appending the tag re-triggers this
+        // observer once; the next pass finds it present and stops, so the
+        // observe→restore loop always converges instead of oscillating.
+        if (enabled && ivoryStyleMissing()) ensureStyle();
+        // A theme flip or stylesheet churn can rebuild host chrome around a
+        // degraded token-only contract — those signals re-probe it. Plain
+        // class rewrites must not: probes fan out into a retry chain, so
+        // gating them keeps mutation-heavy hosts from scanning storms.
+        if (enabled && reprobeNow
+          && document.body.dataset.dshcsCompat === 'token-only'
+          && Date.now() >= contractProbeAt) {
+          contractProbeAt = Date.now() + 5_000;
+          contractAttempts = 0;
+          validateHostContract();
         }
       });
     }
@@ -170,8 +199,17 @@ body[data-ds-dark-theme] .dshcs-knob{background:var(--cl-ink)}
 
     function observeState() {
       if (!stateObserver) {
-        stateObserver = new MutationObserver(scheduleStateSync);
-        stateObserver.observe(document.body, { attributes: true, attributeFilter: ['class'] });
+        stateObserver = new MutationObserver((records) => {
+          // Theme attribute flips and head childList changes mean the host
+          // rebuilt chrome or stylesheets; only they may re-probe a degraded
+          // contract. Body class rewrites just heal the classes/tag.
+          const reprobe = records.some((record) => record.attributeName === 'data-ds-dark-theme' || record.type === 'childList');
+          scheduleStateSync(reprobe);
+        });
+        stateObserver.observe(document.body, { attributes: true, attributeFilter: ['class', 'data-ds-dark-theme'] });
+        // Watching head childList is what lets the skin notice its own style
+        // tag being removed (HMR, theme module reloads) and re-inject it.
+        stateObserver.observe(document.head, { childList: true });
       }
       if (!stateStorageListening) {
         window.addEventListener('storage', handleStateStorage);
@@ -222,6 +260,7 @@ body[data-ds-dark-theme] .dshcs-knob{background:var(--cl-ink)}
     let flowFrame = 0;
     let stateObserver = null;
     let stateFrame = 0;
+    let stateWantsReprobe = false;
     let stateStorageListening = false;
     let pendingRoots = new Set();
     let composerObserver = null;
@@ -443,6 +482,21 @@ body[data-ds-dark-theme] .dshcs-knob{background:var(--cl-ink)}
       return button;
     }
 
+    function hasNativeCopyControl(scope) {
+      if (!scope) return false;
+      const controls = scope.querySelectorAll('button, [role="button"]');
+      for (const control of controls) {
+        if (control.classList?.contains('dshcs-copy-button')) continue;
+        const label = [
+          control.getAttribute?.('aria-label'),
+          control.getAttribute?.('title'),
+          control.textContent,
+        ].filter(Boolean).join(' ');
+        if (/(?:复制|copy|copied)/i.test(label)) return true;
+      }
+      return false;
+    }
+
     function enhanceCopyControls(root = document) {
       if (!isEnabled()) return;
       ensureCopyStatus();
@@ -450,6 +504,8 @@ body[data-ds-dark-theme] .dshcs-knob{background:var(--cl-ink)}
         if (pre.dataset.dshcsCopyCode || isInsideStreamingMessage(pre)) continue;
         const parent = pre.parentNode;
         if (!parent || parent.nodeType !== Node.ELEMENT_NODE) continue;
+        const nativeCodeBlock = pre.closest('[class*="code-block"]');
+        if (nativeCodeBlock && hasNativeCopyControl(nativeCodeBlock)) continue;
         // Never reparent the host-owned <pre>: React reconciles against its own
         // fiber tree, so moving the node into a plugin wrapper would make the
         // host's next commit throw NotFoundError. Mark the parent and insert
@@ -765,7 +821,10 @@ body[data-ds-dark-theme] .dshcs-knob{background:var(--cl-ink)}
         const body = msg.querySelector('.Sxvs8a_body');
         if (!body || !(body.textContent || '').trim()) continue;
         const blocks = [...body.querySelectorAll('p, h1, h2, h3, h4, h5, h6, li')]
-          .filter((node) => (node.textContent || '').trim() && !node.closest('.dshcs-md'));
+          .filter((node) => (node.textContent || '').trim()
+            && !node.closest('.dshcs-md')
+            && !node.closest('.QWLzlG_root, .CY-8Ka_root, [data-terminal], [class*="callRow"]'));
+        if (!blocks.length) continue;
         const host = blocks.at(-1) ?? body;
         if (host.querySelector('.dshcs-turn-mark')) continue;
         const svg = getWhaleNode();
@@ -834,28 +893,32 @@ body[data-ds-dark-theme] .dshcs-knob{background:var(--cl-ink)}
       if (flowObserver) return;
       flowObserver = new MutationObserver((records) => {
         let hasAddedNodes = false;
+        let hasContractCandidate = false;
         for (const record of records) {
           if (record.addedNodes.length) hasAddedNodes = true;
           const target = record.target.nodeType === Node.ELEMENT_NODE ? record.target : record.target.parentElement;
           if (target) pendingRoots.add(target);
           for (const node of record.addedNodes) {
             const element = node.nodeType === Node.ELEMENT_NODE ? node : node.parentElement;
-            if (element) pendingRoots.add(element);
+            if (element) {
+              pendingRoots.add(element);
+              if (!hasContractCandidate) hasContractCandidate = containsHostContractNode(element);
+            }
           }
         }
-        if (document.body.dataset.dshcsCompat !== 'ok'
-          && document.body.dataset.dshcsCompat !== 'token-only'
+        const compat = document.body.dataset.dshcsCompat;
+        const degraded = compat === 'token-only' || document.body.classList.contains('dshcs-contract-mismatch');
+        if (compat !== 'ok'
+          && !degraded
           && document.querySelector('.pI_x6G_frame')
           && document.querySelector('.pI_x6G_centerCol')) {
           contractAttempts = 0;
           validateHostContract();
         }
-        if (document.body.dataset.dshcsCompat === 'token-only' && hasAddedNodes && Date.now() >= contractProbeAt) {
+        if (degraded && hasAddedNodes && hasContractCandidate && Date.now() >= contractProbeAt) {
           contractProbeAt = Date.now() + 5_000;
-          if (document.querySelector('.pI_x6G_frame') && document.querySelector('.pI_x6G_centerCol')) {
-            contractAttempts = 0;
-            validateHostContract();
-          }
+          contractAttempts = 0;
+          validateHostContract();
         }
         if (!flowFrame) flowFrame = requestAnimationFrame(flushEnhancements);
       });
@@ -866,6 +929,11 @@ body[data-ds-dark-theme] .dshcs-knob{background:var(--cl-ink)}
         attributeFilter: ['aria-busy', 'data-streaming', 'data-state'],
         subtree: true,
       });
+    }
+
+    function containsHostContractNode(element) {
+      return Boolean(element.matches?.('.pI_x6G_frame, .pI_x6G_centerCol')
+        || element.querySelector?.('.pI_x6G_frame, .pI_x6G_centerCol'));
     }
 
     function validateHostContract() {

@@ -120,15 +120,107 @@ try {
         return {
           leadingColor: getComputedStyle(leading).color,
           ringAnim: before.animationName,
-          ringBorderTop: before.borderTopColor,
+          ringAnimDuration: before.animationDuration,
+          ringBorders: [before.borderTopColor, before.borderRightColor, before.borderBottomColor, before.borderLeftColor],
           iconAnim: after.animationName,
         };
       });
       if (anim) break;
     }
-    check('running-ring-and-breathe',
-      anim && anim.ringAnim.includes('orbit') && anim.iconAnim.includes('breathe')
-      && anim.ringBorderTop !== 'rgba(0, 0, 0, 0)', anim);
+    if (!anim) {
+      anim = await page.evaluate(() => {
+        const fixture = document.createElement('div');
+        fixture.dataset.dshcsActivityFixture = 'running-tool';
+        fixture.className = 'CY-8Ka_root';
+        fixture.dataset.state = 'running';
+        fixture.dataset.sample = 'bash';
+        fixture.dataset.variant = 'bash';
+
+        const leading = document.createElement('span');
+        leading.className = 'CY-8Ka_leading';
+        const chevron = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+        chevron.classList.add('CY-8Ka_chevron');
+        chevron.setAttribute('viewBox', '0 0 14 14');
+        leading.append(chevron);
+
+        const title = document.createElement('span');
+        title.className = 'CY-8Ka_title';
+        title.textContent = 'Bash';
+        fixture.append(leading, title);
+        document.body.append(fixture);
+
+        const before = getComputedStyle(leading, '::before');
+        const after = getComputedStyle(leading, '::after');
+        return {
+          fixture: true,
+          leadingColor: getComputedStyle(leading).color,
+          ringAnim: before.animationName,
+          ringAnimDuration: before.animationDuration,
+          ringBorders: [before.borderTopColor, before.borderRightColor, before.borderBottomColor, before.borderLeftColor],
+          iconAnim: after.animationName,
+        };
+      });
+    }
+    // A quiet Claude-like cue: an evenly lit ring that only breathes in
+    // opacity. Explicitly rejects the old boomerang — one opaque border side
+    // (the rest transparent) driven by a rotation animation — and requires the
+    // pulse to stay slow (low-noise), with the icon breathe layer intact.
+    const uniformRing = (ring) => Boolean(ring) && ring.length === 4 && ring.every((color) => color === ring[0]);
+    check('running-halo-quiet-no-boomerang',
+      anim
+        && anim.ringAnim.includes('halo')
+        && !/orbit|rotate|spin/i.test(anim.ringAnim)
+        && uniformRing(anim.ringBorders)
+        && Number.parseFloat(anim.ringAnimDuration) >= 1.5
+        && anim.iconAnim.includes('breathe'), anim);
+
+    // Expanded thinking while still running: the stage belongs to the body
+    // text, so the ring must settle to a static evenly lit state cue.
+    const expanded = await page.evaluate(() => {
+      const root = document.createElement('div');
+      root.dataset.dshcsActivityFixture = 'expanded-think';
+      root.className = 'QWLzlG_root';
+      root.dataset.variant = 'think';
+      root.dataset.state = 'running';
+      const inner = document.createElement('div');
+      const row = document.createElement('div');
+      row.className = 'QWLzlG_row';
+      row.setAttribute('role', 'button');
+      row.setAttribute('aria-expanded', 'true');
+      const leading = document.createElement('span');
+      leading.className = 'QWLzlG_leading';
+      const iconIdle = document.createElement('span');
+      iconIdle.className = '_iconIdle_qa';
+      leading.appendChild(iconIdle);
+      const chevron = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+      chevron.classList.add('QWLzlG_chevron');
+      chevron.setAttribute('viewBox', '0 0 14 14');
+      leading.appendChild(chevron);
+      const title = document.createElement('span');
+      title.className = 'QWLzlG_title';
+      title.textContent = '已深度思考';
+      row.append(leading, title);
+      const thinkBody = document.createElement('div');
+      thinkBody.className = 'QWLzlG_thinkBody';
+      thinkBody.textContent = '先核对约束，再比较两个方案的成本。';
+      inner.append(row, thinkBody);
+      root.appendChild(inner);
+      document.body.appendChild(root);
+      const before = getComputedStyle(leading, '::before');
+      const bodyStyle = getComputedStyle(thinkBody);
+      return {
+        ringAnim: before.animationName,
+        ringBorders: [before.borderTopColor, before.borderRightColor, before.borderBottomColor, before.borderLeftColor],
+        bodyFont: bodyStyle.font.slice(0, 40),
+        bodyColor: bodyStyle.color,
+        bodyWhitespace: bodyStyle.whiteSpace,
+      };
+    });
+    check('think-expanded-ring-static-and-even',
+      expanded.ringAnim === 'none'
+        && uniformRing(expanded.ringBorders)
+        && /13px/.test(expanded.bodyFont) && /sans/i.test(expanded.bodyFont)
+        && expanded.bodyWhitespace === 'pre-wrap', expanded);
     const thinkRunning = await page.evaluate(() => {
       const row = document.querySelector('.QWLzlG_root[data-state="running"]');
       if (!row) return null;
@@ -167,11 +259,18 @@ try {
       const row = document.querySelector('.CY-8Ka_root[data-state="running"]');
       const leading = row?.querySelector('.CY-8Ka_leading');
       const before = leading ? getComputedStyle(leading, '::before') : null;
-      return { ringDuration: before?.animationDuration };
+      const expandedLeading = document.querySelector('[data-dshcs-activity-fixture="expanded-think"] .QWLzlG_leading');
+      const expandedBefore = expandedLeading ? getComputedStyle(expandedLeading, '::before') : null;
+      return {
+        ringDuration: before?.animationDuration,
+        expandedAnim: expandedBefore?.animationName,
+      };
     });
     const nearZero = (value) => value === undefined
       || String(value).split(',').every((v) => v.trim() === '0s' || Number.parseFloat(v) < 0.01);
     check('running-reduced-motion-near-zero', nearZero(reduced.ringDuration), reduced);
+    check('expanded-ring-still-static-reduced-motion',
+      reduced.expandedAnim === undefined || reduced.expandedAnim === 'none', reduced);
     await page.close();
   }
 } finally {

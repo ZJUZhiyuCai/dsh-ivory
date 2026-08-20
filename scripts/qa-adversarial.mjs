@@ -2,7 +2,7 @@
 // streaming guards, toggle storms, resize storms, degraded-mode cost, and
 // corrupted storage. Requires a running DSH instance at http://127.0.0.1:3080.
 import fs from 'node:fs';
-import { launch, openPage, expandSidebar, BASE } from './qa-lib.mjs';
+import { launch, openPage, expandSidebar, setTheme, BASE } from './qa-lib.mjs';
 
 const OUT = 'output/playwright/adversarial-20260818';
 fs.mkdirSync(OUT, { recursive: true });
@@ -166,6 +166,20 @@ try {
   {
     const { page, errors } = await openPage(browser, { focus: false });
     await addMarkdownFixture(page, 'md-whale-fixture', '# 结尾\n\n- 最后一项');
+    await page.evaluate(() => {
+      const message = document.createElement('article');
+      message.className = 'Sxvs8a_root md-whale-activity';
+      const body = document.createElement('div');
+      body.className = 'Sxvs8a_body';
+      const think = document.createElement('div');
+      think.className = 'QWLzlG_root';
+      think.dataset.variant = 'think';
+      think.dataset.state = 'ok';
+      think.textContent = 'Think 活动阶段完成';
+      body.appendChild(think);
+      message.appendChild(body);
+      document.body.appendChild(message);
+    });
     await page.waitForTimeout(400);
     const placement = await page.evaluate(() => {
       const marks = [...document.querySelectorAll('.md-whale-fixture .dshcs-turn-mark')];
@@ -173,10 +187,11 @@ try {
         total: marks.length,
         insidePreview: marks.filter((mark) => mark.closest('.dshcs-md')).length,
         insideProse: marks.filter((mark) => mark.closest('.md-whale-fixture-prose')).length,
+        pureActivity: document.querySelectorAll('.md-whale-activity .dshcs-turn-mark').length,
       };
     });
     check('whale-stays-outside-md-preview',
-      placement.total === 1 && placement.insidePreview === 0 && placement.insideProse === 1, placement);
+      placement.total === 1 && placement.insidePreview === 0 && placement.insideProse === 1 && placement.pureActivity === 0, placement);
     check('whale-md-no-page-errors', errors.length === 0, errors);
     await page.close();
   }
@@ -266,6 +281,52 @@ try {
     await page.close();
   }
 
+  // A6c: repaint storm. Repeated light/dark theme flips interleaved with
+  // Ivory style tag deletion and whole-string body.className rewrites must
+  // converge back to the enabled light state: class restored, stylesheet
+  // re-injected exactly once, --cl-page back on the ivory white (not host
+  // plain white), contract ok, and no observer feedback loop piling up tags.
+  {
+    const { page, errors } = await openPage(browser, { w: 1440, h: 900, focus: false });
+    await setTheme(page, '浅色');
+    const baseline = await page.evaluate(() => ({
+      clPage: getComputedStyle(document.body).getPropertyValue('--cl-page').trim(),
+      bg: getComputedStyle(document.body).backgroundColor,
+      tags: document.querySelectorAll('style[data-plugin-css="dsh-ivory"]').length,
+    }));
+    for (let round = 0; round < 6; round++) {
+      await setTheme(page, round % 2 ? '浅色' : '深色');
+      await page.evaluate((index) => {
+        document.querySelector('style[data-plugin-css="dsh-ivory"]')?.remove();
+        document.body.className = `host-storm-rewrite-${index}-${Math.random().toString(36).slice(2, 7)}`;
+        if (index % 2) document.body.removeAttribute('data-ds-dark-theme');
+        else document.body.setAttribute('data-ds-dark-theme', '1');
+      }, round);
+      await page.waitForTimeout(120);
+    }
+    await setTheme(page, '浅色');
+    await page.waitForTimeout(800);
+    const healed = await page.evaluate(() => ({
+      enabled: document.body.classList.contains('dsh-ivory'),
+      focus: document.body.classList.contains('dsh-ivory-focus'),
+      tags: document.querySelectorAll('style[data-plugin-css="dsh-ivory"]').length,
+      clPage: getComputedStyle(document.body).getPropertyValue('--cl-page').trim(),
+      bg: getComputedStyle(document.body).backgroundColor,
+      compat: document.body.dataset.dshcsCompat,
+      darkAttr: document.body.hasAttribute('data-ds-dark-theme'),
+    }));
+    check('theme-style-storm-self-heals',
+      baseline.clPage === '#fcfcfb'
+        && healed.enabled && !healed.focus
+        && healed.tags === 1
+        && healed.clPage === '#fcfcfb'
+        && healed.bg === baseline.bg
+        && healed.compat === 'ok',
+      { baseline, healed });
+    check('theme-style-storm-no-page-errors', errors.length === 0, errors);
+    await page.close();
+  }
+
   // A7: resize storm — drag-like viewport churn must not throw and the outline
   // clearance must settle at a sane value.
   {
@@ -301,8 +362,13 @@ try {
     await page.waitForTimeout(200);
     const probe = await page.evaluate(async () => {
       let calls = 0;
+      let totalCalls = 0;
       const original = document.querySelector.bind(document);
-      document.querySelector = (selector) => { calls += 1; return original(selector); };
+      document.querySelector = (selector) => {
+        totalCalls += 1;
+        if (selector === '.pI_x6G_frame' || selector === '.pI_x6G_centerCol') calls += 1;
+        return original(selector);
+      };
       const hot = document.createElement('div');
       document.body.appendChild(hot);
       let ticks = 0;
@@ -316,7 +382,7 @@ try {
       await new Promise((resolve) => setTimeout(resolve, 400));
       document.querySelector = original;
       hot.remove();
-      return { calls, ticks };
+      return { calls, totalCalls, ticks };
     });
     check('token-only-mode-no-scan-storm', probe.ticks === 30 && probe.calls <= 6, probe);
     check('token-only-no-page-errors', errors.length === 0, errors);

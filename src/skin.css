@@ -664,21 +664,22 @@ body.dsh-ivory .dshcs-copy-button {
   align-items: center !important;
   justify-content: center !important;
   min-width: 26px !important;
+  width: 26px !important;
   height: 26px !important;
   margin: 0 !important;
   padding: 4px !important;
   border: 0.5px solid var(--cl-border) !important;
   border-radius: 7px !important;
-  background: color-mix(in srgb, var(--cl-surface) 94%, transparent) !important;
+  background: transparent !important;
   color: var(--cl-muted) !important;
-  box-shadow: 0 1px 3px hsl(0 0% 0% / 8%) !important;
+  box-shadow: none !important;
   font: 500 11px/16px var(--cl-sans) !important;
   letter-spacing: 0 !important;
   cursor: pointer !important;
   transition: opacity 120ms ease, color 120ms ease, background-color 120ms ease !important;
 }
 body.dsh-ivory .dshcs-copy-button:hover {
-  background: var(--cl-hover) !important;
+  background: color-mix(in srgb, var(--cl-hover) 72%, transparent) !important;
   color: var(--cl-ink-strong) !important;
 }
 body.dsh-ivory .dshcs-copy-button svg {
@@ -686,6 +687,7 @@ body.dsh-ivory .dshcs-copy-button svg {
   flex: none !important;
   width: 15px !important;
   height: 15px !important;
+  stroke-width: 1.6 !important;
 }
 body.dsh-ivory .dshcs-copy-button[data-copy-state="success"] {
   color: var(--cl-ink-strong) !important;
@@ -698,14 +700,8 @@ body.dsh-ivory .dshcs-copy-code {
   z-index: 3 !important;
   top: 8px !important;
   right: 8px !important;
-  gap: 5px !important;
-  min-width: 58px !important;
-  padding-inline: 7px !important;
+  min-width: 26px !important;
   opacity: 0.82 !important;
-}
-body.dsh-ivory .dshcs-copy-code::after {
-  content: attr(data-label);
-  white-space: nowrap;
 }
 body.dsh-ivory .dshcs-code-copy-host:hover > .dshcs-copy-code,
 body.dsh-ivory .dshcs-copy-code:focus-visible {
@@ -1026,22 +1022,182 @@ body.dsh-ivory:not(.dshcs-contract-mismatch) .Pz1RTq_group {
 body.dsh-ivory:not(.dshcs-contract-mismatch) .dvt-panel.dvt-essential {
   border-color: var(--cl-border-strong) !important;
 }
+body.dsh-ivory:not(.dshcs-contract-mismatch) .dvt-alert {
+  border-radius: 8px !important;
+  font-family: var(--cl-sans) !important;
+}
 body.dsh-ivory:not(.dshcs-contract-mismatch) .dvt-alert.notice {
   background: var(--cl-surface-0) !important;
   border: 0.5px solid var(--cl-border) !important;
   color: var(--cl-ink-strong) !important;
 }
-body.dsh-ivory:not(.dshcs-contract-mismatch) .dvt-badge,
-body.dsh-ivory:not(.dshcs-contract-mismatch) .dvt-badge.error,
-body.dsh-ivory:not(.dshcs-contract-mismatch) .dvt-badge.ok {
+/* Semantic alerts stay legible but desaturated: a whisper of warm ink instead
+ * of the host's saturated status fills. */
+body.dsh-ivory:not(.dshcs-contract-mismatch) .dvt-alert.warning {
+  background: hsl(38 50% 45% / 8%) !important;
+  border: 0.5px solid hsl(38 40% 45% / 24%) !important;
+  color: #8a6a35 !important;
+}
+body.dsh-ivory[data-ds-dark-theme]:not(.dshcs-contract-mismatch) .dvt-alert.warning {
+  background: hsl(38 40% 60% / 10%) !important;
+  border-color: hsl(38 40% 60% / 26%) !important;
+  color: #d4b478 !important;
+}
+body.dsh-ivory:not(.dshcs-contract-mismatch) .dvt-alert.error {
+  background: hsl(4 50% 45% / 7%) !important;
+  border: 0.5px solid hsl(4 40% 45% / 24%) !important;
+  color: #9c3f3d !important;
+}
+body.dsh-ivory[data-ds-dark-theme]:not(.dshcs-contract-mismatch) .dvt-alert.error {
+  background: hsl(4 40% 60% / 10%) !important;
+  border-color: hsl(4 40% 60% / 26%) !important;
+  color: #e8a5a3 !important;
+}
+body.dsh-ivory:not(.dshcs-contract-mismatch) .dvt-alert.success {
+  background: hsl(140 32% 34% / 7%) !important;
+  border: 0.5px solid hsl(140 26% 34% / 22%) !important;
+  color: #4c8759 !important;
+}
+body.dsh-ivory[data-ds-dark-theme]:not(.dshcs-contract-mismatch) .dvt-alert.success {
+  background: hsl(140 30% 55% / 10%) !important;
+  border-color: hsl(140 30% 55% / 24%) !important;
+  color: #a3c9ad !important;
+}
+/* Badges read as quiet cornered tags (6px, not 999px pills); the semantic
+ * variants tint text + a whisper of background only. */
+body.dsh-ivory:not(.dshcs-contract-mismatch) .dvt-badge {
   background: var(--cl-active) !important;
   border: 0.5px solid var(--cl-border) !important;
+  border-radius: 6px !important;
   color: var(--cl-ink-strong) !important;
+  font-weight: 500 !important;
+  font-family: var(--cl-sans) !important;
+}
+body.dsh-ivory:not(.dshcs-contract-mismatch) .dvt-badge.ok {
+  background: hsl(140 32% 34% / 8%) !important;
+  border-color: transparent !important;
+  color: #4c8759 !important;
+}
+body.dsh-ivory[data-ds-dark-theme]:not(.dshcs-contract-mismatch) .dvt-badge.ok {
+  background: hsl(140 30% 55% / 12%) !important;
+  color: #a3c9ad !important;
+}
+body.dsh-ivory:not(.dshcs-contract-mismatch) .dvt-badge.warning {
+  background: hsl(38 50% 45% / 10%) !important;
+  border-color: transparent !important;
+  color: #8a6a35 !important;
+}
+body.dsh-ivory[data-ds-dark-theme]:not(.dshcs-contract-mismatch) .dvt-badge.warning {
+  background: hsl(38 40% 60% / 14%) !important;
+  color: #d4b478 !important;
+}
+body.dsh-ivory:not(.dshcs-contract-mismatch) .dvt-badge.error {
+  background: hsl(4 50% 45% / 8%) !important;
+  border-color: transparent !important;
+  color: #9c3f3d !important;
+}
+body.dsh-ivory[data-ds-dark-theme]:not(.dshcs-contract-mismatch) .dvt-badge.error {
+  background: hsl(4 40% 60% / 12%) !important;
+  color: #e8a5a3 !important;
 }
 body.dsh-ivory:not(.dshcs-contract-mismatch) .dvt-runtime-facts,
 body.dsh-ivory:not(.dshcs-contract-mismatch) .dvt-release {
   background: var(--cl-surface-0) !important;
   border: 0.5px solid var(--cl-border) !important;
+  color: var(--cl-ink-strong) !important;
+}
+/* Health cells keep their status rail but on Ivory surfaces with the same
+ * desaturated palette as the alerts above. */
+body.dsh-ivory:not(.dshcs-contract-mismatch) .dvt-health-grid > div {
+  background: var(--cl-surface-0) !important;
+  border-left: 3px solid var(--cl-border-strong) !important;
+}
+body.dsh-ivory:not(.dshcs-contract-mismatch) .dvt-health-grid > div[data-status="ok"] {
+  border-left-color: #4c8759 !important;
+}
+body.dsh-ivory[data-ds-dark-theme]:not(.dshcs-contract-mismatch) .dvt-health-grid > div[data-status="ok"] {
+  border-left-color: #7fae8a !important;
+}
+body.dsh-ivory:not(.dshcs-contract-mismatch) .dvt-health-grid > div[data-status="warning"],
+body.dsh-ivory:not(.dshcs-contract-mismatch) .dvt-health-grid > div[data-status="not_tested"] {
+  border-left-color: #b98a4a !important;
+}
+body.dsh-ivory[data-ds-dark-theme]:not(.dshcs-contract-mismatch) .dvt-health-grid > div[data-status="warning"],
+body.dsh-ivory[data-ds-dark-theme]:not(.dshcs-contract-mismatch) .dvt-health-grid > div[data-status="not_tested"] {
+  border-left-color: #d4b478 !important;
+}
+body.dsh-ivory:not(.dshcs-contract-mismatch) .dvt-health-grid > div[data-status="error"] {
+  border-left-color: #b14543 !important;
+}
+body.dsh-ivory[data-ds-dark-theme]:not(.dshcs-contract-mismatch) .dvt-health-grid > div[data-status="error"] {
+  border-left-color: #e2908e !important;
+}
+body.dsh-ivory:not(.dshcs-contract-mismatch) .dvt-health-grid strong,
+body.dsh-ivory:not(.dshcs-contract-mismatch) .dvt-health-grid p {
+  color: var(--cl-muted) !important;
+}
+body.dsh-ivory:not(.dshcs-contract-mismatch) .dvt-health-test-tag {
+  background: var(--cl-surface) !important;
+  border-radius: 6px !important;
+  color: var(--cl-muted) !important;
+}
+body.dsh-ivory:not(.dshcs-contract-mismatch) .dvt-health-test-tag[data-status="ok"] {
+  background: hsl(140 32% 34% / 10%) !important;
+  color: #4c8759 !important;
+}
+body.dsh-ivory:not(.dshcs-contract-mismatch) .dvt-health-test-tag[data-status="warning"] {
+  background: hsl(38 50% 45% / 12%) !important;
+  color: #8a6a35 !important;
+}
+body.dsh-ivory[data-ds-dark-theme]:not(.dshcs-contract-mismatch) .dvt-health-test-tag[data-status="warning"] {
+  color: #d4b478 !important;
+}
+body.dsh-ivory:not(.dshcs-contract-mismatch) .dvt-health-test-tag[data-status="error"] {
+  background: hsl(4 50% 45% / 10%) !important;
+  color: #9c3f3d !important;
+}
+body.dsh-ivory[data-ds-dark-theme]:not(.dshcs-contract-mismatch) .dvt-health-test-tag[data-status="error"] {
+  color: #e8a5a3 !important;
+}
+body.dsh-ivory:not(.dshcs-contract-mismatch) .dvt-loading {
+  background: var(--cl-surface-0) !important;
+  border-radius: 8px !important;
+  color: var(--cl-muted) !important;
+  font-family: var(--cl-sans) !important;
+}
+/* Settings typography + inputs: same quiet surfaces and controls as the main
+ * settings shell. */
+body.dsh-ivory:not(.dshcs-contract-mismatch) .dvt-panel-title h3 {
+  color: var(--cl-ink) !important;
+}
+body.dsh-ivory:not(.dshcs-contract-mismatch) .dvt-panel-title p {
+  color: var(--cl-muted) !important;
+}
+body.dsh-ivory:not(.dshcs-contract-mismatch) .dvt-tutorial-link a {
+  color: var(--cl-accent-text) !important;
+}
+body.dsh-ivory:not(.dshcs-contract-mismatch) .dvt-field > span {
+  color: var(--cl-ink-strong) !important;
+}
+body.dsh-ivory:not(.dshcs-contract-mismatch) .dvt-field > small,
+body.dsh-ivory:not(.dshcs-contract-mismatch) .dvt-check > small {
+  color: var(--cl-muted) !important;
+}
+body.dsh-ivory:not(.dshcs-contract-mismatch) .dvt-field select,
+body.dsh-ivory:not(.dshcs-contract-mismatch) .dvt-field textarea {
+  background: var(--cl-surface) !important;
+  border: 0.5px solid var(--cl-border-strong) !important;
+  border-radius: 8px !important;
+  color: var(--cl-ink) !important;
+  font-family: var(--cl-sans) !important;
+  box-shadow: none !important;
+}
+body.dsh-ivory:not(.dshcs-contract-mismatch) .dvt-manual-update,
+body.dsh-ivory:not(.dshcs-contract-mismatch) .dvt-update-grid > div {
+  background: var(--cl-surface-0) !important;
+  border-radius: 8px !important;
+}
+body.dsh-ivory:not(.dshcs-contract-mismatch) .dvt-manual-update code {
   color: var(--cl-ink-strong) !important;
 }
 body.dsh-ivory:not(.dshcs-contract-mismatch) .dvt-kicker,
@@ -1491,8 +1647,7 @@ body.dsh-ivory:not(.dshcs-contract-mismatch) .QWLzlG_leading {
  * mask-painted ::after carries the Claude-style stroke artwork. Scoped to the
  * bash variant — other tool variants keep the host icon untouched. The host
  * only mounts .CY-8Ka_iconIdle in some states, so the leading slot also
- * paints the icon whenever it holds neither an iconIdle wrapper nor a
- * chevron. Chevrons are never masked. */
+ * paints the icon when rc.8 leaves it with only the disclosure chevron. */
 body.dsh-ivory:not(.dshcs-contract-mismatch) .CY-8Ka_iconIdle,
 body.dsh-ivory:not(.dshcs-contract-mismatch) .QWLzlG_root [class*="_iconIdle_"] {
   position: relative !important;
@@ -1512,8 +1667,13 @@ body.dsh-ivory:not(.dshcs-contract-mismatch) .CY-8Ka_root[data-sample="bash"] .C
 body.dsh-ivory:not(.dshcs-contract-mismatch) .QWLzlG_leading {
   --dshcs-icon: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Cpath fill='black' d='M8 1.9c.5 1.85 1.12 3.05 1.95 3.87.83.83 2.03 1.46 3.9 1.98-1.87.52-3.07 1.15-3.9 1.98-.83.82-1.45 2.02-1.95 3.87-.5-1.85-1.12-3.05-1.95-3.87-.83-.83-2.03-1.46-3.9-1.98 1.87-.52 3.07-1.15 3.9-1.98.83-.82 1.45-2.02 1.95-3.87z'/%3E%3Cpath fill='black' d='M12.4 10.7c.24.9.54 1.48.94 1.88.4.4.98.7 1.88.94-.9.24-1.48.54-1.88.94-.4.4-.7.98-.94 1.88-.24-.9-.54-1.48-.94-1.88-.4-.4-.98-.7-1.88-.94.9-.24 1.48-.54 1.88-.94.4-.4.7-.98.94-1.88z'/%3E%3C/svg%3E");
 }
-body.dsh-ivory:not(.dshcs-contract-mismatch) .CY-8Ka_root[data-sample="bash"] .CY-8Ka_leading:not(:has(.CY-8Ka_iconIdle)):not(:has(.CY-8Ka_chevron))::after,
-body.dsh-ivory:not(.dshcs-contract-mismatch) .QWLzlG_leading:not(:has([class*="_iconIdle_"])):not(:has(.QWLzlG_chevron))::after,
+body.dsh-ivory:not(.dshcs-contract-mismatch) .CY-8Ka_root[data-sample="bash"] .CY-8Ka_leading:has(.CY-8Ka_chevron):not(:has(.CY-8Ka_iconIdle)),
+body.dsh-ivory:not(.dshcs-contract-mismatch) .QWLzlG_leading:has(.QWLzlG_chevron):not(:has([class*="_iconIdle_"])) {
+  width: 34px !important;
+  justify-content: flex-start !important;
+}
+body.dsh-ivory:not(.dshcs-contract-mismatch) .CY-8Ka_root[data-sample="bash"] .CY-8Ka_leading:not(:has(.CY-8Ka_iconIdle))::after,
+body.dsh-ivory:not(.dshcs-contract-mismatch) .QWLzlG_leading:not(:has([class*="_iconIdle_"]))::after,
 body.dsh-ivory:not(.dshcs-contract-mismatch) .CY-8Ka_root[data-sample="bash"] .CY-8Ka_iconIdle::after,
 body.dsh-ivory:not(.dshcs-contract-mismatch) .QWLzlG_root [class*="_iconIdle_"]::after {
   content: '' !important;
@@ -1526,20 +1686,31 @@ body.dsh-ivory:not(.dshcs-contract-mismatch) .QWLzlG_root [class*="_iconIdle_"]:
   -webkit-mask: var(--dshcs-icon, none) center / contain no-repeat;
   mask: var(--dshcs-icon, none) center / contain no-repeat;
 }
+body.dsh-ivory:not(.dshcs-contract-mismatch) .CY-8Ka_root[data-sample="bash"] .CY-8Ka_leading:has(.CY-8Ka_chevron):not(:has(.CY-8Ka_iconIdle))::after,
+body.dsh-ivory:not(.dshcs-contract-mismatch) .QWLzlG_leading:has(.QWLzlG_chevron):not(:has([class*="_iconIdle_"]))::after {
+  inset: 0 0 0 auto;
+  margin: auto 0;
+}
 
-/* running: one soft accent — the icon breathes inside a thin orbiting ring */
+/* running: one soft accent. The icon breathes gently inside a thin ring that
+ * is lit evenly on every side and only pulses in opacity — a quiet "working"
+ * cue, never a spinner. A single-sided rotating border reads as a boomerang
+ * at 16px, so rotation is deliberately absent from this state. */
 @keyframes dshcs-breathe {
   0%, 100% { opacity: 1; }
   50% { opacity: 0.4; }
 }
-@keyframes dshcs-orbit {
-  to { transform: rotate(360deg); }
+@keyframes dshcs-halo {
+  0%, 100% { opacity: 0.45; }
+  50% { opacity: 1; }
 }
 body.dsh-ivory:not(.dshcs-contract-mismatch) .CY-8Ka_root[data-state="running"] .CY-8Ka_leading,
 body.dsh-ivory:not(.dshcs-contract-mismatch) .QWLzlG_root[data-state="running"] .QWLzlG_leading {
   color: var(--cl-accent-text) !important;
 }
+body.dsh-ivory:not(.dshcs-contract-mismatch) .CY-8Ka_root[data-state="running"][data-sample="bash"] .CY-8Ka_leading:not(:has(.CY-8Ka_iconIdle))::after,
 body.dsh-ivory:not(.dshcs-contract-mismatch) .CY-8Ka_root[data-state="running"][data-sample="bash"] .CY-8Ka_iconIdle::after,
+body.dsh-ivory:not(.dshcs-contract-mismatch) .QWLzlG_root[data-state="running"] .QWLzlG_leading:not(:has([class*="_iconIdle_"]))::after,
 body.dsh-ivory:not(.dshcs-contract-mismatch) .QWLzlG_root[data-state="running"] [class*="_iconIdle_"]::after {
   animation: dshcs-breathe 1.7s ease-in-out infinite !important;
 }
@@ -1549,9 +1720,17 @@ body.dsh-ivory:not(.dshcs-contract-mismatch) .QWLzlG_root[data-state="running"] 
   position: absolute;
   inset: -3px;
   border-radius: 50%;
-  border: 1px solid transparent;
-  border-top-color: color-mix(in srgb, var(--cl-accent-text) 65%, transparent);
-  animation: dshcs-orbit 0.9s linear infinite !important;
+  border: 1px solid color-mix(in srgb, var(--cl-accent-text) 38%, transparent);
+  animation: dshcs-halo 2.4s ease-in-out infinite !important;
+}
+/* Expanded rows hand the stage to the body text: the ring settles into a
+ * static, fainter state cue and only the icon keeps its slow breathing. */
+body.dsh-ivory:not(.dshcs-contract-mismatch) .CY-8Ka_root[data-state="running"][aria-expanded="true"] .CY-8Ka_leading::before,
+body.dsh-ivory:not(.dshcs-contract-mismatch) .CY-8Ka_root[data-state="running"] [aria-expanded="true"] .CY-8Ka_leading::before,
+body.dsh-ivory:not(.dshcs-contract-mismatch) .QWLzlG_root[data-state="running"] .QWLzlG_row[aria-expanded="true"] .QWLzlG_leading::before {
+  animation: none !important;
+  opacity: 0.75;
+  border-color: color-mix(in srgb, var(--cl-accent-text) 24%, transparent) !important;
 }
 body.dsh-ivory:not(.dshcs-contract-mismatch) .CY-8Ka_root[data-state="running"] .CY-8Ka_title {
   color: var(--cl-ink-strong) !important;
@@ -1655,15 +1834,324 @@ body.dsh-ivory:not(.dshcs-contract-mismatch) [aria-expanded="true"] .QWLzlG_chev
   color: var(--cl-ink-strong) !important;
 }
 
-/* Reduced motion also silences the activity-row orbit/breathe cues. Selectors
+/* Reduced motion also silences the activity-row halo/breathe cues. Selectors
  * mirror the animation rules' specificity so source order decides the winner. */
 @media (prefers-reduced-motion: reduce) {
   body.dsh-ivory:not(.dshcs-contract-mismatch) .CY-8Ka_root[data-state="running"] .CY-8Ka_leading::before,
   body.dsh-ivory:not(.dshcs-contract-mismatch) .QWLzlG_root[data-state="running"] .QWLzlG_leading::before,
+  body.dsh-ivory:not(.dshcs-contract-mismatch) .CY-8Ka_root[data-state="running"][data-sample="bash"] .CY-8Ka_leading:not(:has(.CY-8Ka_iconIdle))::after,
   body.dsh-ivory:not(.dshcs-contract-mismatch) .CY-8Ka_root[data-state="running"][data-sample="bash"] .CY-8Ka_iconIdle::after,
+  body.dsh-ivory:not(.dshcs-contract-mismatch) .QWLzlG_root[data-state="running"] .QWLzlG_leading:not(:has([class*="_iconIdle_"]))::after,
   body.dsh-ivory:not(.dshcs-contract-mismatch) .QWLzlG_root[data-state="running"] [class*="_iconIdle_"]::after,
   body.dsh-ivory:not(.dshcs-contract-mismatch) [data-terminal] [class*="_dot_"][data-state="running"] {
     animation-duration: 0.001ms !important;
     animation-iteration-count: 1 !important;
   }
+}
+
+/* ---------- Vision Toolkit result cards (chat flow) ----------
+ * @anionex/dsh-vision-toolkit renders its web-screenshot / OCR / palette /
+ * pixel-diff results with its own stylesheet: accent-blue icon wells, 12px
+ * rounded cards with drop shadows, 999px pill buttons and a loud checkerboard.
+ * Everything below repaints those surfaces onto Ivory's quiet tool-row
+ * language — 8px corners, 0.5px neutral borders, no shadows, 13px sans —
+ * while the plugin's DOM and functionality stay untouched. Its stylesheet is
+ * injected at runtime (possibly after Ivory's), so every declaration carries
+ * !important on top of the higher-specificity body-scoped selectors. */
+
+/* tool result card: a light activity row, not a heavy mini card */
+body.dsh-ivory:not(.dshcs-contract-mismatch) .dvt-tool {
+  margin: 2px 0 !important;
+  border: 0.5px solid var(--cl-border) !important;
+  border-radius: 8px !important;
+  background: transparent !important;
+  box-shadow: none !important;
+  font-family: var(--cl-sans) !important;
+  font-size: 13px !important;
+  line-height: 20px !important;
+  color: var(--cl-muted) !important;
+}
+body.dsh-ivory:not(.dshcs-contract-mismatch) .dvt-tool-head {
+  min-height: 30px !important;
+  padding: 5px 8px !important;
+  gap: 8px !important;
+  border-radius: 7px !important;
+  font: inherit !important;
+  color: inherit !important;
+}
+body.dsh-ivory:not(.dshcs-contract-mismatch) .dvt-tool-head:hover {
+  background: var(--cl-hover) !important;
+}
+body.dsh-ivory:not(.dshcs-contract-mismatch) .dvt-tool-head:focus-visible {
+  outline: 2px solid var(--cl-ink) !important;
+  outline-offset: -2px !important;
+}
+/* icon well: neutral ink, no accent tile — running softens to the accent text
+ * tone the same way the activity rows do */
+body.dsh-ivory:not(.dshcs-contract-mismatch) .dvt-tool-icon {
+  width: 18px !important;
+  height: 18px !important;
+  border-radius: 5px !important;
+  color: var(--cl-ink-strong) !important;
+  background: transparent !important;
+}
+body.dsh-ivory:not(.dshcs-contract-mismatch) .dvt-tool[data-state="running"] .dvt-tool-icon {
+  color: var(--cl-accent-text) !important;
+}
+body.dsh-ivory:not(.dshcs-contract-mismatch) .dvt-tool-title {
+  font: 500 13px/20px var(--cl-sans) !important;
+  color: var(--cl-ink-strong) !important;
+}
+body.dsh-ivory:not(.dshcs-contract-mismatch) .dvt-tool-sep {
+  color: var(--cl-border-strong) !important;
+}
+body.dsh-ivory:not(.dshcs-contract-mismatch) .dvt-tool-summary,
+body.dsh-ivory:not(.dshcs-contract-mismatch) .dvt-tool-status {
+  font-family: var(--cl-sans) !important;
+  font-size: 12px !important;
+  color: var(--cl-muted) !important;
+}
+body.dsh-ivory:not(.dshcs-contract-mismatch) .dvt-tool[data-state="error"] .dvt-tool-status {
+  color: #b14543 !important;
+}
+body.dsh-ivory[data-ds-dark-theme]:not(.dshcs-contract-mismatch) .dvt-tool[data-state="error"] .dvt-tool-status {
+  color: #e2908e !important;
+}
+body.dsh-ivory:not(.dshcs-contract-mismatch) .dvt-chevron {
+  color: var(--cl-muted) !important;
+}
+body.dsh-ivory:not(.dshcs-contract-mismatch) .dvt-tool-body {
+  padding: 0 10px 10px !important;
+}
+body.dsh-ivory:not(.dshcs-contract-mismatch) .dvt-stack {
+  gap: 8px !important;
+}
+body.dsh-ivory:not(.dshcs-contract-mismatch) .dvt-muted {
+  color: var(--cl-muted) !important;
+  font-family: var(--cl-sans) !important;
+  font-size: 12px !important;
+}
+body.dsh-ivory:not(.dshcs-contract-mismatch) .dvt-tool h4 {
+  font: 500 12px/16px var(--cl-sans) !important;
+  color: var(--cl-ink-strong) !important;
+}
+
+/* metrics / lists / tables: neutral wells, mono numerals */
+body.dsh-ivory:not(.dshcs-contract-mismatch) .dvt-metrics {
+  gap: 6px !important;
+}
+body.dsh-ivory:not(.dshcs-contract-mismatch) .dvt-metrics > div,
+body.dsh-ivory:not(.dshcs-contract-mismatch) .dvt-diff-score {
+  padding: 8px 10px !important;
+  border: 0.5px solid var(--cl-border) !important;
+  border-radius: 7px !important;
+  background: var(--cl-surface-0) !important;
+  gap: 3px !important;
+}
+body.dsh-ivory:not(.dshcs-contract-mismatch) .dvt-metrics span,
+body.dsh-ivory:not(.dshcs-contract-mismatch) .dvt-diff-score span {
+  font: 500 10px/14px var(--cl-sans) !important;
+  letter-spacing: 0.04em !important;
+  color: var(--cl-muted) !important;
+}
+body.dsh-ivory:not(.dshcs-contract-mismatch) .dvt-metrics strong,
+body.dsh-ivory:not(.dshcs-contract-mismatch) .dvt-diff-score strong {
+  font: 500 13px/18px var(--cl-mono) !important;
+  color: var(--cl-ink) !important;
+}
+body.dsh-ivory:not(.dshcs-contract-mismatch) .dvt-list {
+  gap: 3px !important;
+}
+body.dsh-ivory:not(.dshcs-contract-mismatch) .dvt-list li {
+  background: var(--cl-surface-0) !important;
+  border-radius: 6px !important;
+  font-family: var(--cl-sans) !important;
+  font-size: 12px !important;
+  color: var(--cl-ink-strong) !important;
+}
+body.dsh-ivory:not(.dshcs-contract-mismatch) .dvt-list code {
+  color: var(--cl-muted) !important;
+  font-family: var(--cl-mono) !important;
+  font-size: 11px !important;
+}
+body.dsh-ivory:not(.dshcs-contract-mismatch) .dvt-table-wrap {
+  border: 0.5px solid var(--cl-border) !important;
+  border-radius: 8px !important;
+}
+body.dsh-ivory:not(.dshcs-contract-mismatch) .dvt-table {
+  font-family: var(--cl-sans) !important;
+  font-size: 12px !important;
+  color: var(--cl-ink-strong) !important;
+}
+body.dsh-ivory:not(.dshcs-contract-mismatch) .dvt-table th,
+body.dsh-ivory:not(.dshcs-contract-mismatch) .dvt-table td {
+  padding: 6px 8px !important;
+  border-bottom: 0.5px solid var(--cl-border) !important;
+}
+body.dsh-ivory:not(.dshcs-contract-mismatch) .dvt-table th {
+  background: var(--cl-surface-0) !important;
+  color: var(--cl-muted) !important;
+  font-weight: 500 !important;
+}
+body.dsh-ivory:not(.dshcs-contract-mismatch) .dvt-table td code {
+  color: var(--cl-muted) !important;
+  font-family: var(--cl-mono) !important;
+}
+/* pixel-diff meter: desaturated warm ramp instead of the saturated warn→error
+ * gradient; the track reads as a hairline */
+body.dsh-ivory:not(.dshcs-contract-mismatch) .dvt-diff-score > div {
+  height: 4px !important;
+  background: var(--cl-border) !important;
+}
+body.dsh-ivory:not(.dshcs-contract-mismatch) .dvt-diff-score i {
+  background: linear-gradient(90deg, hsl(32 26% 58%), hsl(8 30% 56%)) !important;
+}
+body.dsh-ivory[data-ds-dark-theme]:not(.dshcs-contract-mismatch) .dvt-diff-score i {
+  background: linear-gradient(90deg, hsl(32 20% 62%), hsl(8 24% 62%)) !important;
+}
+
+/* artifact + screenshot preview: a neutral media well. The checkerboard stays
+ * (transparent PNGs need it) but shrinks and fades so it stops competing with
+ * the shot itself. */
+body.dsh-ivory:not(.dshcs-contract-mismatch) .dvt-artifact {
+  border: 0.5px solid var(--cl-border) !important;
+  border-radius: 8px !important;
+  background: var(--cl-surface-0) !important;
+}
+body.dsh-ivory:not(.dshcs-contract-mismatch) .dvt-preview {
+  max-height: 320px !important;
+  background: repeating-conic-gradient(var(--cl-hover) 0 25%, transparent 0 50%) 50% / 12px 12px !important;
+}
+body.dsh-ivory:not(.dshcs-contract-mismatch) .dvt-artifact-meta {
+  padding: 8px 10px !important;
+}
+body.dsh-ivory:not(.dshcs-contract-mismatch) .dvt-artifact-meta strong {
+  font: 500 12px/16px var(--cl-sans) !important;
+  color: var(--cl-ink) !important;
+}
+body.dsh-ivory:not(.dshcs-contract-mismatch) .dvt-artifact-meta span,
+body.dsh-ivory:not(.dshcs-contract-mismatch) .dvt-artifact-meta small {
+  font-family: var(--cl-sans) !important;
+  font-size: 11px !important;
+  color: var(--cl-muted) !important;
+}
+/* download: Ivory's small button language (matches the copy buttons) — 26px,
+ * 7px corners, hairline border, no pill, no primary fill */
+body.dsh-ivory:not(.dshcs-contract-mismatch) .dvt-download {
+  height: 26px !important;
+  padding: 0 10px !important;
+  border: 0.5px solid var(--cl-border) !important;
+  border-radius: 7px !important;
+  background: transparent !important;
+  color: var(--cl-ink-strong) !important;
+  box-shadow: none !important;
+  font: 500 12px/16px var(--cl-sans) !important;
+  transition: background-color 120ms ease, color 120ms ease !important;
+}
+body.dsh-ivory:not(.dshcs-contract-mismatch) .dvt-download:hover {
+  background: var(--cl-hover) !important;
+  color: var(--cl-ink) !important;
+}
+body.dsh-ivory:not(.dshcs-contract-mismatch) .dvt-download:focus-visible {
+  outline: 2px solid var(--cl-ink) !important;
+  outline-offset: 2px !important;
+}
+
+/* dominant-color palette: stable swatch geometry, hairline ring instead of a
+ * shadow, mono hex + muted share so the row reads as data, not candy */
+body.dsh-ivory:not(.dshcs-contract-mismatch) .dvt-palette {
+  gap: 6px !important;
+}
+body.dsh-ivory:not(.dshcs-contract-mismatch) .dvt-palette > div {
+  align-items: center !important;
+  gap: 8px !important;
+  padding: 6px 7px !important;
+  border: 0.5px solid var(--cl-border) !important;
+  border-radius: 8px !important;
+  background: transparent !important;
+  min-width: 0 !important;
+}
+body.dsh-ivory:not(.dshcs-contract-mismatch) .dvt-palette i {
+  width: 26px !important;
+  height: 26px !important;
+  flex: none !important;
+  border-radius: 6px !important;
+  box-shadow: inset 0 0 0 1px hsl(0 0% 4.3% / 14%) !important;
+}
+body.dsh-ivory[data-ds-dark-theme]:not(.dshcs-contract-mismatch) .dvt-palette i {
+  box-shadow: inset 0 0 0 1px hsl(0 0% 100% / 16%) !important;
+}
+body.dsh-ivory:not(.dshcs-contract-mismatch) .dvt-palette span {
+  display: grid !important;
+  min-width: 0 !important;
+}
+body.dsh-ivory:not(.dshcs-contract-mismatch) .dvt-palette strong {
+  font: 500 11px/14px var(--cl-mono) !important;
+  color: var(--cl-ink) !important;
+}
+body.dsh-ivory:not(.dshcs-contract-mismatch) .dvt-palette small {
+  font-family: var(--cl-sans) !important;
+  font-size: 10px !important;
+  color: var(--cl-muted) !important;
+}
+
+/* paste-image chips near the composer: same geometry as the composer's quiet
+ * controls — 28px tall, 8px corners, neutral surface, ellipsized names, and
+ * status edges that inform without flashing */
+body.dsh-ivory:not(.dshcs-contract-mismatch) .dvt-paste-dock {
+  gap: 6px !important;
+  padding: 0 2px 6px !important;
+}
+body.dsh-ivory:not(.dshcs-contract-mismatch) .dvt-paste-chip {
+  height: 28px !important;
+  gap: 6px !important;
+  padding: 0 4px 0 10px !important;
+  border: 0.5px solid var(--cl-border) !important;
+  border-radius: 8px !important;
+  background: var(--cl-surface-0) !important;
+  font-family: var(--cl-sans) !important;
+  font-size: 12px !important;
+  color: var(--cl-ink-strong) !important;
+  box-shadow: none !important;
+}
+body.dsh-ivory:not(.dshcs-contract-mismatch) .dvt-paste-chip[data-status="copying"] {
+  border-color: var(--cl-border-strong) !important;
+  color: var(--cl-ink) !important;
+}
+body.dsh-ivory:not(.dshcs-contract-mismatch) .dvt-paste-chip[data-status="error"] {
+  border-color: hsl(4 32% 58% / 55%) !important;
+}
+body.dsh-ivory:not(.dshcs-contract-mismatch) .dvt-paste-name {
+  max-width: min(260px, 40vw) !important;
+  overflow: hidden !important;
+  text-overflow: ellipsis !important;
+  white-space: nowrap !important;
+}
+body.dsh-ivory:not(.dshcs-contract-mismatch) .dvt-paste-detail {
+  max-width: min(200px, 32vw) !important;
+  overflow: hidden !important;
+  text-overflow: ellipsis !important;
+  white-space: nowrap !important;
+  font-size: 11px !important;
+  color: var(--cl-muted) !important;
+}
+body.dsh-ivory:not(.dshcs-contract-mismatch) .dvt-paste-chip[data-status="error"] .dvt-paste-detail {
+  color: #b14543 !important;
+}
+body.dsh-ivory[data-ds-dark-theme]:not(.dshcs-contract-mismatch) .dvt-paste-chip[data-status="error"] .dvt-paste-detail {
+  color: #e2908e !important;
+}
+body.dsh-ivory:not(.dshcs-contract-mismatch) .dvt-paste-chip button {
+  width: 20px !important;
+  height: 20px !important;
+  border-radius: 6px !important;
+  color: var(--cl-muted) !important;
+}
+body.dsh-ivory:not(.dshcs-contract-mismatch) .dvt-paste-chip button:hover {
+  background: var(--cl-hover) !important;
+  color: var(--cl-ink-strong) !important;
+}
+body.dsh-ivory:not(.dshcs-contract-mismatch) .dvt-paste-chip button:focus-visible {
+  outline: 2px solid var(--cl-ink) !important;
+  outline-offset: 1px !important;
 }

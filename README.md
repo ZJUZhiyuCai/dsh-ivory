@@ -47,7 +47,7 @@ focus mode stays off until you choose it.
 Install the exact GitHub release without using npm.
 
 ```sh
-dsh plugin --profile web add github:ZJUZhiyuCai/dsh-ivory#v0.2.4
+dsh plugin --profile web add github:ZJUZhiyuCai/dsh-ivory#v0.2.5
 ```
 
 Remove Ivory and return to the native DSH interface.
@@ -103,9 +103,9 @@ and [third-party notices](https://github.com/ZJUZhiyuCai/dsh-ivory/blob/main/THI
 
 > [!NOTE]
 > DeepSeek Harness is in developer preview and may make breaking UI changes.
-> Ivory 0.2.x is verified against DSH 0.1.0-rc.6. When Ivory cannot prove the
-> current structural contract, it keeps token-level theming and releases the
-> host layout back to DSH.
+> Ivory 0.2.x is verified against DSH 0.1.0-rc.7 with the current 0.1.0-rc.8
+> web client modules. When Ivory cannot prove the current structural contract,
+> it keeps token-level theming and releases the host layout back to DSH.
 
 <details>
 <summary><strong>Quality and release checks</strong></summary>
@@ -114,8 +114,9 @@ and [third-party notices](https://github.com/ZJUZhiyuCai/dsh-ivory/blob/main/THI
 npm ci
 npm test          # 14 static, build, publint, and package checks
 npm run qa:r2     # 69 browser regressions; DSH must run at 127.0.0.1:3080
-npm run qa:adversarial  # 25 stress checks: reconciliation safety, toggle/resize storms, degraded mode
-npm run qa:activity     # 13 checks for thinking/tool-call rows, icons, and terminal polish
+npm run qa:adversarial  # 29 stress checks: reconciliation safety, toggle/resize storms, degraded mode
+npm run qa:activity     # 16 checks for thinking/tool-call rows, icons, and terminal polish
+npm run qa:micro        # 28 Vision Toolkit/Ivory micro-component checks; set DVT_CLIENT_JS if the toolkit is not installed in the DSH web profile
 ```
 
 The browser suite covers responsive layout, composer focus, dark mode,

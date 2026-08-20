@@ -126,11 +126,19 @@ try {
     const { page, errors } = await openPage(browser, { w: 1440, h: 900, focus: true });
     await expandSidebar(page).catch(() => {});
     await openConversation(page);
+    const expectedCard = [488, 768, 752, 100];
+    await page.waitForFunction((expected) => {
+      const element = document.querySelector('.uV2eYG_card');
+      if (!element) return false;
+      const rect = element.getBoundingClientRect();
+      const actual = [rect.x, rect.y, rect.width, rect.height].map(Math.round);
+      return actual.every((value, index) => value === expected[index]);
+    }, expectedCard, { timeout: 5000 }).catch(() => {});
     const card = await page.locator('.uV2eYG_card').evaluate((element) => {
       const rect = element.getBoundingClientRect();
       return [rect.x, rect.y, rect.width, rect.height].map(Math.round);
     });
-    check('focus-conversation-card-reference-geometry', card[0] === 488 && card[1] === 768 && card[2] === 752 && card[3] === 100, card);
+    check('focus-conversation-card-reference-geometry', card.every((value, index) => value === expectedCard[index]), { expected: expectedCard, actual: card });
     check('focus-conversation-no-page-errors', errors.length === 0, errors);
     await page.close();
   }
@@ -359,12 +367,18 @@ try {
       fixture.style.cssText = 'position:fixed;left:16px;top:16px;width:420px;z-index:99999;background:var(--cl-page)';
       const body = document.createElement('div');
       body.className = 'Sxvs8a_body';
+      const nativeParagraph = document.createElement('p');
+      nativeParagraph.className = 'dshcs-copy-fixture-native';
+      nativeParagraph.textContent = '原生 assistant 段落不补复制';
+      const mdPreview = document.createElement('div');
+      mdPreview.className = 'dshcs-md';
       const paragraph = document.createElement('p');
       paragraph.className = 'dshcs-copy-fixture-text';
       paragraph.append('段落 alpha 与 ');
       const strong = document.createElement('strong');
       strong.textContent = 'beta';
       paragraph.append(strong, '。', document.createElement('br'), '第二行');
+      mdPreview.appendChild(paragraph);
       const block = document.createElement('div');
       block.className = 'code-block-copy-fixture';
       const seat = document.createElement('div');
@@ -373,7 +387,7 @@ try {
       pre.textContent = 'const answer = 42;\n  return answer;\n';
       seat.appendChild(pre);
       block.appendChild(seat);
-      body.append(paragraph, block);
+      body.append(nativeParagraph, mdPreview, block);
       fixture.appendChild(body);
 
       const bubble = document.createElement('div');
@@ -383,16 +397,15 @@ try {
       document.body.append(fixture, bubble);
     });
     await page.waitForTimeout(350);
-    await page.locator('.dshcs-copy-fixture-text > .dshcs-copy-text').evaluate((button) => button.remove());
-    await page.waitForTimeout(250);
 
     const controls = await page.evaluate(() => ({
       code: document.querySelectorAll('.dshcs-copy-fixture .dshcs-copy-code').length,
+      nativeText: document.querySelectorAll('.dshcs-copy-fixture-native > .dshcs-copy-text').length,
       text: document.querySelectorAll('.dshcs-copy-fixture-text > .dshcs-copy-text, .dshcs-copy-fixture-bubble > .dshcs-copy-text').length,
       wraps: document.querySelectorAll('.dshcs-copy-fixture .dshcs-code-copy-host').length,
       status: document.querySelectorAll('.dshcs-copy-status[role="status"]').length,
     }));
-    check('copy-controls-injected-once', controls.code === 1 && controls.text === 2 && controls.wraps === 1 && controls.status === 1, controls);
+    check('copy-controls-injected-once', controls.code === 1 && controls.nativeText === 0 && controls.text === 2 && controls.wraps === 1 && controls.status === 1, controls);
 
     const paragraph = page.locator('.dshcs-copy-fixture-text');
     await paragraph.hover();
@@ -510,7 +523,7 @@ try {
       && Math.abs(completed.height - 13.5) < 0.1
       && completed.color === completed.ink
       && completed.hidden === 'true', completed);
-    check('copy-controls-appear-after-streaming', completed?.copyControls === 1, completed);
+    check('copy-controls-do-not-duplicate-final-text', completed?.copyControls === 0, completed);
     check('whale-state-no-page-errors', errors.length === 0, errors);
     await page.close();
   }
@@ -545,7 +558,7 @@ try {
       copyControls: document.querySelectorAll('.dshcs-copy-button').length,
       compat: document.body.dataset.dshcsCompat,
     }));
-    check('skin-reenable-restores-enhancements', before.messages === 0 || (on.marks === before.messages && on.copyControls > 0), { before, on });
+    check('skin-reenable-restores-enhancements', on.marks === before.marks && on.copyControls === before.copyControls, { before, on });
     check('lifecycle-no-page-errors', errors.length === 0, errors);
     await page.close();
   }

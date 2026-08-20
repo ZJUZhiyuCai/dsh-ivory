@@ -5,6 +5,40 @@ All notable changes to Ivory are documented here. The project follows
 
 ## [Unreleased]
 
+## [0.2.5] - 2026-08-20
+
+### Changed
+
+- Replace the thinking/tool running spinner with a quiet, evenly lit halo ring
+  that settles to a static cue while a thinking row is expanded, removing the
+  boomerang-style single-side rotating border at small sizes. The activity QA
+  now asserts the halo shape, low animation noise, and near-static
+  reduced-motion behavior.
+- Restyle the Vision Toolkit (`@anionex/dsh-vision-toolkit`) chat cards to
+  Ivory's visual language: 8px tool cards with hairline borders and no
+  shadows, neutral ink icons, quiet checkerboard artifact previews, small
+  bordered download buttons, stable mono-labeled color palettes, desaturated
+  warm diff-score ramps, and composer-matched paste chips. Overrides are
+  prefixed with the Ivory body scope and survive the plugin injecting its own
+  stylesheet after Ivory's.
+- Polish micro-components across the toolkit panel: cornered status badges,
+  desaturated alert banners, neutral form fields, and health-grid status
+  colors with light/dark variants.
+- Verify compatibility with DSH 0.1.0-rc.7 and the current 0.1.0-rc.8 web
+  client modules, making the DSH peer range explicit while retaining rc.6
+  compatibility.
+- Harden token-only selector-contract recovery so degraded mode only re-probes
+  when newly added DOM contains likely host frame nodes.
+- Update activity-row styling for rc.8 chevron-only tool/thinking rows and make
+  the activity QA independent of live model execution timing.
+
+### Fixed
+
+- Re-inject the Ivory stylesheet when theme flips or host repaints remove the
+  `data-plugin-css` style tag, keeping `--cl-page` stable at `#fcfcfb` in
+  light mode. Contract re-probes stay gated to theme/head signals so class
+  rewrites cannot trigger scan storms (adversarial storm test included).
+
 ## [0.2.4] - 2026-08-18
 
 ### Fixed
@@ -117,7 +151,8 @@ All notable changes to Ivory are documented here. The project follows
 - Explicit npm file allowlist, MIT license, third-party notices, and bilingual
   documentation.
 
-[Unreleased]: https://github.com/ZJUZhiyuCai/dsh-ivory/compare/v0.2.4...HEAD
+[Unreleased]: https://github.com/ZJUZhiyuCai/dsh-ivory/compare/v0.2.5...HEAD
+[0.2.5]: https://github.com/ZJUZhiyuCai/dsh-ivory/compare/v0.2.4...v0.2.5
 [0.2.4]: https://github.com/ZJUZhiyuCai/dsh-ivory/compare/v0.2.3...v0.2.4
 [0.2.3]: https://github.com/ZJUZhiyuCai/dsh-ivory/compare/v0.2.2...v0.2.3
 [0.2.2]: https://github.com/ZJUZhiyuCai/dsh-ivory/compare/v0.2.1...v0.2.2

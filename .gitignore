@@ -20,5 +20,6 @@ scripts/*
 !scripts/qa-adversarial.mjs
 !scripts/qa-r2-fixes.mjs
 !scripts/qa-verify-activity.mjs
+!scripts/qa-micro-components.mjs
 !scripts/release-check.mjs
 !scripts/verify-pack.mjs
