@@ -47,7 +47,7 @@ focus mode stays off until you choose it.
 Install the exact GitHub release without using npm.
 
 ```sh
-dsh plugin --profile web add github:ZJUZhiyuCai/dsh-ivory#v0.2.5
+dsh plugin --profile web add github:ZJUZhiyuCai/dsh-ivory#v0.2.6
 ```
 
 Remove Ivory and return to the native DSH interface.

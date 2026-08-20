@@ -40,7 +40,7 @@ const pkg = JSON.parse(packageText);
 
 check('package metadata', () => {
   assert.equal(pkg.name, 'dsh-ivory');
-  assert.equal(pkg.version, '0.2.5');
+  assert.equal(pkg.version, '0.2.6');
   assert.equal(pkg.private, undefined);
   assert.equal(pkg.license, 'MIT');
   assert.equal(pkg.publishConfig?.access, 'public');

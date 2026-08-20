@@ -5,6 +5,8 @@ All notable changes to Ivory are documented here. The project follows
 
 ## [Unreleased]
 
+## [0.2.6] - 2026-08-20
+
 ### Added
 
 - Extract the Markdown preview renderer into `src/markdown.js` (spliced into
@@ -27,6 +29,8 @@ All notable changes to Ivory are documented here. The project follows
   style labels in unrelated panels no longer do.
 - Render image syntax in the Markdown preview as its alt text instead of
   leaking the leading `!`, and add `scope="col"` to preview table headers.
+
+## [0.2.5] - 2026-08-20
 
 ### Changed
 
@@ -172,7 +176,8 @@ All notable changes to Ivory are documented here. The project follows
 - Explicit npm file allowlist, MIT license, third-party notices, and bilingual
   documentation.
 
-[Unreleased]: https://github.com/ZJUZhiyuCai/dsh-ivory/compare/v0.2.5...HEAD
+[Unreleased]: https://github.com/ZJUZhiyuCai/dsh-ivory/compare/v0.2.6...HEAD
+[0.2.6]: https://github.com/ZJUZhiyuCai/dsh-ivory/compare/v0.2.5...v0.2.6
 [0.2.5]: https://github.com/ZJUZhiyuCai/dsh-ivory/compare/v0.2.4...v0.2.5
 [0.2.4]: https://github.com/ZJUZhiyuCai/dsh-ivory/compare/v0.2.3...v0.2.4
 [0.2.3]: https://github.com/ZJUZhiyuCai/dsh-ivory/compare/v0.2.2...v0.2.3

@@ -44,7 +44,7 @@ dsh web
 绕过 npm，安装确切的 GitHub 标签版本。
 
 ```sh
-dsh plugin --profile web add github:ZJUZhiyuCai/dsh-ivory#v0.2.5
+dsh plugin --profile web add github:ZJUZhiyuCai/dsh-ivory#v0.2.6
 ```
 
 移除 Ivory，恢复 DSH 原生界面。
