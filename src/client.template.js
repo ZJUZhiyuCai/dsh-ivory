@@ -8,14 +8,11 @@ window.__ModuleLoader__.load({
     const ENABLED_KEY = 'dsh-ivory.enabled';
     const FOCUS_KEY = 'dsh-ivory.focus';
     const LOCALE_NS = 'dsh-ivory';
-    const MAX_MARKDOWN_PREVIEW_CHARS = 250_000;
-    const MAX_MARKDOWN_DEPTH = 32;
-    const MAX_MARKDOWN_LIST_ITEMS = 500;
-    const MAX_MARKDOWN_TABLE_ROWS = 256;
-    const MAX_MARKDOWN_TABLE_COLS = 64;
-    const MAX_MARKDOWN_PARAGRAPH_LINES = 200;
-    const MAX_INLINE_DEPTH = 24;
     const COPY_FEEDBACK_MS = 1_800;
+
+    // Markdown preview renderer and its caps — spliced from src/markdown.js
+    // by scripts/build.mjs (do not edit in place).
+    /*__MARKDOWN_JS__*/
     const CODE_COPY_SELECTOR = [
       '.Sxvs8a_body pre',
       '[class*="code-block"] pre',
@@ -179,17 +176,11 @@ body[data-ds-dark-theme] .dshcs-knob{background:var(--cl-ink)}
         // observer once; the next pass finds it present and stops, so the
         // observe→restore loop always converges instead of oscillating.
         if (enabled && ivoryStyleMissing()) ensureStyle();
-        // A theme flip or stylesheet churn can rebuild host chrome around a
-        // degraded token-only contract — those signals re-probe it. Plain
-        // class rewrites must not: probes fan out into a retry chain, so
-        // gating them keeps mutation-heavy hosts from scanning storms.
-        if (enabled && reprobeNow
-          && document.body.dataset.dshcsCompat === 'token-only'
-          && Date.now() >= contractProbeAt) {
-          contractProbeAt = Date.now() + 5_000;
-          contractAttempts = 0;
-          validateHostContract();
-        }
+        // A theme flip or stylesheet churn can rebuild host chrome — those
+        // signals re-probe the contract (frame pair and drift families).
+        // Plain class rewrites must not: probes fan out into a retry chain,
+        // so gating them keeps mutation-heavy hosts from scanning storms.
+        if (enabled && reprobeNow) requestContractRecheck();
       });
     }
 
@@ -270,6 +261,21 @@ body[data-ds-dark-theme] .dshcs-knob{background:var(--cl-ink)}
     let contractTimer = 0;
     let contractAttempts = 0;
     let contractProbeAt = 0;
+    // Drift telemetry families: each lists alternative host selectors for one
+    // surface, so a rename inside a family does not alarm while a whole-surface
+    // disappearance does. Only the sidebar is reportable — it exists in every
+    // app-shell view. The composer and conversation surfaces are view-dependent
+    // (the home composer exists without any message root), so a static check
+    // there produces false alarms; instead they act as candidate nodes that
+    // trigger a throttled re-check, below.
+    const DRIFT_FAMILIES = {
+      sidebar: ['.pI_x6G_sidebarCol', '.hHd-Xa_root'],
+    };
+    const CONTRACT_CANDIDATE_SELECTORS = [
+      '.pI_x6G_frame', '.pI_x6G_centerCol',
+      '.uV2eYG_card', '.uV2eYG_root',
+      '.Sxvs8a_root', '.Sxvs8a_body',
+    ];
     let checkedPanes = new WeakSet();
     let whaleNode = null;
     let copyStatusNode = null;
@@ -491,8 +497,12 @@ body[data-ds-dark-theme] .dshcs-knob{background:var(--cl-ink)}
           control.getAttribute?.('aria-label'),
           control.getAttribute?.('title'),
           control.textContent,
-        ].filter(Boolean).join(' ');
-        if (/(?:复制|copy|copied)/i.test(label)) return true;
+        ].filter(Boolean).join(' ').replace(/\s+/g, ' ').trim();
+        // Only exact copy verbs suppress Ivory's control. A broad substring
+        // match (e.g. "Copy project" in an unrelated panel) used to remove
+        // the per-block copy button by mistake.
+        if (/^(?:复制|复制代码|复制文本|copy|copy code|copied|copied code|已复制|复制成功)$/i.test(label)
+          || /(?:复制代码|copy code|copied code)/i.test(label)) return true;
       }
       return false;
     }
@@ -524,190 +534,8 @@ body[data-ds-dark-theme] .dshcs-knob{background:var(--cl-ink)}
       }
     }
 
-    function safeLink(raw) {
-      if (!raw || /["'<>`\u0000-\u001f]/.test(raw)) return null;
-      try {
-        const url = new URL(raw);
-        return url.protocol === 'http:' || url.protocol === 'https:' ? url.href : null;
-      } catch { return null; }
-    }
-
-    function appendInline(parent, source, depth = 0) {
-      let rest = String(source ?? '');
-      if (depth > MAX_INLINE_DEPTH) {
-        parent.appendChild(document.createTextNode(rest));
-        return;
-      }
-      const patterns = [
-        { kind: 'code', re: /`([^`\n]+)`/ },
-        { kind: 'link', re: /\[([^\]\n]+)\]\(([^)\s]+)\)/ },
-        { kind: 'strong', re: /\*\*([^*\n]+)\*\*/ },
-        { kind: 'em', re: /\*([^*\n]+)\*/ },
-      ];
-      while (rest) {
-        let token = null;
-        for (const pattern of patterns) {
-          const match = pattern.re.exec(rest);
-          if (match && (!token || match.index < token.match.index)) token = { ...pattern, match };
-        }
-        if (!token) {
-          parent.appendChild(document.createTextNode(rest));
-          break;
-        }
-        if (token.match.index) parent.appendChild(document.createTextNode(rest.slice(0, token.match.index)));
-        const whole = token.match[0];
-        if (token.kind === 'link') {
-          const href = safeLink(token.match[2]);
-          if (href) {
-            const link = document.createElement('a');
-            link.href = href;
-            link.target = '_blank';
-            link.rel = 'noopener noreferrer';
-            link.textContent = token.match[1];
-            parent.appendChild(link);
-          } else {
-            parent.appendChild(document.createTextNode(whole));
-          }
-        } else {
-          const tag = token.kind === 'code' ? 'code' : token.kind === 'strong' ? 'strong' : 'em';
-          const node = document.createElement(tag);
-          if (token.kind === 'code') node.textContent = token.match[1];
-          else appendInline(node, token.match[1], depth + 1);
-          parent.appendChild(node);
-        }
-        rest = rest.slice(token.match.index + whole.length);
-      }
-    }
-
-    function renderMarkdown(src, depth = 0) {
-      const lines = String(src ?? '').replace(/\r\n?/g, '\n').split('\n');
-      const out = document.createDocumentFragment();
-      if (depth > MAX_MARKDOWN_DEPTH) {
-        const fallback = document.createElement('p');
-        fallback.textContent = lines.join(' ').slice(0, 4_000);
-        out.appendChild(fallback);
-        return out;
-      }
-      let i = 0;
-      while (i < lines.length) {
-        const l = lines[i];
-        if (/^```/.test(l)) {
-          const buf = [];
-          i++;
-          while (i < lines.length && !/^```/.test(lines[i])) buf.push(lines[i++]);
-          if (i < lines.length) i++;
-          const pre = document.createElement('pre');
-          const code = document.createElement('code');
-          code.textContent = buf.join('\n');
-          pre.appendChild(code);
-          out.appendChild(pre);
-          continue;
-        }
-        const h = l.match(/^(#{1,6})\s+(.*)$/);
-        if (h) {
-          const n = Math.min(6, h[1].length);
-          const heading = document.createElement('h' + n);
-          appendInline(heading, h[2]);
-          out.appendChild(heading);
-          i++;
-          continue;
-        }
-        if (/^\s*([-*_])(?:\s*\1){2,}\s*$/.test(l)) { out.appendChild(document.createElement('hr')); i++; continue; }
-        if (/^>\s?/.test(l)) {
-          const buf = [];
-          while (i < lines.length && /^>\s?/.test(lines[i])) buf.push(lines[i++].replace(/^>\s?/, ''));
-          const quote = document.createElement('blockquote');
-          quote.appendChild(renderMarkdown(buf.join('\n'), depth + 1));
-          out.appendChild(quote);
-          continue;
-        }
-        if (/^\s*\|.*\|\s*$/.test(l) && i + 1 < lines.length && /^\s*\|[\s:|-]+\|\s*$/.test(lines[i + 1])) {
-          const parseRow = (r) => r.trim().replace(/^\||\|$/g, '').split('|').map((c) => c.trim()).slice(0, MAX_MARKDOWN_TABLE_COLS);
-          const head = parseRow(lines[i]);
-          i += 2;
-          const rows = [];
-          while (i < lines.length && rows.length < MAX_MARKDOWN_TABLE_ROWS && /^\s*\|.*\|\s*$/.test(lines[i])) rows.push(parseRow(lines[i++]));
-          if (i < lines.length && /^\s*\|.*\|\s*$/.test(lines[i])) {
-            while (i < lines.length && /^\s*\|.*\|\s*$/.test(lines[i])) i++;
-            rows.push(['…']);
-          }
-          const table = document.createElement('table');
-          const thead = document.createElement('thead');
-          const headRow = document.createElement('tr');
-          for (const value of head) {
-            const cell = document.createElement('th');
-            appendInline(cell, value);
-            headRow.appendChild(cell);
-          }
-          thead.appendChild(headRow);
-          table.appendChild(thead);
-          const tbody = document.createElement('tbody');
-          for (const values of rows) {
-            const row = document.createElement('tr');
-            for (const value of values) {
-              const cell = document.createElement('td');
-              appendInline(cell, value);
-              row.appendChild(cell);
-            }
-            tbody.appendChild(row);
-          }
-          table.appendChild(tbody);
-          out.appendChild(table);
-          continue;
-        }
-        if (/^\s*[-*+]\s+/.test(l)) {
-          const buf = [];
-          while (i < lines.length && buf.length < MAX_MARKDOWN_LIST_ITEMS && /^\s*[-*+]\s+/.test(lines[i])) buf.push(lines[i++].replace(/^\s*[-*+]\s+/, ''));
-          if (i < lines.length && /^\s*[-*+]\s+/.test(lines[i])) {
-            while (i < lines.length && /^\s*[-*+]\s+/.test(lines[i])) i++;
-            buf.push('…');
-          }
-          const list = document.createElement('ul');
-          for (const value of buf) {
-            const item = document.createElement('li');
-            appendInline(item, value);
-            list.appendChild(item);
-          }
-          out.appendChild(list);
-          continue;
-        }
-        if (/^\s*\d+[.)]\s+/.test(l)) {
-          const buf = [];
-          while (i < lines.length && buf.length < MAX_MARKDOWN_LIST_ITEMS && /^\s*\d+[.)]\s+/.test(lines[i])) buf.push(lines[i++].replace(/^\s*\d+[.)]\s+/, ''));
-          if (i < lines.length && /^\s*\d+[.)]\s+/.test(lines[i])) {
-            while (i < lines.length && /^\s*\d+[.)]\s+/.test(lines[i])) i++;
-            buf.push('…');
-          }
-          const list = document.createElement('ol');
-          for (const value of buf) {
-            const item = document.createElement('li');
-            appendInline(item, value);
-            list.appendChild(item);
-          }
-          out.appendChild(list);
-          continue;
-        }
-        if (!l.trim()) { i++; continue; }
-        const buf = [l];
-        i++;
-        const continuation = /^(#{1,6}\s|```|\s*[-*+]\s|\s*\d+[.)]\s|\s*\||>)/;
-        let truncated = false;
-        while (i < lines.length && lines[i].trim() && !continuation.test(lines[i])) {
-          if (buf.length < MAX_MARKDOWN_PARAGRAPH_LINES) buf.push(lines[i]);
-          else truncated = true;
-          i++;
-        }
-        if (truncated) buf.push('…');
-        const paragraph = document.createElement('p');
-        buf.forEach((value, index) => {
-          if (index) paragraph.appendChild(document.createElement('br'));
-          appendInline(paragraph, value);
-        });
-        out.appendChild(paragraph);
-      }
-      return out;
-    }
-
+    // safeLink / appendInline / renderMarkdown are spliced in from
+    // src/markdown.js by scripts/build.mjs — see the /*__MARKDOWN_JS__*/ marker.
     function isMarkdownSource(pre) {
       // markdown detection: the block banner names the fence language
       // ("markdown 复制"), or the enclosing tool row reads a *.md file
@@ -905,6 +733,13 @@ body[data-ds-dark-theme] .dshcs-knob{background:var(--cl-ink)}
               if (!hasContractCandidate) hasContractCandidate = containsHostContractNode(element);
             }
           }
+          // Removed contract/family nodes also deserve a throttled re-check:
+          // drift often shows up as a surface that stops existing, not as a
+          // new node with a new name.
+          for (const node of record.removedNodes) {
+            const element = node.nodeType === Node.ELEMENT_NODE ? node : node.parentElement;
+            if (element && !hasContractCandidate) hasContractCandidate = containsHostContractNode(element);
+          }
         }
         const compat = document.body.dataset.dshcsCompat;
         const degraded = compat === 'token-only' || document.body.classList.contains('dshcs-contract-mismatch');
@@ -920,6 +755,11 @@ body[data-ds-dark-theme] .dshcs-knob{background:var(--cl-ink)}
           contractAttempts = 0;
           validateHostContract();
         }
+        // On a healthy contract, added or removed nodes that belong to the
+        // frame or a drift family still deserve a throttled re-check so
+        // surface drift (e.g. a renamed surface after navigation) is noticed
+        // even when it arrives inside the throttle window.
+        if (compat === 'ok' && hasContractCandidate) requestContractRecheck();
         if (!flowFrame) flowFrame = requestAnimationFrame(flushEnhancements);
       });
       flowObserver.observe(document.body, {
@@ -932,8 +772,45 @@ body[data-ds-dark-theme] .dshcs-knob{background:var(--cl-ink)}
     }
 
     function containsHostContractNode(element) {
-      return Boolean(element.matches?.('.pI_x6G_frame, .pI_x6G_centerCol')
-        || element.querySelector?.('.pI_x6G_frame, .pI_x6G_centerCol'));
+      const contractSelectors = CONTRACT_CANDIDATE_SELECTORS
+        .concat(Object.values(DRIFT_FAMILIES).flat());
+      const joined = contractSelectors.join(', ');
+      return Boolean(element.matches?.(joined) || element.querySelector?.(joined));
+    }
+
+    // One throttled contract recheck with a deferred fallback: candidates
+    // that arrive inside the throttle window must not be silently dropped —
+    // a removal is often the only signal that a surface drifted away, so the
+    // recheck is scheduled for when the window opens.
+    function requestContractRecheck() {
+      const delay = contractProbeAt - Date.now();
+      if (delay <= 0) {
+        contractProbeAt = Date.now() + 5_000;
+        contractAttempts = 0;
+        validateHostContract();
+        return;
+      }
+      if (contractTimer) return;
+      contractTimer = window.setTimeout(() => {
+        contractTimer = 0;
+        requestContractRecheck();
+      }, delay);
+    }
+
+    // Drift telemetry. Findings are written to body[data-dshcs-drift] and
+    // logged once per family state change (no warning storms).
+    function reportContractDrift() {
+      const missing = [];
+      if (!DRIFT_FAMILIES.sidebar.some((selector) => document.querySelector(selector))) missing.push('sidebar');
+      if (missing.length) {
+        const next = missing.join(',');
+        if (document.body.dataset.dshcsDrift !== next) {
+          console.warn('[dsh-ivory] Structural selector drift; surface styling may be missing for:', next);
+        }
+        document.body.dataset.dshcsDrift = next;
+      } else {
+        delete document.body.dataset.dshcsDrift;
+      }
     }
 
     function validateHostContract() {
@@ -956,6 +833,9 @@ body[data-ds-dark-theme] .dshcs-knob{background:var(--cl-ink)}
         // the whole document on every mutation batch.
         contractProbeAt = Date.now() + 5_000;
         console.warn('[dsh-ivory] Selector contract mismatch; layout enhancements degraded to token-only.', missing);
+        delete document.body.dataset.dshcsDrift;
+      } else {
+        reportContractDrift();
       }
     }
 
@@ -1038,6 +918,7 @@ body[data-ds-dark-theme] .dshcs-knob{background:var(--cl-ink)}
       document.body.style.removeProperty('--dshcs-composer-clearance');
       document.body.classList.remove('dshcs-contract-mismatch');
       delete document.body.dataset.dshcsCompat;
+      delete document.body.dataset.dshcsDrift;
     }
 
     function IvorySettings() {

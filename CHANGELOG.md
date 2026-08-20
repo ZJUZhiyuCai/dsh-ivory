@@ -5,7 +5,28 @@ All notable changes to Ivory are documented here. The project follows
 
 ## [Unreleased]
 
-## [0.2.5] - 2026-08-20
+### Added
+
+- Extract the Markdown preview renderer into `src/markdown.js` (spliced into
+  the client bundle by `scripts/build.mjs`) and add `scripts/test-markdown.mjs`,
+  a node:test unit suite covering inline parsing, link allowlisting, raw-HTML
+  neutrality, container caps, table scoping, and depth limits. It runs first in
+  `npm test` and therefore in CI on every matrix node.
+
+### Changed
+
+- Extend the selector-contract watchdog beyond the frame pair: the sidebar
+  surface is tracked as a selector family (it exists in every app-shell view),
+  and its disappearance is reported through `body[data-dshcs-drift]` plus one
+  throttled console warning instead of failing silently. The composer and
+  conversation surfaces act as candidate nodes that trigger a throttled
+  re-check; healthy contracts also re-check on theme flips, bounded to one
+  probe per five seconds.
+- Tighten native copy-control detection so only exact copy verbs (复制/copy/
+  copied 及代码变体) suppress Ivory's per-block copy buttons; "Copy project"-
+  style labels in unrelated panels no longer do.
+- Render image syntax in the Markdown preview as its alt text instead of
+  leaking the leading `!`, and add `scope="col"` to preview table headers.
 
 ### Changed
 

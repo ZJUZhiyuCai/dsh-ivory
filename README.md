@@ -112,8 +112,8 @@ and [third-party notices](https://github.com/ZJUZhiyuCai/dsh-ivory/blob/main/THI
 
 ```sh
 npm ci
-npm test          # 14 static, build, publint, and package checks
-npm run qa:r2     # 69 browser regressions; DSH must run at 127.0.0.1:3080
+npm test          # renderer unit tests, then 14 static, build, publint, and package checks
+npm run qa:r2     # 71 browser regressions; DSH must run at 127.0.0.1:3080
 npm run qa:adversarial  # 29 stress checks: reconciliation safety, toggle/resize storms, degraded mode
 npm run qa:activity     # 16 checks for thinking/tool-call rows, icons, and terminal polish
 npm run qa:micro        # 28 Vision Toolkit/Ivory micro-component checks; set DVT_CLIENT_JS if the toolkit is not installed in the DSH web profile
@@ -140,13 +140,15 @@ dsh plugin --profile web add link:$PWD
 dsh web
 ```
 
-Edit `src/skin.css` or `src/client.template.js`, then run `npm run build`.
+Edit `src/skin.css`, `src/client.template.js`, or `src/markdown.js`, then run `npm run build`.
 The generated `lib/client.js` is committed so GitHub installs need no build
 permission.
 
 ```text
 src/skin.css             theme and compatibility styles
 src/client.template.js   client lifecycle and optional enhancements
+src/markdown.js          capped DOM-built Markdown preview renderer
+scripts/test-markdown.mjs  renderer unit tests (node --test)
 lib/client.js            deterministic generated browser bundle
 lib/index.js             inert host entry point
 cordis.patch.yml         DSH bundle registration

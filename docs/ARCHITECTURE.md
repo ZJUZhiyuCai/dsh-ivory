@@ -9,7 +9,9 @@ happens inside the DSH browser client.
 | Face | File | Responsibility |
 | --- | --- | --- |
 | Host | `lib/index.js` | Exports the package name and an empty `apply()` |
-| Client source | `src/client.template.js` | Lifecycle, settings, safe preview, turn marker |
+| Client source | `src/client.template.js` | Lifecycle, settings, copy controls, turn marker |
+| Renderer source | `src/markdown.js` | Capped DOM-built Markdown preview renderer |
+| Renderer tests | `scripts/test-markdown.mjs` | node:test unit suite for the renderer (npm test) |
 | Theme source | `src/skin.css` | Tokens, responsive layout, compatibility selectors |
 | Client artifact | `lib/client.js` | Deterministic DSH ModuleLoader bootstrap |
 | Bundle patch | `cordis.patch.yml` | Registers `dsh-ivory` in the web profile |
@@ -77,7 +79,8 @@ the MIT-licensed DSH whale; its notice is retained in
 
 ## Build and release invariants
 
-`scripts/build.mjs` combines the source template, CSS, and whale SVG without a
+`scripts/build.mjs` combines the source template, Markdown renderer, CSS, and
+whale SVG without a
 bundler. `scripts/release-check.mjs` independently recreates the artifact and
 requires byte equality. `scripts/verify-pack.mjs` then rejects any tarball file
 outside the explicit release manifest as well as unexpected package growth.

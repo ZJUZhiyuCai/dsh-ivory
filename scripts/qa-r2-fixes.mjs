@@ -727,6 +727,30 @@ try {
     check('forced-colors-no-page-errors', errors.length === 0, errors);
     await page.close();
   }
+
+  // Drift telemetry: a healthy page carries no drift flag; removing the only
+  // sidebar nodes must flip the sidebar family to missing on the next
+  // throttled re-check, and the flag must clear again in a fresh page.
+  {
+    const { page, errors } = await openPage(browser, { focus: false });
+    const drift = await page.evaluate(() => {
+      const before = document.body.dataset.dshcsDrift ?? '';
+      document.querySelectorAll('.pI_x6G_sidebarCol, .hHd-Xa_root').forEach((node) => node.remove());
+      return { before };
+    });
+    // The recheck is throttled (≤5s window) but never silently dropped, so
+    // poll until the removal is reported instead of betting on a fixed delay.
+    const deadline = Date.now() + 7_000;
+    let after = '';
+    while (Date.now() < deadline) {
+      after = await page.evaluate(() => document.body.dataset.dshcsDrift ?? '');
+      if (after.includes('sidebar')) break;
+      await page.waitForTimeout(250);
+    }
+    check('drift-telemetry-flags-removed-sidebar', after.includes('sidebar'), { ...drift, after, errors });
+    check('drift-telemetry-no-page-errors', errors.length === 0, errors);
+    await page.close();
+  }
 } finally {
   await browser.close();
 }

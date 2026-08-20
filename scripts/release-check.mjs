@@ -22,11 +22,12 @@ const contrastRatio = (a, b) => {
   return (lighter + 0.05) / (darker + 0.05);
 };
 
-const [packageText, patch, host, template, css, whale, built, readme, readmeZh, notices, publishWorkflow] = await Promise.all([
+const [packageText, patch, host, template, markdown, css, whale, built, readme, readmeZh, notices, publishWorkflow] = await Promise.all([
   read('package.json'),
   read('cordis.patch.yml'),
   read('lib/index.js'),
   read('src/client.template.js'),
+  read('src/markdown.js'),
   read('src/skin.css'),
   read('lib/assets/icons/whale.svg'),
   read('lib/client.js'),
@@ -84,9 +85,12 @@ check('inert host boundary', () => {
 check('browser security boundary', () => {
   assert.doesNotMatch(template, /\.innerHTML\s*=|insertAdjacentHTML|document\.write/);
   assert.doesNotMatch(template, /\b(?:fetch|WebSocket|XMLHttpRequest|sendBeacon)\b/);
-  assert.match(template, /url\.protocol === 'http:' \|\| url\.protocol === 'https:'/);
-  assert.match(template, /rel = 'noopener noreferrer'/);
-  assert.match(template, /MAX_MARKDOWN_PREVIEW_CHARS = 250_000/);
+  assert.doesNotMatch(markdown, /\.innerHTML\s*=|insertAdjacentHTML|document\.write/);
+  assert.doesNotMatch(markdown, /\b(?:fetch|WebSocket|XMLHttpRequest|sendBeacon)\b/);
+  assert.match(markdown, /url\.protocol === 'http:' \|\| url\.protocol === 'https:'/);
+  assert.match(markdown, /rel = 'noopener noreferrer'/);
+  assert.match(markdown, /MAX_MARKDOWN_PREVIEW_CHARS = 250_000/);
+  assert.match(markdown, /kind: 'image'/);
   assert.match(template, /navigator\.clipboard\?\.writeText/);
   assert.match(template, /document\.execCommand\('copy'\)/);
   assert.match(template, /isInsideStreamingMessage\(pre\)/);
@@ -116,6 +120,7 @@ check('brand-safe assets and fonts', () => {
 
 check('generated bundle is reproducible', () => {
   const expected = template
+    .replace('/*__MARKDOWN_JS__*/', markdown.trimEnd())
     .replace('/*__SKIN_CSS__*/', JSON.stringify(css))
     .replace('/*__WHALE_SVG__*/', JSON.stringify(whale.trim()));
   assert.equal(built, expected);
@@ -172,9 +177,10 @@ check('dark mask and renderer hardening boundaries', () => {
   assert.match(css, /--cl-mask-drop: rgb\(0 0 0 \/ 60%\)/);
   assert.match(css, /--dsw-alias-bg-mask-drop: var\(--cl-mask-drop\)/);
   for (const cap of ['MAX_MARKDOWN_DEPTH = 32', 'MAX_MARKDOWN_LIST_ITEMS = 500', 'MAX_MARKDOWN_TABLE_ROWS = 256', 'MAX_MARKDOWN_TABLE_COLS = 64', 'MAX_MARKDOWN_PARAGRAPH_LINES = 200', 'MAX_INLINE_DEPTH = 24']) {
-    assert.ok(template.includes(cap), `missing renderer cap ${cap}`);
+    assert.ok(markdown.includes(cap), `missing renderer cap ${cap}`);
   }
-  assert.match(template, /renderMarkdown\(buf\.join\('\\n'\), depth \+ 1\)/);
+  assert.match(markdown, /renderMarkdown\(buf\.join\('\\n'\), depth \+ 1\)/);
+  assert.match(markdown, /cell\.setAttribute\('scope', 'col'\)/);
 });
 
 console.log(`release-check: ${checks.length} checks passed`);

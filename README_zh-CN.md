@@ -107,8 +107,8 @@ npm 包固定为八个白名单文件，每次 CI 都会检查。完整边界可
 
 ```sh
 npm ci
-npm test          # 14 项静态、构建、publint 与包检查
-npm run qa:r2     # 69 项浏览器回归，要求 DSH 运行于 127.0.0.1:3080
+npm test          # 渲染器单元测试，随后 14 项静态、构建、publint 与包检查
+npm run qa:r2     # 71 项浏览器回归，要求 DSH 运行于 127.0.0.1:3080
 npm run qa:adversarial  # 29 项压测：宿主协调安全、开关/resize 风暴、降级模式
 npm run qa:activity     # 16 项思考/工具调用行、图标与终端打磨检查
 npm run qa:micro        # 28 项 Vision Toolkit/Ivory 微组件检查；若工具箱未安装在 DSH Web profile，请设置 DVT_CLIENT_JS
@@ -134,12 +134,14 @@ dsh plugin --profile web add link:$PWD
 dsh web
 ```
 
-修改 `src/skin.css` 或 `src/client.template.js` 后运行 `npm run build`。
+修改 `src/skin.css`、`src/client.template.js` 或 `src/markdown.js` 后运行 `npm run build`。
 生成的 `lib/client.js` 会提交到仓库，因此从 GitHub 安装不需要构建权限。
 
 ```text
 src/skin.css             主题与兼容样式
 src/client.template.js   客户端生命周期与可选增强
+src/markdown.js          带上限的 DOM 构建 Markdown 预览渲染器
+scripts/test-markdown.mjs  渲染器单元测试（node --test）
 lib/client.js            确定性生成的浏览器包
 lib/index.js             空宿主入口
 cordis.patch.yml         DSH bundle 注册

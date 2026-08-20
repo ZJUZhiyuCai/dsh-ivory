@@ -23,3 +23,4 @@ scripts/*
 !scripts/qa-micro-components.mjs
 !scripts/release-check.mjs
 !scripts/verify-pack.mjs
+!scripts/test-markdown.mjs
