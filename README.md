@@ -80,6 +80,12 @@ dsh plugin --profile web remove dsh-ivory
     <td align="center"><sub>Focused desktop conversation</sub></td>
     <td align="center"><sub>390 px mobile layout</sub></td>
   </tr>
+  <tr>
+    <td colspan="2"><img alt="Ivory-styled Vision Toolkit result cards, color palette, paste chips, badges, and alerts" src="https://raw.githubusercontent.com/ZJUZhiyuCai/dsh-ivory/main/assets/vision-toolkit-light.png"></td>
+  </tr>
+  <tr>
+    <td colspan="2" align="center"><sub>Vision Toolkit results inherit Ivory's quiet controls, surfaces, and status language</sub></td>
+  </tr>
 </table>
 
 ## Quiet by design

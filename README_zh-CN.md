@@ -77,6 +77,12 @@ dsh plugin --profile web remove dsh-ivory
     <td align="center"><sub>桌面端专注会话</sub></td>
     <td align="center"><sub>390 像素移动端布局</sub></td>
   </tr>
+  <tr>
+    <td colspan="2"><img alt="Ivory 风格的 Vision Toolkit 结果卡、调色板、粘贴芯片、徽章和提示条" src="https://raw.githubusercontent.com/ZJUZhiyuCai/dsh-ivory/main/assets/vision-toolkit-light.png"></td>
+  </tr>
+  <tr>
+    <td colspan="2" align="center"><sub>Vision Toolkit 结果组件也继承 Ivory 的安静控件、表面和状态语言</sub></td>
+  </tr>
 </table>
 
 ## 安静，也有边界
