@@ -104,11 +104,14 @@ window.__ModuleLoader__.load({
 .dshcs-row{display:flex;align-items:center;justify-content:space-between;gap:16px;padding:12px 14px;border:1px solid var(--dsw-alias-border-l1);border-radius:12px;background:var(--dsw-alias-bg-layer-1)}
 .dshcs-row.dshcs-disabled{opacity:.55}
 .dshcs-text{display:flex;flex-direction:column;gap:2px;min-width:0}
-.dshcs-switch{position:relative;flex:none;width:40px;height:22px;border:0;border-radius:11px;background:var(--dsw-alias-interactive-bg-hover);cursor:pointer;padding:0;transition:background .15s ease}
+.dshcs-switch{position:relative;flex:none;width:40px;height:22px;border:0;border-radius:11px;background:var(--dsw-alias-interactive-bg-hover);cursor:pointer;padding:0;transition:background .22s cubic-bezier(.2,.8,.2,1)}
 .dshcs-switch:focus-visible{outline:2px solid var(--dsw-alias-label-primary);outline-offset:2px}
 .dshcs-switch:disabled{cursor:not-allowed}
+.dshcs-switch:active{transform:scale(.96)}
 .dshcs-switch.dshcs-on{background:var(--cl-ink)}
-.dshcs-knob{position:absolute;top:2px;left:2px;width:18px;height:18px;border-radius:50%;background:#fff;transition:left .15s ease}
+.dshcs-knob{position:absolute;top:2px;left:2px;width:18px;height:18px;border-radius:50%;background:#fff;transition:left .22s cubic-bezier(.2,.8,.2,1),width .18s cubic-bezier(.2,.8,.2,1)}
+.dshcs-switch:active .dshcs-knob{width:21px}
+.dshcs-switch:active.dshcs-on .dshcs-knob{left:17px}
 body[data-ds-dark-theme] .dshcs-knob{background:var(--cl-ink)}
 .dshcs-switch.dshcs-on .dshcs-knob{left:20px;background:var(--cl-page)}`;
 
@@ -327,28 +330,36 @@ body[data-ds-dark-theme] .dshcs-knob{background:var(--cl-ink)}
       svg.setAttribute('stroke-linecap', 'round');
       svg.setAttribute('stroke-linejoin', 'round');
       if (state === 'success') {
+        const circle = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+        circle.setAttribute('cx', '12');
+        circle.setAttribute('cy', '12');
+        circle.setAttribute('r', '8');
         const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
-        path.setAttribute('d', 'm5 12 4 4L19 6');
-        svg.appendChild(path);
+        path.setAttribute('d', 'm8.3 12.3 2.5 2.5 4.9-5.1');
+        svg.append(circle, path);
       } else if (state === 'error') {
+        const circle = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+        circle.setAttribute('cx', '12');
+        circle.setAttribute('cy', '12');
+        circle.setAttribute('r', '8');
         const first = document.createElementNS('http://www.w3.org/2000/svg', 'path');
         const second = document.createElementNS('http://www.w3.org/2000/svg', 'path');
-        first.setAttribute('d', 'M6 6l12 12');
-        second.setAttribute('d', 'M18 6 6 18');
-        svg.append(first, second);
+        first.setAttribute('d', 'M9.2 9.2l5.6 5.6');
+        second.setAttribute('d', 'M14.8 9.2l-5.6 5.6');
+        svg.append(circle, first, second);
       } else {
         const back = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
         const front = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
-        back.setAttribute('x', '4');
-        back.setAttribute('y', '4');
-        back.setAttribute('width', '12');
-        back.setAttribute('height', '12');
-        back.setAttribute('rx', '2');
-        front.setAttribute('x', '8');
-        front.setAttribute('y', '8');
-        front.setAttribute('width', '12');
-        front.setAttribute('height', '12');
-        front.setAttribute('rx', '2');
+        back.setAttribute('x', '4.5');
+        back.setAttribute('y', '4.5');
+        back.setAttribute('width', '11');
+        back.setAttribute('height', '11');
+        back.setAttribute('rx', '2.75');
+        front.setAttribute('x', '8.5');
+        front.setAttribute('y', '8.5');
+        front.setAttribute('width', '11');
+        front.setAttribute('height', '11');
+        front.setAttribute('rx', '2.75');
         svg.append(back, front);
       }
       return svg;
@@ -536,6 +547,25 @@ body[data-ds-dark-theme] .dshcs-knob{background:var(--cl-ink)}
 
     // safeLink / appendInline / renderMarkdown are spliced in from
     // src/markdown.js by scripts/build.mjs — see the /*__MARKDOWN_JS__*/ marker.
+    // R1.1 heuristic: models often emit whole markdown documents inside fences
+    // tagged "text" (or untagged); DSH then shows thousands of px of raw source.
+    // Gates are deliberately strict (heading start + ≥2 structural signals) so
+    // logs and plain notes never match; the rendered view still carries the
+    // 源码/Preview toggle, so the host's raw view stays one click away.
+    function looksLikeMarkdownDoc(source) {
+      if (source.length < 160 || source.length > MAX_MARKDOWN_PREVIEW_CHARS) return false;
+      if (!/^#{1,3} \S/.test(source)) return false;
+      let signals = 0;
+      if (/\n#{2,3} /.test(source)) signals++;
+      if (/\n[-*] /.test(source)) signals++;
+      if (/\n\d+\. /.test(source)) signals++;
+      if (/\n> /.test(source)) signals++;
+      if (/\n\s*(?:---+|\*\*\*+|___+)\s*(\n|$)/.test(source)) signals++;
+      if (/\*\*[^*\n]+\*\*/.test(source)) signals++;
+      if (/`[^`\n]+`/.test(source)) signals++;
+      if (/\n\n/.test(source)) signals++;
+      return signals >= 2;
+    }
     function isMarkdownSource(pre) {
       // markdown detection: the block banner names the fence language
       // ("markdown 复制"), or the enclosing tool row reads a *.md file
@@ -544,7 +574,11 @@ body[data-ds-dark-theme] .dshcs-knob{background:var(--cl-ink)}
       const lang = ((banner && banner.textContent) || '').replace(/(?:复制|copy|copied).*$/i, '').trim().toLowerCase();
       const callRow = pre.closest('[class*="callRow"]');
       const rowLabel = callRow ? callRow.textContent.slice(0, 100) : '';
-      return lang === 'markdown' || lang === 'md' || /\.md\b/i.test(rowLabel);
+      if (lang === 'markdown' || lang === 'md' || /\.md\b/i.test(rowLabel)) return true;
+      if (lang === 'text' || lang === 'plain' || lang === 'txt' || lang === '') {
+        return looksLikeMarkdownDoc(pre.textContent || '');
+      }
+      return false;
     }
 
     function resetMdSeat(seat, state) {
@@ -562,7 +596,11 @@ body[data-ds-dark-theme] .dshcs-knob{background:var(--cl-ink)}
 
     function enhanceMarkdown(root = document) {
       if (!isEnabled()) return;
-      for (const pre of collectNear(root, 'pre[class*=shiki]')) {
+      // R1.1: also collect plain (non-shiki) source pres inside code blocks;
+      // isMarkdownSource gates everything, so this stays safe for terminals
+      // and real code fences.
+      for (const pre of collectNear(root, 'pre[class*=shiki], [class*="code-block"] pre')) {
+        if (pre.closest('[data-terminal]')) continue;
         if (isInsideStreamingMessage(pre)) continue;
         const seat = pre.parentElement;
         if (!seat) continue;

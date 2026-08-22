@@ -16,12 +16,17 @@ body.dsh-ivory {
   --cl-mask-drop: rgb(255 255 255 / 70%);
   --cl-hover: hsl(0 0% 4.3% / 5%);
   --cl-active: #f6f6f4;          /* recents active item bg (measured) */
+  --cl-well: #f4f4f3;            /* chat code well: neutral gray (no warm/beige cast), hairline-framed */
   --cl-card: #ffffff;
   --cl-user-bubble: hsl(0 0% 4.3% / 5%);       /* bg-neutral (measured) */
-  --cl-accent: #2a78d6;          /* --cds-fill-accent */
-  --cl-accent-hover: #3987e5;
-  --cl-accent-text: #184f95;     /* --cds-text-accent */
-  --cl-accent-soft: #cde2fb;     /* --cds-bg-accent */
+  --cl-accent: #9a4d12;          /* R1.3 light accent: burnt amber on ivory — light mode gets deep, low-saturation amber */
+  --cl-accent-hover: #7a3d0d;
+  --cl-accent-text: #8a4a15;     /* text accent: 6.8:1 on page */
+  --cl-accent-soft: #f5e2d1;     /* pale amber wash */
+  --cl-danger: #9a483b;          /* quiet brick, never signal red */
+  --cl-danger-strong: #7e3930;
+  --cl-success: #4d7a58;         /* desaturated sage */
+  --cl-success-strong: #3e6247;
   --cl-primary-fill: #0b0b0b;    /* --cds-fill-primary */
   --cl-primary-hover: #2c2c2a;
   --cl-sans: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, "PingFang SC", "Microsoft YaHei", sans-serif;
@@ -33,25 +38,34 @@ body.dsh-ivory {
 }
 
 body.dsh-ivory[data-ds-dark-theme] {
+  /* R1.1 dark ladder rebuild — neutral elevation, no warm/brown cast.
+   * Ratios vs page: surface-0 1.12 / surface 1.21 / active 1.34.
+   * R1's warm values (#1e1d1c/#2a2926/#302f2c) read as dirty yellow-brown
+   * on many displays and were rejected in user review. */
   --cl-page: #151515;
-  --cl-surface-0: #151515;
-  --cl-surface: #20201f;         /* composer card dark bg (measured) */
+  --cl-surface-0: #202020;       /* wells, platform panels, host bubbles */
+  --cl-surface: #262626;         /* composer card dark bg */
   --cl-ink: #f0efec;
   --cl-ink-soft: #c3c2b7;        /* dark secondary text (measured) */
   --cl-ink-strong: #c3c2b7;
-  --cl-muted: #898781;           /* stays the same in dark (measured) */
+  --cl-muted: #989898;           /* neutral muted: AA on page/surface-0/surface/active */
   --cl-border: hsl(0 0% 100% / 10%);
   --cl-border-strong: hsl(0 0% 100% / 20%);
   --cl-border-stronger: hsl(0 0% 100% / 40%);
   --cl-mask-drop: rgb(0 0 0 / 60%);
   --cl-hover: hsl(0 0% 100% / 5%);
-  --cl-active: #111111;          /* dark active item bg (measured) */
-  --cl-card: #20201f;
-  --cl-user-bubble: hsl(0 0% 100% / 5%);
-  --cl-accent: #2a78d6;
-  --cl-accent-hover: #3987e5;
-  --cl-accent-text: #86b6ef;
-  --cl-accent-soft: #cde2fb;
+  --cl-active: #2e2e2e;          /* selected/pressed: neutral and clearly lighter than page */
+  --cl-well: #202020;
+  --cl-card: #262626;
+  --cl-user-bubble: hsl(0 0% 100% / 6%);
+  --cl-accent: #b45309;          /* R1.3 dark accent: classic black-orange — deep amber fill for black surfaces */
+  --cl-accent-hover: #9a4d12;
+  --cl-accent-text: #ff9e5e;     /* text/ring accent: bright ember, 9.0:1 on page */
+  --cl-accent-soft: #2a1a10;
+  --cl-danger: #d47d6f;          /* keep failure clearly redder than the orange accent */
+  --cl-danger-strong: #e2a094;
+  --cl-success: #8fbb9c;
+  --cl-success-strong: #a9cfb4;
   --cl-primary-fill: #f0efec;
   --cl-primary-hover: #e8e7e1;
   --cl-shadow-card: 0 4px 20px hsl(0 0% 0% / 40%), inset 0 0 0 1px hsl(0 0% 100% / 20%);
@@ -72,8 +86,10 @@ body.dsh-ivory {
   --dsw-alias-bg-multi-select: var(--cl-surface-0);
   --dsw-alias-bg-overlay: var(--cl-hover);
   --dsw-alias-bg-skeleton: var(--cl-hover);
-  --dsw-alias-bg-mask-1: rgb(0 0 0 / 24%);
-  --dsw-alias-bg-mask-2: rgb(0 0 0 / 12%);
+  /* R1: masks deepened — 24%/12% left modal content floating on a veil that
+   * barely separated from the page (measured separation 1.77). */
+  --dsw-alias-bg-mask-1: rgb(0 0 0 / 34%);
+  --dsw-alias-bg-mask-2: rgb(0 0 0 / 18%);
   --dsw-alias-bg-mask-3: rgb(0 0 0 / 48%);
   --dsw-alias-bg-mask-photo: rgb(0 0 0 / 88%);
   --dsw-alias-bg-mask-drop: var(--cl-mask-drop);
@@ -100,7 +116,7 @@ body.dsh-ivory {
   --dsw-alias-interactive-bg-active: var(--cl-hover);
   --dsw-alias-interactive-bg-hover-accent: var(--cl-hover);
   --dsw-alias-interactive-bg-hover-solid: var(--cl-active);
-  --dsw-alias-interactive-bg-hover-danger: hsl(0 80% 40% / 6%);
+  --dsw-alias-interactive-bg-hover-danger: hsl(12 42% 44% / 7%);
 
   --dsw-alias-button-primary-fill: var(--cl-primary-fill);
   --dsw-alias-button-primary-hover: var(--cl-primary-hover);
@@ -130,11 +146,11 @@ body.dsh-ivory {
   --dsw-specific-bubble: var(--cl-surface-0);
   --dsw-specific-bubble-highlight: var(--cl-active);
 
-  --dsw-alias-markdown-code-block: var(--cl-surface-0);
-  --dsw-alias-markdown-code-block-banner: var(--cl-active);
-  --dsw-alias-markdown-inline-code: var(--cl-active);
-  --dsw-alias-markdown-tag: var(--cl-active);
-  --dsw-alias-markdown-citation: var(--cl-active);
+  --dsw-alias-markdown-code-block: var(--cl-well);
+  --dsw-alias-markdown-code-block-banner: var(--cl-well);
+  --dsw-alias-markdown-inline-code: var(--cl-well);
+  --dsw-alias-markdown-tag: var(--cl-well);
+  --dsw-alias-markdown-citation: var(--cl-well);
   --dsw-alias-markdown-placeholder: var(--cl-muted);
 
   --dsw-alias-scrollbar-bg-l1: var(--cl-border);
@@ -343,7 +359,10 @@ body.dsh-ivory:not(.dshcs-contract-mismatch) .qDHVXG_iconButton:hover {
   background: var(--cl-hover) !important;
 }
 
-/* bottom settings row — Claude user-menu-like footer */
+/* bottom settings row — Claude user-menu-like footer.
+ * R1: host moved the settings entry into BUTTON.VOzbGW_trigger inside
+ * .hHd-Xa_footArea; the old .fThDlq_entryRow no longer renders (kept in case
+ * of rollback). The scoped trigger rules below re-apply the same treatment. */
 body.dsh-ivory:not(.dshcs-contract-mismatch) .fThDlq_entryRow {
   height: 64px !important;
   min-height: 64px !important;
@@ -352,6 +371,24 @@ body.dsh-ivory:not(.dshcs-contract-mismatch) .fThDlq_entryRow {
   font-size: 14px !important;
   line-height: 20px !important;
   color: var(--cl-ink-strong) !important;
+}
+body.dsh-ivory:not(.dshcs-contract-mismatch) .hHd-Xa_footArea {
+  border-top: 0.5px solid var(--cl-border) !important;
+  padding: 8px 12px !important;
+}
+/* Scoped to the sidebar footer only: VOzbGW_trigger is also the theme-cube
+ * trigger elsewhere in the top bar, which must keep its own geometry. */
+body.dsh-ivory:not(.dshcs-contract-mismatch) .hHd-Xa_footArea .VOzbGW_trigger {
+  min-height: 32px !important;
+  border-radius: 9px !important;
+  font-family: var(--cl-sans) !important;
+  font-size: 14px !important;
+  line-height: 20px !important;
+  color: var(--cl-ink-strong) !important;
+  background: transparent !important;
+}
+body.dsh-ivory:not(.dshcs-contract-mismatch) .hHd-Xa_footArea .VOzbGW_trigger:hover {
+  background: var(--cl-hover) !important;
 }
 
 /* ---------- center column / chat ---------- */
@@ -394,6 +431,18 @@ body.dsh-ivory:not(.dshcs-contract-mismatch) .wSkVaW_headerActions {
   color: var(--cl-muted) !important;
 }
 /* keep the DSH "对话轨迹" tab bar visible */
+/* R1: active tab + sidebar folder indicators read as chrome, not info state —
+ * Watchlist #1 keeps DSH blue out of primary controls. The host paints these
+ * from its native --cds-fill-accent (#2a78d6), which Ivory does not remap,
+ * so a scoped ink override is the only lever. */
+body.dsh-ivory:not(.dshcs-contract-mismatch) .wSkVaW_tab.wSkVaW_tabActive {
+  color: var(--cl-ink) !important;
+  border-bottom-color: var(--cl-ink) !important;
+}
+body.dsh-ivory:not(.dshcs-contract-mismatch) .YDXeBa_folder.YDXeBa_folderActive {
+  color: var(--cl-ink) !important;
+  border-bottom-color: var(--cl-ink) !important;
+}
 
 /* ---------- hero (new chat) ---------- */
 /* DSH hero mascot/badge stay visible; the decorative glow layer is removed above. */
@@ -514,7 +563,7 @@ body.dsh-ivory:not(.dshcs-contract-mismatch) .uV2eYG_input {
    * layers opaque is what caused the reported bold/ghosted input. */
   color: transparent !important;
   -webkit-text-fill-color: transparent !important;
-  caret-color: var(--cl-accent) !important;
+  caret-color: var(--cl-ink-strong) !important;
   padding-left: 16px !important;
 }
 body.dsh-ivory:not(.dshcs-contract-mismatch) .uV2eYG_backdrop {
@@ -578,6 +627,22 @@ body.dsh-ivory:not(.dshcs-contract-mismatch) .Md3f7G_column {
   width: 100% !important;
   max-width: 720px !important;
   margin: 0 auto !important;
+}
+/* "Deep diving…" turn status: the host paints a DSH-blue text shimmer.
+ * Ivory replaces it with a slow ink/muted sheen — same affordance, on palette. */
+@keyframes dshcs-turn-shimmer {
+  0% { background-position: 160% 0; }
+  100% { background-position: -60% 0; }
+}
+body.dsh-ivory:not(.dshcs-contract-mismatch) .Md3f7G_turnStatus {
+  background-image: linear-gradient(90deg,
+    var(--cl-muted) 0%,
+    var(--cl-muted) 38%,
+    var(--cl-ink-soft) 50%,
+    var(--cl-muted) 62%,
+    var(--cl-muted) 100%) !important;
+  background-size: 250% 100% !important;
+  animation: dshcs-turn-shimmer 2.2s cubic-bezier(0.4, 0, 0.2, 1) infinite !important;
 }
 /* user message: right-aligned neutral bubble, 12px radius, 15/20 sans */
 body.dsh-ivory:not(.dshcs-contract-mismatch) .gdEzaW_userRow {
@@ -676,11 +741,15 @@ body.dsh-ivory .dshcs-copy-button {
   font: 500 11px/16px var(--cl-sans) !important;
   letter-spacing: 0 !important;
   cursor: pointer !important;
-  transition: opacity 120ms ease, color 120ms ease, background-color 120ms ease !important;
+  transition: opacity 160ms ease, color 160ms ease, background-color 160ms ease,
+    transform 180ms cubic-bezier(0.2, 0.8, 0.2, 1) !important;
 }
 body.dsh-ivory .dshcs-copy-button:hover {
   background: color-mix(in srgb, var(--cl-hover) 72%, transparent) !important;
   color: var(--cl-ink-strong) !important;
+}
+body.dsh-ivory .dshcs-copy-button:active {
+  transform: scale(0.92) !important;
 }
 body.dsh-ivory .dshcs-copy-button svg {
   display: block !important;
@@ -693,7 +762,7 @@ body.dsh-ivory .dshcs-copy-button[data-copy-state="success"] {
   color: var(--cl-ink-strong) !important;
 }
 body.dsh-ivory .dshcs-copy-button[data-copy-state="error"] {
-  color: var(--cl-accent-text) !important;
+  color: var(--cl-danger) !important;
 }
 body.dsh-ivory .dshcs-copy-code {
   position: absolute !important;
@@ -765,6 +834,14 @@ body.dsh-ivory .dshcs-copy-status {
 /* inline markdown code + links */
 body.dsh-ivory:not(.dshcs-contract-mismatch) ._markdown_1nba0_5 a {
   color: var(--cl-accent-text) !important;
+}
+
+/* R1.1: chat code wells — neutral gray well + hairline frame + 10px radius.
+ * [class*="code-block"] matches the host's banner wrapper around <pre>. */
+body.dsh-ivory:not(.dshcs-contract-mismatch) .Sxvs8a_body [class*="code-block"] {
+  border: 0.5px solid var(--cl-border) !important;
+  border-radius: 10px !important;
+  overflow: hidden !important;
 }
 
 /* Claude uses native overlay scrollbars — no reserved gutter width.
@@ -1044,24 +1121,24 @@ body.dsh-ivory[data-ds-dark-theme]:not(.dshcs-contract-mismatch) .dvt-alert.warn
   color: #d4b478 !important;
 }
 body.dsh-ivory:not(.dshcs-contract-mismatch) .dvt-alert.error {
-  background: hsl(4 50% 45% / 7%) !important;
-  border: 0.5px solid hsl(4 40% 45% / 24%) !important;
-  color: #9c3f3d !important;
+  background: hsl(12 42% 44% / 7%) !important;
+  border: 0.5px solid hsl(12 36% 44% / 24%) !important;
+  color: var(--cl-danger) !important;
 }
 body.dsh-ivory[data-ds-dark-theme]:not(.dshcs-contract-mismatch) .dvt-alert.error {
-  background: hsl(4 40% 60% / 10%) !important;
-  border-color: hsl(4 40% 60% / 26%) !important;
-  color: #e8a5a3 !important;
+  background: hsl(12 34% 62% / 10%) !important;
+  border-color: hsl(12 34% 62% / 26%) !important;
+  color: var(--cl-danger-strong) !important;
 }
 body.dsh-ivory:not(.dshcs-contract-mismatch) .dvt-alert.success {
   background: hsl(140 32% 34% / 7%) !important;
   border: 0.5px solid hsl(140 26% 34% / 22%) !important;
-  color: #4c8759 !important;
+  color: var(--cl-success) !important;
 }
 body.dsh-ivory[data-ds-dark-theme]:not(.dshcs-contract-mismatch) .dvt-alert.success {
   background: hsl(140 30% 55% / 10%) !important;
   border-color: hsl(140 30% 55% / 24%) !important;
-  color: #a3c9ad !important;
+  color: var(--cl-success-strong) !important;
 }
 /* Badges read as quiet cornered tags (6px, not 999px pills); the semantic
  * variants tint text + a whisper of background only. */
@@ -1076,11 +1153,11 @@ body.dsh-ivory:not(.dshcs-contract-mismatch) .dvt-badge {
 body.dsh-ivory:not(.dshcs-contract-mismatch) .dvt-badge.ok {
   background: hsl(140 32% 34% / 8%) !important;
   border-color: transparent !important;
-  color: #4c8759 !important;
+  color: var(--cl-success) !important;
 }
 body.dsh-ivory[data-ds-dark-theme]:not(.dshcs-contract-mismatch) .dvt-badge.ok {
   background: hsl(140 30% 55% / 12%) !important;
-  color: #a3c9ad !important;
+  color: var(--cl-success-strong) !important;
 }
 body.dsh-ivory:not(.dshcs-contract-mismatch) .dvt-badge.warning {
   background: hsl(38 50% 45% / 10%) !important;
@@ -1092,13 +1169,13 @@ body.dsh-ivory[data-ds-dark-theme]:not(.dshcs-contract-mismatch) .dvt-badge.warn
   color: #d4b478 !important;
 }
 body.dsh-ivory:not(.dshcs-contract-mismatch) .dvt-badge.error {
-  background: hsl(4 50% 45% / 8%) !important;
+  background: hsl(12 42% 44% / 8%) !important;
   border-color: transparent !important;
-  color: #9c3f3d !important;
+  color: var(--cl-danger) !important;
 }
 body.dsh-ivory[data-ds-dark-theme]:not(.dshcs-contract-mismatch) .dvt-badge.error {
-  background: hsl(4 40% 60% / 12%) !important;
-  color: #e8a5a3 !important;
+  background: hsl(12 34% 62% / 12%) !important;
+  color: var(--cl-danger-strong) !important;
 }
 body.dsh-ivory:not(.dshcs-contract-mismatch) .dvt-runtime-facts,
 body.dsh-ivory:not(.dshcs-contract-mismatch) .dvt-release {
@@ -1113,10 +1190,10 @@ body.dsh-ivory:not(.dshcs-contract-mismatch) .dvt-health-grid > div {
   border-left: 3px solid var(--cl-border-strong) !important;
 }
 body.dsh-ivory:not(.dshcs-contract-mismatch) .dvt-health-grid > div[data-status="ok"] {
-  border-left-color: #4c8759 !important;
+  border-left-color: var(--cl-success) !important;
 }
 body.dsh-ivory[data-ds-dark-theme]:not(.dshcs-contract-mismatch) .dvt-health-grid > div[data-status="ok"] {
-  border-left-color: #7fae8a !important;
+  border-left-color: var(--cl-success-strong) !important;
 }
 body.dsh-ivory:not(.dshcs-contract-mismatch) .dvt-health-grid > div[data-status="warning"],
 body.dsh-ivory:not(.dshcs-contract-mismatch) .dvt-health-grid > div[data-status="not_tested"] {
@@ -1127,10 +1204,10 @@ body.dsh-ivory[data-ds-dark-theme]:not(.dshcs-contract-mismatch) .dvt-health-gri
   border-left-color: #d4b478 !important;
 }
 body.dsh-ivory:not(.dshcs-contract-mismatch) .dvt-health-grid > div[data-status="error"] {
-  border-left-color: #b14543 !important;
+  border-left-color: var(--cl-danger) !important;
 }
 body.dsh-ivory[data-ds-dark-theme]:not(.dshcs-contract-mismatch) .dvt-health-grid > div[data-status="error"] {
-  border-left-color: #e2908e !important;
+  border-left-color: var(--cl-danger-strong) !important;
 }
 body.dsh-ivory:not(.dshcs-contract-mismatch) .dvt-health-grid strong,
 body.dsh-ivory:not(.dshcs-contract-mismatch) .dvt-health-grid p {
@@ -1143,7 +1220,7 @@ body.dsh-ivory:not(.dshcs-contract-mismatch) .dvt-health-test-tag {
 }
 body.dsh-ivory:not(.dshcs-contract-mismatch) .dvt-health-test-tag[data-status="ok"] {
   background: hsl(140 32% 34% / 10%) !important;
-  color: #4c8759 !important;
+  color: var(--cl-success) !important;
 }
 body.dsh-ivory:not(.dshcs-contract-mismatch) .dvt-health-test-tag[data-status="warning"] {
   background: hsl(38 50% 45% / 12%) !important;
@@ -1153,11 +1230,11 @@ body.dsh-ivory[data-ds-dark-theme]:not(.dshcs-contract-mismatch) .dvt-health-tes
   color: #d4b478 !important;
 }
 body.dsh-ivory:not(.dshcs-contract-mismatch) .dvt-health-test-tag[data-status="error"] {
-  background: hsl(4 50% 45% / 10%) !important;
-  color: #9c3f3d !important;
+  background: hsl(12 42% 44% / 10%) !important;
+  color: var(--cl-danger) !important;
 }
 body.dsh-ivory[data-ds-dark-theme]:not(.dshcs-contract-mismatch) .dvt-health-test-tag[data-status="error"] {
-  color: #e8a5a3 !important;
+  color: var(--cl-danger-strong) !important;
 }
 body.dsh-ivory:not(.dshcs-contract-mismatch) .dvt-loading {
   background: var(--cl-surface-0) !important;
@@ -1464,6 +1541,14 @@ body.dsh-ivory .uV2eYG_input:focus-visible {
   body.dsh-ivory :is(button, a, input, textarea, select):focus-visible {
     outline: 2px solid CanvasText !important;
   }
+  /* Background-clip text shimmers can become invisible when background images
+   * are stripped: hand the status text back a solid system color. */
+  body.dsh-ivory .Md3f7G_turnStatus {
+    background-image: none !important;
+    -webkit-text-fill-color: CanvasText !important;
+    color: CanvasText !important;
+    animation: none !important;
+  }
 }
 
 /* F10 icon consistency: one size + one stroke color per zone, like Claude's
@@ -1546,12 +1631,12 @@ body.dsh-ivory .dshcs-md li { margin: 3px 0; }
 body.dsh-ivory .dshcs-md code {
   font-family: var(--cl-mono);
   font-size: 13px;
-  background: var(--cl-active);
+  background: var(--cl-well);
   border-radius: 5px;
   padding: 1px 5px;
 }
 body.dsh-ivory .dshcs-md pre {
-  background: var(--cl-surface-0);
+  background: var(--cl-well);
   border: 0.5px solid var(--cl-border);
   border-radius: 10px;
   padding: 12px 14px;
@@ -1576,7 +1661,7 @@ body.dsh-ivory .dshcs-md table {
 }
 body.dsh-ivory .dshcs-md th,
 body.dsh-ivory .dshcs-md td { border: 0.5px solid var(--cl-border-strong); padding: 6px 12px; text-align: left; }
-body.dsh-ivory .dshcs-md th { background: var(--cl-active); font-weight: 600; }
+body.dsh-ivory .dshcs-md th { background: var(--cl-well); font-weight: 600; }
 body.dsh-ivory .dshcs-md a { color: var(--cl-accent-text); }
 body.dsh-ivory .dshcs-md hr { border: 0; border-top: 0.5px solid var(--cl-border-strong); margin: 14px 0; }
 body.dsh-ivory .dshcs-md-toggle {
@@ -1589,8 +1674,11 @@ body.dsh-ivory .dshcs-md-toggle {
   border-radius: 6px;
   padding: 2px 10px;
   cursor: pointer;
+  transition: background-color 160ms ease, color 160ms ease,
+    transform 180ms cubic-bezier(0.2, 0.8, 0.2, 1);
 }
 body.dsh-ivory .dshcs-md-toggle:hover { background: var(--cl-hover); color: var(--cl-ink-strong); }
+body.dsh-ivory .dshcs-md-toggle:active { transform: scale(0.96); }
 body.dsh-ivory .dshcs-safe-source-note {
   margin: 0 0 10px;
   padding: 8px 10px;
@@ -1662,10 +1750,14 @@ body.dsh-ivory:not(.dshcs-contract-mismatch) .QWLzlG_leading svg:not(.QWLzlG_che
   visibility: hidden !important;
 }
 body.dsh-ivory:not(.dshcs-contract-mismatch) .CY-8Ka_root[data-sample="bash"] .CY-8Ka_leading {
-  --dshcs-icon: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Cg fill='none' stroke='black' stroke-width='1.3' stroke-linecap='round' stroke-linejoin='round'%3E%3Crect x='1.75' y='2.75' width='12.5' height='10.5' rx='2.5'/%3E%3Cpath d='M4.75 6.25 6.9 8l-2.15 1.75'/%3E%3Cpath d='M8.4 10.4h2.85'/%3E%3C/g%3E%3C/svg%3E");
+  /* iOS-style terminal glyph: squircle frame, three tiny title-bar dots,
+   * rounded prompt chevron and a short command line. */
+  --dshcs-icon: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Cg fill='none' stroke='black' stroke-width='1.3' stroke-linecap='round' stroke-linejoin='round'%3E%3Crect x='1.6' y='2.6' width='12.8' height='10.8' rx='3.2'/%3E%3Cpath d='M4.3 7.4 6.6 9.1 4.3 10.8'/%3E%3Cpath d='M8.1 11.2h3'/%3E%3C/g%3E%3Ccircle fill='black' cx='4.1' cy='4.8' r='0.55'/%3E%3Ccircle fill='black' cx='5.9' cy='4.8' r='0.55'/%3E%3Ccircle fill='black' cx='7.7' cy='4.8' r='0.55'/%3E%3C/svg%3E");
 }
 body.dsh-ivory:not(.dshcs-contract-mismatch) .QWLzlG_leading {
-  --dshcs-icon: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Cpath fill='black' d='M8 1.9c.5 1.85 1.12 3.05 1.95 3.87.83.83 2.03 1.46 3.9 1.98-1.87.52-3.07 1.15-3.9 1.98-.83.82-1.45 2.02-1.95 3.87-.5-1.85-1.12-3.05-1.95-3.87-.83-.83-2.03-1.46-3.9-1.98 1.87-.52 3.07-1.15 3.9-1.98.83-.82 1.45-2.02 1.95-3.87z'/%3E%3Cpath fill='black' d='M12.4 10.7c.24.9.54 1.48.94 1.88.4.4.98.7 1.88.94-.9.24-1.48.54-1.88.94-.4.4-.7.98-.94 1.88-.24-.9-.54-1.48-.94-1.88-.4-.4-.98-.7-1.88-.94.9-.24 1.48-.54 1.88-.94.4-.4.7-.98.94-1.88z'/%3E%3C/svg%3E");
+  /* iOS-style curved sparkle: concave petals instead of the generic straight
+   * 4-point star, plus one offset satellite twinkle for an asymmetric orbit. */
+  --dshcs-icon: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Cpath fill='black' d='M8 1.4c.45 2.3 1.35 3.75 2.5 5.2-1.15 1.45-2.05 2.9-2.5 5-.45-2.1-1.35-3.55-2.5-5 1.15-1.45 2.05-2.9 2.5-5.2z'/%3E%3Cpath fill='black' d='M12.35 8.9c.17 1.15.5 1.78 1.35 2.2-.85.42-1.18 1.05-1.35 2.2-.17-1.15-.5-1.78-1.35-2.2.85-.42 1.18-1.05 1.35-2.2z'/%3E%3Ccircle fill='black' cx='3.6' cy='10.15' r='0.75'/%3E%3C/svg%3E");
 }
 body.dsh-ivory:not(.dshcs-contract-mismatch) .CY-8Ka_root[data-sample="bash"] .CY-8Ka_leading:has(.CY-8Ka_chevron):not(:has(.CY-8Ka_iconIdle)),
 body.dsh-ivory:not(.dshcs-contract-mismatch) .QWLzlG_leading:has(.QWLzlG_chevron):not(:has([class*="_iconIdle_"])) {
@@ -1700,6 +1792,10 @@ body.dsh-ivory:not(.dshcs-contract-mismatch) .QWLzlG_leading:has(.QWLzlG_chevron
   0%, 100% { opacity: 1; }
   50% { opacity: 0.4; }
 }
+@keyframes dshcs-think-soft-scale {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.14); }
+}
 @keyframes dshcs-halo {
   0%, 100% { opacity: 0.45; }
   50% { opacity: 1; }
@@ -1712,7 +1808,9 @@ body.dsh-ivory:not(.dshcs-contract-mismatch) .CY-8Ka_root[data-state="running"][
 body.dsh-ivory:not(.dshcs-contract-mismatch) .CY-8Ka_root[data-state="running"][data-sample="bash"] .CY-8Ka_iconIdle::after,
 body.dsh-ivory:not(.dshcs-contract-mismatch) .QWLzlG_root[data-state="running"] .QWLzlG_leading:not(:has([class*="_iconIdle_"]))::after,
 body.dsh-ivory:not(.dshcs-contract-mismatch) .QWLzlG_root[data-state="running"] [class*="_iconIdle_"]::after {
-  animation: dshcs-breathe 1.7s ease-in-out infinite !important;
+  transform-origin: center;
+  animation: dshcs-breathe 1.7s ease-in-out infinite,
+    dshcs-think-soft-scale 2.6s cubic-bezier(0.3, 0.7, 0.3, 1) infinite !important;
 }
 body.dsh-ivory:not(.dshcs-contract-mismatch) .CY-8Ka_root[data-state="running"] .CY-8Ka_leading::before,
 body.dsh-ivory:not(.dshcs-contract-mismatch) .QWLzlG_root[data-state="running"] .QWLzlG_leading::before {
@@ -1743,16 +1841,16 @@ body.dsh-ivory:not(.dshcs-contract-mismatch) .CY-8Ka_root[data-state="running"] 
 
 /* failed calls read as quiet danger, never a shout */
 body.dsh-ivory:not(.dshcs-contract-mismatch) .CY-8Ka_root[data-state="error"] .CY-8Ka_leading {
-  color: #b14543 !important;
+  color: var(--cl-danger) !important;
 }
 body.dsh-ivory[data-ds-dark-theme]:not(.dshcs-contract-mismatch) .CY-8Ka_root[data-state="error"] .CY-8Ka_leading {
-  color: #e2908e !important;
+  color: var(--cl-danger-strong) !important;
 }
 body.dsh-ivory:not(.dshcs-contract-mismatch) .CY-8Ka_root[data-state="error"] .CY-8Ka_title {
-  color: #9c3f3d !important;
+  color: var(--cl-danger) !important;
 }
 body.dsh-ivory[data-ds-dark-theme]:not(.dshcs-contract-mismatch) .CY-8Ka_root[data-state="error"] .CY-8Ka_title {
-  color: #e8a5a3 !important;
+  color: var(--cl-danger-strong) !important;
 }
 
 /* expanded terminal: a quiet Claude-style console card */
@@ -1775,14 +1873,23 @@ body.dsh-ivory:not(.dshcs-contract-mismatch) .CY-8Ka_bodyWrap [data-terminal] [c
   color: var(--cl-muted) !important;
 }
 body.dsh-ivory:not(.dshcs-contract-mismatch) .CY-8Ka_bodyWrap [data-terminal] [class*="_dot_"][data-state="done"] {
-  background: #4c8759 !important;
+  background: var(--cl-success) !important;
 }
 body.dsh-ivory:not(.dshcs-contract-mismatch) .CY-8Ka_bodyWrap [data-terminal] [class*="_dot_"][data-state="error"] {
-  background: #b14543 !important;
+  background: var(--cl-danger) !important;
 }
 body.dsh-ivory:not(.dshcs-contract-mismatch) .CY-8Ka_bodyWrap [data-terminal] [class*="_dot_"][data-state="running"] {
   background: var(--cl-accent) !important;
   animation: dshcs-breathe 1.2s ease-in-out infinite !important;
+}
+/* rc.8 renders the running state as a matrix spinner (svg._matrix_ with
+ * 8 rect cells) in DSH blue. Re-ink its cells with the theme accent and keep
+ * the host's staggered opacity animation — same motion, no foreign color. */
+body.dsh-ivory:not(.dshcs-contract-mismatch) .CY-8Ka_bodyWrap [data-terminal] svg[class*="_matrix_"] {
+  color: var(--cl-accent-text) !important;
+}
+body.dsh-ivory:not(.dshcs-contract-mismatch) .CY-8Ka_bodyWrap [data-terminal] svg[class*="_matrix_"] rect[class*="_cell_"] {
+  fill: var(--cl-accent-text) !important;
 }
 body.dsh-ivory:not(.dshcs-contract-mismatch) .CY-8Ka_bodyWrap [data-terminal] [class*="_cwd"] {
   color: var(--cl-muted) !important;
@@ -1843,7 +1950,8 @@ body.dsh-ivory:not(.dshcs-contract-mismatch) [aria-expanded="true"] .QWLzlG_chev
   body.dsh-ivory:not(.dshcs-contract-mismatch) .CY-8Ka_root[data-state="running"][data-sample="bash"] .CY-8Ka_iconIdle::after,
   body.dsh-ivory:not(.dshcs-contract-mismatch) .QWLzlG_root[data-state="running"] .QWLzlG_leading:not(:has([class*="_iconIdle_"]))::after,
   body.dsh-ivory:not(.dshcs-contract-mismatch) .QWLzlG_root[data-state="running"] [class*="_iconIdle_"]::after,
-  body.dsh-ivory:not(.dshcs-contract-mismatch) [data-terminal] [class*="_dot_"][data-state="running"] {
+  body.dsh-ivory:not(.dshcs-contract-mismatch) [data-terminal] [class*="_dot_"][data-state="running"],
+  body.dsh-ivory:not(.dshcs-contract-mismatch) .Md3f7G_turnStatus {
     animation-duration: 0.001ms !important;
     animation-iteration-count: 1 !important;
   }
@@ -1912,10 +2020,10 @@ body.dsh-ivory:not(.dshcs-contract-mismatch) .dvt-tool-status {
   color: var(--cl-muted) !important;
 }
 body.dsh-ivory:not(.dshcs-contract-mismatch) .dvt-tool[data-state="error"] .dvt-tool-status {
-  color: #b14543 !important;
+  color: var(--cl-danger) !important;
 }
 body.dsh-ivory[data-ds-dark-theme]:not(.dshcs-contract-mismatch) .dvt-tool[data-state="error"] .dvt-tool-status {
-  color: #e2908e !important;
+  color: var(--cl-danger-strong) !important;
 }
 body.dsh-ivory:not(.dshcs-contract-mismatch) .dvt-chevron {
   color: var(--cl-muted) !important;
@@ -2119,7 +2227,7 @@ body.dsh-ivory:not(.dshcs-contract-mismatch) .dvt-paste-chip[data-status="copyin
   color: var(--cl-ink) !important;
 }
 body.dsh-ivory:not(.dshcs-contract-mismatch) .dvt-paste-chip[data-status="error"] {
-  border-color: hsl(4 32% 58% / 55%) !important;
+  border-color: hsl(12 32% 46% / 50%) !important;
 }
 body.dsh-ivory:not(.dshcs-contract-mismatch) .dvt-paste-name {
   max-width: min(260px, 40vw) !important;
@@ -2136,10 +2244,10 @@ body.dsh-ivory:not(.dshcs-contract-mismatch) .dvt-paste-detail {
   color: var(--cl-muted) !important;
 }
 body.dsh-ivory:not(.dshcs-contract-mismatch) .dvt-paste-chip[data-status="error"] .dvt-paste-detail {
-  color: #b14543 !important;
+  color: var(--cl-danger) !important;
 }
 body.dsh-ivory[data-ds-dark-theme]:not(.dshcs-contract-mismatch) .dvt-paste-chip[data-status="error"] .dvt-paste-detail {
-  color: #e2908e !important;
+  color: var(--cl-danger-strong) !important;
 }
 body.dsh-ivory:not(.dshcs-contract-mismatch) .dvt-paste-chip button {
   width: 20px !important;

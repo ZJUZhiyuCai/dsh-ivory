@@ -168,6 +168,8 @@ function renderMarkdown(src, depth = 0) {
       continue;
     }
     if (/^\s*\d+[.)]\s+/.test(l)) {
+      const startMatch = l.match(/^\s*(\d+)[.)]\s+/);
+      const start = Math.max(1, parseInt(startMatch?.[1] ?? '1', 10) || 1);
       const buf = [];
       while (i < lines.length && buf.length < MAX_MARKDOWN_LIST_ITEMS && /^\s*\d+[.)]\s+/.test(lines[i])) buf.push(lines[i++].replace(/^\s*\d+[.)]\s+/, ''));
       if (i < lines.length && /^\s*\d+[.)]\s+/.test(lines[i])) {
@@ -175,9 +177,13 @@ function renderMarkdown(src, depth = 0) {
         buf.push('…');
       }
       const list = document.createElement('ol');
-      for (const value of buf) {
+      for (let index = 0; index < buf.length; index++) {
         const item = document.createElement('li');
-        appendInline(item, value);
+        // GFM normalizes markers: the first item's number sets the start and
+        // the rest increment. Explicit li.value keeps the rendered numbering
+        // sane even when the source repeats "1." for every item.
+        item.value = start + index;
+        appendInline(item, buf[index]);
         list.appendChild(item);
       }
       out.appendChild(list);

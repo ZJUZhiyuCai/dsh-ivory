@@ -5,6 +5,16 @@ All notable changes to Ivory are documented here. The project follows
 
 ## [Unreleased]
 
+### Added
+
+- Add browser regression coverage for the plain-text fenced Markdown heuristic,
+  including a positive document preview case and a false-positive guard for
+  ordinary long text notes.
+
+### Changed
+
+- Refresh README screenshots for the latest Ivory visual language.
+
 ## [0.2.6] - 2026-08-20
 
 ### Added

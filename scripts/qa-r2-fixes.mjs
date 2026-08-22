@@ -327,6 +327,54 @@ try {
     check('markdown-no-page-errors', errors.length === 0, errors);
 
     await page.evaluate(() => {
+      const makeTextBlock = (className, text) => {
+        const block = document.createElement('div');
+        block.className = className;
+        const banner = document.createElement('div');
+        banner.textContent = 'text 复制';
+        const seat = document.createElement('div');
+        const pre = document.createElement('pre');
+        pre.textContent = text;
+        seat.appendChild(pre);
+        block.append(banner, seat);
+        document.body.appendChild(block);
+      };
+      makeTextBlock('code-block-text-heuristic-fixture', '# Text fence document\n\nThis deliberately long text-fenced document should become a Markdown preview because models often emit whole reports inside plain text fences.\n\n## Findings\n\n- Quiet source blocks stay readable.\n- The source toggle remains available.\n\n**Safe emphasis** and `inline code`.');
+      makeTextBlock('code-block-text-plain-fixture', '# Plain operational note\n\nThis is intentionally long enough to pass the length gate, but it has no Markdown structure beyond a title and paragraphs. It should stay as plain source so logs, notes, and accidental text fences are not promoted into rendered previews.\n\nThe final paragraph only extends the fixture length and does not add list, quote, table, or emphasis signals.');
+    });
+    await page.waitForTimeout(400);
+    const textFence = await page.evaluate(() => {
+      const accepted = document.querySelector('.code-block-text-heuristic-fixture');
+      const rejected = document.querySelector('.code-block-text-plain-fixture');
+      const acceptedPre = accepted?.querySelector('pre');
+      const rejectedPre = rejected?.querySelector('pre');
+      return {
+        accepted: {
+          previews: accepted?.querySelectorAll('.dshcs-md').length ?? -1,
+          state: acceptedPre?.dataset.dshcs || '',
+          visible: acceptedPre ? getComputedStyle(acceptedPre).display !== 'none' : null,
+          headings: accepted ? [...accepted.querySelectorAll('.dshcs-md h1, .dshcs-md h2')].map((node) => node.textContent) : [],
+          items: accepted ? [...accepted.querySelectorAll('.dshcs-md li')].map((node) => node.textContent) : [],
+        },
+        rejected: {
+          previews: rejected?.querySelectorAll('.dshcs-md').length ?? -1,
+          state: rejectedPre?.dataset.dshcs || '',
+          visible: rejectedPre ? getComputedStyle(rejectedPre).display !== 'none' : null,
+        },
+      };
+    });
+    check('markdown-text-fence-heuristic-renders', textFence.accepted.previews === 1
+      && textFence.accepted.state === 'md'
+      && textFence.accepted.visible === false
+      && textFence.accepted.headings.includes('Text fence document')
+      && textFence.accepted.items.length === 2,
+      textFence.accepted);
+    check('markdown-text-fence-heuristic-rejects-plain-text', textFence.rejected.previews === 0
+      && textFence.rejected.state === ''
+      && textFence.rejected.visible === true,
+      textFence.rejected);
+
+    await page.evaluate(() => {
       const block = document.createElement('div');
       block.className = 'code-block-oversize-fixture';
       const banner = document.createElement('div');
