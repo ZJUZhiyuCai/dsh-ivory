@@ -23,6 +23,7 @@ body.dsh-ivory {
   --cl-accent-hover: #7a3d0d;
   --cl-accent-text: #8a4a15;     /* text accent: 6.8:1 on page */
   --cl-accent-soft: #f5e2d1;     /* pale amber wash */
+  --cl-chrys: #a94a25;           /* R2.0 light chrysanthemum: Claude clay deepened for AA (5.5:1 on page) */
   --cl-danger: #9a483b;          /* quiet brick, never signal red */
   --cl-danger-strong: #7e3930;
   --cl-success: #4d7a58;         /* desaturated sage */
@@ -32,6 +33,9 @@ body.dsh-ivory {
   --cl-sans: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, "PingFang SC", "Microsoft YaHei", sans-serif;
   --cl-serif: ui-serif, "Iowan Old Style", "Palatino Linotype", Palatino, Georgia, "Songti SC", STSong, "Times New Roman", serif;
   --cl-mono: ui-monospace, "SFMono-Regular", Menlo, Monaco, Consolas, "Liberation Mono", monospace;
+  /* Composer text uses one CJK-capable family first so Latin and CJK glyphs
+   * share a single typeface instead of splitting into Anthropic Sans + PingFang. */
+  --cl-input: "PingFang SC", "Hiragino Sans GB", "Noto Sans CJK SC", "Source Han Sans SC", "Microsoft YaHei UI", "Microsoft YaHei", ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
   --cl-shadow-card: 0 4px 20px hsl(0 0% 0% / 7.5%), inset 0 0 0 1px hsl(0 0% 3% / 30%);
   --cl-shadow-md: 0 2px 4px hsl(0 0% 4.3% / 7%), 0 6px 16px hsl(0 0% 4.3% / 8%);
   --cl-shadow-lg: 0 4px 8px hsl(0 0% 4.3% / 8%), 0 12px 28px -2px hsl(0 0% 4.3% / 8%);
@@ -62,6 +66,7 @@ body.dsh-ivory[data-ds-dark-theme] {
   --cl-accent-hover: #9a4d12;
   --cl-accent-text: #ff9e5e;     /* text/ring accent: bright ember, 9.0:1 on page */
   --cl-accent-soft: #2a1a10;
+  --cl-chrys: #e88b62;           /* R2.0 dark chrysanthemum: bright Claude clay on near-black, 7.2:1 */
   --cl-danger: #d47d6f;          /* keep failure clearly redder than the orange accent */
   --cl-danger-strong: #e2a094;
   --cl-success: #8fbb9c;
@@ -554,7 +559,7 @@ body.dsh-ivory:not(.dshcs-contract-mismatch) .wSkVaW_composerHero .uV2eYG_card {
   margin-inline: auto !important;
 }
 body.dsh-ivory:not(.dshcs-contract-mismatch) .uV2eYG_input {
-  font-family: var(--cl-sans) !important;
+  font-family: var(--cl-input) !important;
   font-size: 15px !important;
   line-height: 20px !important;
   font-weight: 400 !important;
@@ -566,8 +571,16 @@ body.dsh-ivory:not(.dshcs-contract-mismatch) .uV2eYG_input {
   caret-color: var(--cl-ink-strong) !important;
   padding-left: 16px !important;
 }
+/* One family for the visible text, its mirror, and every token painted inside
+ * the composer: mixed Latin + CJK text previously split across Anthropic Sans
+ * and PingFang, which read as several fonts in a single line. */
+body.dsh-ivory:not(.dshcs-contract-mismatch) .uV2eYG_backdrop,
+body.dsh-ivory:not(.dshcs-contract-mismatch) .uV2eYG_backdrop *,
+body.dsh-ivory:not(.dshcs-contract-mismatch) .uV2eYG_mirror,
+body.dsh-ivory:not(.dshcs-contract-mismatch) .uV2eYG_mirror * {
+  font-family: var(--cl-input) !important;
+}
 body.dsh-ivory:not(.dshcs-contract-mismatch) .uV2eYG_backdrop {
-  font-family: DshChipCell, var(--cl-sans) !important;
   font-size: 15px !important;
   line-height: 20px !important;
   padding-left: 16px !important;
@@ -575,7 +588,6 @@ body.dsh-ivory:not(.dshcs-contract-mismatch) .uV2eYG_backdrop {
   -webkit-text-fill-color: currentColor !important;
 }
 body.dsh-ivory:not(.dshcs-contract-mismatch) .uV2eYG_mirror {
-  font-family: DshChipCell, var(--cl-sans) !important;
   font-size: 15px !important;
   line-height: 20px !important;
   padding-left: 16px !important;
@@ -629,20 +641,23 @@ body.dsh-ivory:not(.dshcs-contract-mismatch) .Md3f7G_column {
   margin: 0 auto !important;
 }
 /* "Deep diving…" turn status: the host paints a DSH-blue text shimmer.
- * Ivory replaces it with a slow ink/muted sheen — same affordance, on palette. */
+ * R2.0: Ivory replaces it with a chrysanthemum/clay sheen — Claude's original
+ * clay family — that runs from a dimmed clay into the full chrysanthemum and
+ * back, with a faint clay glow so the working state never reads as background. */
 @keyframes dshcs-turn-shimmer {
   0% { background-position: 160% 0; }
   100% { background-position: -60% 0; }
 }
 body.dsh-ivory:not(.dshcs-contract-mismatch) .Md3f7G_turnStatus {
   background-image: linear-gradient(90deg,
-    var(--cl-muted) 0%,
-    var(--cl-muted) 38%,
-    var(--cl-ink-soft) 50%,
-    var(--cl-muted) 62%,
-    var(--cl-muted) 100%) !important;
+    color-mix(in srgb, var(--cl-chrys) 58%, var(--cl-page)) 0%,
+    var(--cl-chrys) 38%,
+    color-mix(in srgb, var(--cl-chrys) 78%, var(--cl-ink)) 50%,
+    var(--cl-chrys) 62%,
+    color-mix(in srgb, var(--cl-chrys) 58%, var(--cl-page)) 100%) !important;
   background-size: 250% 100% !important;
   animation: dshcs-turn-shimmer 2.2s cubic-bezier(0.4, 0, 0.2, 1) infinite !important;
+  filter: drop-shadow(0 0 6px color-mix(in srgb, var(--cl-chrys) 32%, transparent));
 }
 /* user message: right-aligned neutral bubble, 12px radius, 15/20 sans */
 body.dsh-ivory:not(.dshcs-contract-mismatch) .gdEzaW_userRow {
@@ -1548,6 +1563,7 @@ body.dsh-ivory .uV2eYG_input:focus-visible {
     -webkit-text-fill-color: CanvasText !important;
     color: CanvasText !important;
     animation: none !important;
+    filter: none !important;
   }
 }
 
@@ -1570,6 +1586,38 @@ body.dsh-ivory:not(.dshcs-contract-mismatch) .mL8Uca_entryIcon svg {
   width: 20px !important;
   height: 20px !important;
   color: var(--cl-ink-soft) !important;
+}
+
+/* R2.1 sidebar folder glyph: redrawn in the same 1.1px stroke language as the
+ * activity-row icons, with stronger ink so folder navigation no longer reads
+ * as a pale chrome detail. */
+body.dsh-ivory:not(.dshcs-contract-mismatch) .YDXeBa_folder {
+  position: relative !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  width: 16px !important;
+  height: 16px !important;
+  flex: none !important;
+  color: var(--cl-ink-soft) !important;
+  --dshcs-icon-folder: url("data:image/svg+xml,%3Csvg%20xmlns%3D'http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg'%20viewBox%3D'0%200%2016%2016'%3E%3Cpath%20fill%3D'none'%20stroke%3D'black'%20stroke-width%3D'1.1'%20stroke-linecap%3D'round'%20stroke-linejoin%3D'round'%20d%3D'M2.5%205.5c0-.8.6-1.3%201.3-1.3h2.4c.5%200%20.9.2%201.2.6l.9%201.1c.3.4.8.6%201.3.6h2.6c.7%200%201.3.5%201.3%201.2v4.1c0%20.7-.6%201.3-1.3%201.3H3.8c-.7%200-1.3-.6-1.3-1.3V5.5Z'%2F%3E%3C%2Fsvg%3E");
+}
+body.dsh-ivory:not(.dshcs-contract-mismatch) .YDXeBa_folder > svg {
+  visibility: hidden !important;
+}
+body.dsh-ivory:not(.dshcs-contract-mismatch) .YDXeBa_folder::before {
+  content: '' !important;
+  position: absolute;
+  inset: 0;
+  width: 16px;
+  height: 16px;
+  background: currentColor;
+  -webkit-mask: var(--dshcs-icon-folder) center / contain no-repeat;
+  mask: var(--dshcs-icon-folder) center / contain no-repeat;
+}
+body.dsh-ivory:not(.dshcs-contract-mismatch) .YDXeBa_projectRow:hover .YDXeBa_folder,
+body.dsh-ivory:not(.dshcs-contract-mismatch) .YDXeBa_folder.YDXeBa_folderActive {
+  color: var(--cl-ink) !important;
 }
 
 /* F11 sidebar item typography to Claude: 400 weight, 21px line, primary ink
@@ -1719,7 +1767,8 @@ body.dsh-ivory:not(.dshcs-contract-mismatch) .CY-8Ka_sep {
   color: var(--cl-border-strong) !important;
 }
 body.dsh-ivory:not(.dshcs-contract-mismatch) .CY-8Ka_leading,
-body.dsh-ivory:not(.dshcs-contract-mismatch) .QWLzlG_leading {
+body.dsh-ivory:not(.dshcs-contract-mismatch) .QWLzlG_leading,
+body.dsh-ivory:not(.dshcs-contract-mismatch) .o3BgMG_leading {
   position: relative !important;
   display: inline-flex !important;
   align-items: center !important;
@@ -1728,16 +1777,16 @@ body.dsh-ivory:not(.dshcs-contract-mismatch) .QWLzlG_leading {
   height: 16px !important;
   flex: none !important;
   overflow: visible !important;
-  color: var(--cl-muted) !important;
+  color: var(--cl-ink-strong) !important;
 }
 
-/* redrawn icons: the host svg keeps its place (visibility hidden) while a
- * mask-painted ::after carries the Claude-style stroke artwork. Scoped to the
- * bash variant — other tool variants keep the host icon untouched. The host
- * only mounts .CY-8Ka_iconIdle in some states, so the leading slot also
- * paints the icon when rc.8 leaves it with only the disclosure chevron. */
+/* Redrawn icons: every activity-row icon (think / tool call / bash / read /
+ * glob) now comes from ONE stroke set — 16px viewBox, 1.1px rounded strokes,
+ * currentColor via CSS mask. The host SVG stays in place but is hidden, so
+ * React reconciliation never sees replaced nodes. */
 body.dsh-ivory:not(.dshcs-contract-mismatch) .CY-8Ka_iconIdle,
-body.dsh-ivory:not(.dshcs-contract-mismatch) .QWLzlG_root [class*="_iconIdle_"] {
+body.dsh-ivory:not(.dshcs-contract-mismatch) .QWLzlG_root [class*="_iconIdle_"],
+body.dsh-ivory:not(.dshcs-contract-mismatch) .o3BgMG_root [class*="_iconIdle_"] {
   position: relative !important;
   display: inline-flex !important;
   align-items: center !important;
@@ -1745,29 +1794,46 @@ body.dsh-ivory:not(.dshcs-contract-mismatch) .QWLzlG_root [class*="_iconIdle_"] 
   width: 16px !important;
   height: 16px !important;
 }
-body.dsh-ivory:not(.dshcs-contract-mismatch) .CY-8Ka_root[data-sample="bash"] .CY-8Ka_leading svg:not(.CY-8Ka_chevron),
-body.dsh-ivory:not(.dshcs-contract-mismatch) .QWLzlG_leading svg:not(.QWLzlG_chevron) {
+body.dsh-ivory:not(.dshcs-contract-mismatch) .CY-8Ka_leading svg:not(.CY-8Ka_chevron),
+body.dsh-ivory:not(.dshcs-contract-mismatch) .QWLzlG_leading svg:not(.QWLzlG_chevron),
+body.dsh-ivory:not(.dshcs-contract-mismatch) .o3BgMG_leading svg:not(.o3BgMG_chevron) {
   visibility: hidden !important;
 }
-body.dsh-ivory:not(.dshcs-contract-mismatch) .CY-8Ka_root[data-sample="bash"] .CY-8Ka_leading {
-  /* iOS-style terminal glyph: squircle frame, three tiny title-bar dots,
-   * rounded prompt chevron and a short command line. */
-  --dshcs-icon: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Cg fill='none' stroke='black' stroke-width='1.3' stroke-linecap='round' stroke-linejoin='round'%3E%3Crect x='1.6' y='2.6' width='12.8' height='10.8' rx='3.2'/%3E%3Cpath d='M4.3 7.4 6.6 9.1 4.3 10.8'/%3E%3Cpath d='M8.1 11.2h3'/%3E%3C/g%3E%3Ccircle fill='black' cx='4.1' cy='4.8' r='0.55'/%3E%3Ccircle fill='black' cx='5.9' cy='4.8' r='0.55'/%3E%3Ccircle fill='black' cx='7.7' cy='4.8' r='0.55'/%3E%3C/svg%3E");
-}
+/* think: an organic spark — seven uneven, slightly curved rays with an open
+ * centre (no hub), tuned for a 16px 1.1px-stroke mask set. */
 body.dsh-ivory:not(.dshcs-contract-mismatch) .QWLzlG_leading {
-  /* iOS-style curved sparkle: concave petals instead of the generic straight
-   * 4-point star, plus one offset satellite twinkle for an asymmetric orbit. */
-  --dshcs-icon: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Cpath fill='black' d='M8 1.4c.45 2.3 1.35 3.75 2.5 5.2-1.15 1.45-2.05 2.9-2.5 5-.45-2.1-1.35-3.55-2.5-5 1.15-1.45 2.05-2.9 2.5-5.2z'/%3E%3Cpath fill='black' d='M12.35 8.9c.17 1.15.5 1.78 1.35 2.2-.85.42-1.18 1.05-1.35 2.2-.17-1.15-.5-1.78-1.35-2.2.85-.42 1.18-1.05 1.35-2.2z'/%3E%3Ccircle fill='black' cx='3.6' cy='10.15' r='0.75'/%3E%3C/svg%3E");
+  --dshcs-icon: url("data:image/svg+xml,%3Csvg%20xmlns%3D'http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg'%20viewBox%3D'0%200%2016%2016'%3E%3Cpath%20fill%3D'none'%20stroke%3D'black'%20stroke-width%3D'1.1'%20stroke-linecap%3D'round'%20stroke-linejoin%3D'round'%20d%3D'M7.4%206.4%20Q7.3%204.5%206.2%202.8M8.8%206.5%20Q9.5%205%2010.8%203M9.6%207.3%20Q11.8%206.9%2013.8%205.4M9.5%208.9%20Q11.3%2010.5%2013.2%2011M8.6%209.6%20Q9.9%2011.4%2010.2%2013.4M7.1%209.4%20Q6.3%2010.8%204.8%2013M6.3%207.6%20Q4.9%207.8%203.3%207'%2F%3E%3C%2Fsvg%3E");
+}
+/* bash: rounded terminal, rx 2, wider prompt chevron */
+body.dsh-ivory:not(.dshcs-contract-mismatch) .CY-8Ka_leading {
+  --dshcs-icon: url("data:image/svg+xml,%3Csvg%20xmlns%3D'http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg'%20viewBox%3D'0%200%2016%2016'%3E%3Cg%20fill%3D'none'%20stroke%3D'black'%20stroke-width%3D'1.1'%20stroke-linecap%3D'round'%20stroke-linejoin%3D'round'%3E%3Crect%20x%3D'2.5'%20y%3D'3'%20width%3D'11'%20height%3D'10'%20rx%3D'2'%2F%3E%3Cpath%20d%3D'M5%206.5%208%208%205%209.5'%2F%3E%3C%2Fg%3E%3C%2Fsvg%3E");
+}
+/* generic tool call: compact open wrench. External V2's diagonal head still
+ * fails the 16px silhouette test (reads as pencil/magic wand), so this
+ * readable compact jaw stays as the approved shape. */
+body.dsh-ivory:not(.dshcs-contract-mismatch) .o3BgMG_leading {
+  --dshcs-icon: url("data:image/svg+xml,%3Csvg%20xmlns%3D'http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg'%20viewBox%3D'0%200%2016%2016'%3E%3Cpath%20fill%3D'none'%20stroke%3D'black'%20stroke-width%3D'1.1'%20stroke-linecap%3D'round'%20stroke-linejoin%3D'round'%20d%3D'M9.8%204.2a.67.67%200%200%200%200%20.93l1.07%201.07a.67.67%200%200%200%20.93%200l2.51-2.51a4%204%200%200%201-5.29%205.29L4.4%2013.6a1.41%201.41%200%200%201-2-2l4.61-4.61a4%204%200%200%201%205.29-5.29l-2.5%202.5z'%2F%3E%3C%2Fsvg%3E");
+}
+/* read: dog-ear document, stepped reading lines */
+body.dsh-ivory:not(.dshcs-contract-mismatch) .o3BgMG_root[data-variant="read"] .o3BgMG_leading {
+  --dshcs-icon: url("data:image/svg+xml,%3Csvg%20xmlns%3D'http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg'%20viewBox%3D'0%200%2016%2016'%3E%3Cg%20fill%3D'none'%20stroke%3D'black'%20stroke-width%3D'1.1'%20stroke-linecap%3D'round'%20stroke-linejoin%3D'round'%3E%3Cpath%20d%3D'M9.5%202.5H4.2C3.55%202.5%203%203.05%203%203.7v9.1c0%20.65.55%201.2%201.2%201.2h7.6c.65%200%201.2-.55%201.2-1.2V5.5L9.5%202.5Z'%2F%3E%3Cpath%20d%3D'M9.5%202.5V5.5H13'%2F%3E%3Cpath%20d%3D'M5.5%208.5h5M5.5%2011h3'%2F%3E%3C%2Fg%3E%3C%2Fsvg%3E");
+}
+/* glob/search: clear lens magnifier */
+body.dsh-ivory:not(.dshcs-contract-mismatch) .o3BgMG_root[data-variant="search"] .o3BgMG_leading {
+  --dshcs-icon: url("data:image/svg+xml,%3Csvg%20xmlns%3D'http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg'%20viewBox%3D'0%200%2016%2016'%3E%3Cg%20fill%3D'none'%20stroke%3D'black'%20stroke-width%3D'1.1'%20stroke-linecap%3D'round'%20stroke-linejoin%3D'round'%3E%3Ccircle%20cx%3D'6.7'%20cy%3D'6.7'%20r%3D'4.2'%2F%3E%3Cpath%20d%3D'M10%2010%2013.5%2013.5'%2F%3E%3C%2Fg%3E%3C%2Fsvg%3E");
 }
 body.dsh-ivory:not(.dshcs-contract-mismatch) .CY-8Ka_root[data-sample="bash"] .CY-8Ka_leading:has(.CY-8Ka_chevron):not(:has(.CY-8Ka_iconIdle)),
-body.dsh-ivory:not(.dshcs-contract-mismatch) .QWLzlG_leading:has(.QWLzlG_chevron):not(:has([class*="_iconIdle_"])) {
+body.dsh-ivory:not(.dshcs-contract-mismatch) .QWLzlG_leading:has(.QWLzlG_chevron):not(:has([class*="_iconIdle_"])),
+body.dsh-ivory:not(.dshcs-contract-mismatch) .o3BgMG_leading:has(.o3BgMG_chevron):not(:has([class*="_iconIdle_"])) {
   width: 34px !important;
   justify-content: flex-start !important;
 }
 body.dsh-ivory:not(.dshcs-contract-mismatch) .CY-8Ka_root[data-sample="bash"] .CY-8Ka_leading:not(:has(.CY-8Ka_iconIdle))::after,
 body.dsh-ivory:not(.dshcs-contract-mismatch) .QWLzlG_leading:not(:has([class*="_iconIdle_"]))::after,
-body.dsh-ivory:not(.dshcs-contract-mismatch) .CY-8Ka_root[data-sample="bash"] .CY-8Ka_iconIdle::after,
-body.dsh-ivory:not(.dshcs-contract-mismatch) .QWLzlG_root [class*="_iconIdle_"]::after {
+body.dsh-ivory:not(.dshcs-contract-mismatch) .o3BgMG_leading:not(:has([class*="_iconIdle_"]))::after,
+body.dsh-ivory:not(.dshcs-contract-mismatch) .CY-8Ka_iconIdle::after,
+body.dsh-ivory:not(.dshcs-contract-mismatch) .QWLzlG_root [class*="_iconIdle_"]::after,
+body.dsh-ivory:not(.dshcs-contract-mismatch) .o3BgMG_root [class*="_iconIdle_"]::after {
   content: '' !important;
   position: absolute;
   inset: 0;
@@ -1779,7 +1845,8 @@ body.dsh-ivory:not(.dshcs-contract-mismatch) .QWLzlG_root [class*="_iconIdle_"]:
   mask: var(--dshcs-icon, none) center / contain no-repeat;
 }
 body.dsh-ivory:not(.dshcs-contract-mismatch) .CY-8Ka_root[data-sample="bash"] .CY-8Ka_leading:has(.CY-8Ka_chevron):not(:has(.CY-8Ka_iconIdle))::after,
-body.dsh-ivory:not(.dshcs-contract-mismatch) .QWLzlG_leading:has(.QWLzlG_chevron):not(:has([class*="_iconIdle_"]))::after {
+body.dsh-ivory:not(.dshcs-contract-mismatch) .QWLzlG_leading:has(.QWLzlG_chevron):not(:has([class*="_iconIdle_"]))::after,
+body.dsh-ivory:not(.dshcs-contract-mismatch) .o3BgMG_leading:has(.o3BgMG_chevron):not(:has([class*="_iconIdle_"]))::after {
   inset: 0 0 0 auto;
   margin: auto 0;
 }
@@ -1801,19 +1868,23 @@ body.dsh-ivory:not(.dshcs-contract-mismatch) .QWLzlG_leading:has(.QWLzlG_chevron
   50% { opacity: 1; }
 }
 body.dsh-ivory:not(.dshcs-contract-mismatch) .CY-8Ka_root[data-state="running"] .CY-8Ka_leading,
-body.dsh-ivory:not(.dshcs-contract-mismatch) .QWLzlG_root[data-state="running"] .QWLzlG_leading {
+body.dsh-ivory:not(.dshcs-contract-mismatch) .QWLzlG_root[data-state="running"] .QWLzlG_leading,
+body.dsh-ivory:not(.dshcs-contract-mismatch) .o3BgMG_root[data-state="running"] .o3BgMG_leading {
   color: var(--cl-accent-text) !important;
 }
 body.dsh-ivory:not(.dshcs-contract-mismatch) .CY-8Ka_root[data-state="running"][data-sample="bash"] .CY-8Ka_leading:not(:has(.CY-8Ka_iconIdle))::after,
 body.dsh-ivory:not(.dshcs-contract-mismatch) .CY-8Ka_root[data-state="running"][data-sample="bash"] .CY-8Ka_iconIdle::after,
 body.dsh-ivory:not(.dshcs-contract-mismatch) .QWLzlG_root[data-state="running"] .QWLzlG_leading:not(:has([class*="_iconIdle_"]))::after,
-body.dsh-ivory:not(.dshcs-contract-mismatch) .QWLzlG_root[data-state="running"] [class*="_iconIdle_"]::after {
+body.dsh-ivory:not(.dshcs-contract-mismatch) .QWLzlG_root[data-state="running"] [class*="_iconIdle_"]::after,
+body.dsh-ivory:not(.dshcs-contract-mismatch) .o3BgMG_root[data-state="running"] .o3BgMG_leading:not(:has([class*="_iconIdle_"]))::after,
+body.dsh-ivory:not(.dshcs-contract-mismatch) .o3BgMG_root[data-state="running"] [class*="_iconIdle_"]::after {
   transform-origin: center;
   animation: dshcs-breathe 1.7s ease-in-out infinite,
     dshcs-think-soft-scale 2.6s cubic-bezier(0.3, 0.7, 0.3, 1) infinite !important;
 }
 body.dsh-ivory:not(.dshcs-contract-mismatch) .CY-8Ka_root[data-state="running"] .CY-8Ka_leading::before,
-body.dsh-ivory:not(.dshcs-contract-mismatch) .QWLzlG_root[data-state="running"] .QWLzlG_leading::before {
+body.dsh-ivory:not(.dshcs-contract-mismatch) .QWLzlG_root[data-state="running"] .QWLzlG_leading::before,
+body.dsh-ivory:not(.dshcs-contract-mismatch) .o3BgMG_root[data-state="running"] .o3BgMG_leading::before {
   content: '' !important;
   position: absolute;
   inset: -3px;
@@ -1825,7 +1896,8 @@ body.dsh-ivory:not(.dshcs-contract-mismatch) .QWLzlG_root[data-state="running"] 
  * static, fainter state cue and only the icon keeps its slow breathing. */
 body.dsh-ivory:not(.dshcs-contract-mismatch) .CY-8Ka_root[data-state="running"][aria-expanded="true"] .CY-8Ka_leading::before,
 body.dsh-ivory:not(.dshcs-contract-mismatch) .CY-8Ka_root[data-state="running"] [aria-expanded="true"] .CY-8Ka_leading::before,
-body.dsh-ivory:not(.dshcs-contract-mismatch) .QWLzlG_root[data-state="running"] .QWLzlG_row[aria-expanded="true"] .QWLzlG_leading::before {
+body.dsh-ivory:not(.dshcs-contract-mismatch) .QWLzlG_root[data-state="running"] .QWLzlG_row[aria-expanded="true"] .QWLzlG_leading::before,
+body.dsh-ivory:not(.dshcs-contract-mismatch) .o3BgMG_root[data-state="running"] .o3BgMG_row[aria-expanded="true"] .o3BgMG_leading::before {
   animation: none !important;
   opacity: 0.75;
   border-color: color-mix(in srgb, var(--cl-accent-text) 24%, transparent) !important;
@@ -1840,10 +1912,14 @@ body.dsh-ivory:not(.dshcs-contract-mismatch) .CY-8Ka_root[data-state="running"] 
 }
 
 /* failed calls read as quiet danger, never a shout */
-body.dsh-ivory:not(.dshcs-contract-mismatch) .CY-8Ka_root[data-state="error"] .CY-8Ka_leading {
+body.dsh-ivory:not(.dshcs-contract-mismatch) .CY-8Ka_root[data-state="error"] .CY-8Ka_leading,
+body.dsh-ivory:not(.dshcs-contract-mismatch) .QWLzlG_root[data-state="error"] .QWLzlG_leading,
+body.dsh-ivory:not(.dshcs-contract-mismatch) .o3BgMG_root[data-state="error"] .o3BgMG_leading {
   color: var(--cl-danger) !important;
 }
-body.dsh-ivory[data-ds-dark-theme]:not(.dshcs-contract-mismatch) .CY-8Ka_root[data-state="error"] .CY-8Ka_leading {
+body.dsh-ivory[data-ds-dark-theme]:not(.dshcs-contract-mismatch) .CY-8Ka_root[data-state="error"] .CY-8Ka_leading,
+body.dsh-ivory[data-ds-dark-theme]:not(.dshcs-contract-mismatch) .QWLzlG_root[data-state="error"] .QWLzlG_leading,
+body.dsh-ivory[data-ds-dark-theme]:not(.dshcs-contract-mismatch) .o3BgMG_root[data-state="error"] .o3BgMG_leading {
   color: var(--cl-danger-strong) !important;
 }
 body.dsh-ivory:not(.dshcs-contract-mismatch) .CY-8Ka_root[data-state="error"] .CY-8Ka_title {
@@ -1932,12 +2008,14 @@ body.dsh-ivory:not(.dshcs-contract-mismatch) .QWLzlG_root[data-state="running"] 
 }
 /* the chevron turns instead of jumping */
 body.dsh-ivory:not(.dshcs-contract-mismatch) .CY-8Ka_chevron,
-body.dsh-ivory:not(.dshcs-contract-mismatch) .QWLzlG_chevron {
+body.dsh-ivory:not(.dshcs-contract-mismatch) .QWLzlG_chevron,
+body.dsh-ivory:not(.dshcs-contract-mismatch) .o3BgMG_chevron {
   transition: transform 150ms ease !important;
   color: var(--cl-muted) !important;
 }
 body.dsh-ivory:not(.dshcs-contract-mismatch) [aria-expanded="true"] .CY-8Ka_chevron,
-body.dsh-ivory:not(.dshcs-contract-mismatch) [aria-expanded="true"] .QWLzlG_chevron {
+body.dsh-ivory:not(.dshcs-contract-mismatch) [aria-expanded="true"] .QWLzlG_chevron,
+body.dsh-ivory:not(.dshcs-contract-mismatch) [aria-expanded="true"] .o3BgMG_chevron {
   color: var(--cl-ink-strong) !important;
 }
 
@@ -1946,10 +2024,13 @@ body.dsh-ivory:not(.dshcs-contract-mismatch) [aria-expanded="true"] .QWLzlG_chev
 @media (prefers-reduced-motion: reduce) {
   body.dsh-ivory:not(.dshcs-contract-mismatch) .CY-8Ka_root[data-state="running"] .CY-8Ka_leading::before,
   body.dsh-ivory:not(.dshcs-contract-mismatch) .QWLzlG_root[data-state="running"] .QWLzlG_leading::before,
+  body.dsh-ivory:not(.dshcs-contract-mismatch) .o3BgMG_root[data-state="running"] .o3BgMG_leading::before,
   body.dsh-ivory:not(.dshcs-contract-mismatch) .CY-8Ka_root[data-state="running"][data-sample="bash"] .CY-8Ka_leading:not(:has(.CY-8Ka_iconIdle))::after,
   body.dsh-ivory:not(.dshcs-contract-mismatch) .CY-8Ka_root[data-state="running"][data-sample="bash"] .CY-8Ka_iconIdle::after,
   body.dsh-ivory:not(.dshcs-contract-mismatch) .QWLzlG_root[data-state="running"] .QWLzlG_leading:not(:has([class*="_iconIdle_"]))::after,
   body.dsh-ivory:not(.dshcs-contract-mismatch) .QWLzlG_root[data-state="running"] [class*="_iconIdle_"]::after,
+  body.dsh-ivory:not(.dshcs-contract-mismatch) .o3BgMG_root[data-state="running"] .o3BgMG_leading:not(:has([class*="_iconIdle_"]))::after,
+  body.dsh-ivory:not(.dshcs-contract-mismatch) .o3BgMG_root[data-state="running"] [class*="_iconIdle_"]::after,
   body.dsh-ivory:not(.dshcs-contract-mismatch) [data-terminal] [class*="_dot_"][data-state="running"],
   body.dsh-ivory:not(.dshcs-contract-mismatch) .Md3f7G_turnStatus {
     animation-duration: 0.001ms !important;

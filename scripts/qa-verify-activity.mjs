@@ -95,6 +95,104 @@ try {
     if (probe.errorTitleColor !== 'no-error-row') {
       check(`${tag}-error-quiet-danger`, probe.errorTitleColor !== probe.titleColor && probe.errorTitleColor !== probe.rowColor, probe);
     }
+
+    // Render the rc.2 generic tool-call and sidebar glyph contracts directly.
+    // Static selector checks cannot prove that the host SVG is hidden, the
+    // variant mask wins the cascade, or the generated pseudo-element paints.
+    const iconSet = await page.evaluate(() => {
+      const fixture = document.createElement('section');
+      fixture.dataset.dshcsActivityFixture = 'rc2-icon-set';
+
+      const svg = (className = '') => {
+        const node = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+        if (className) node.classList.add(className);
+        node.setAttribute('viewBox', '0 0 16 16');
+        return node;
+      };
+      const tool = (variant) => {
+        const root = document.createElement('div');
+        root.className = 'o3BgMG_root';
+        root.dataset.variant = variant;
+        root.dataset.state = 'ok';
+        const leading = document.createElement('span');
+        leading.className = 'o3BgMG_leading';
+        const idle = document.createElement('span');
+        idle.className = '_iconIdle_qa';
+        idle.appendChild(svg());
+        leading.appendChild(idle);
+        root.appendChild(leading);
+        fixture.appendChild(root);
+        return { leading, idle };
+      };
+
+      const tools = ['tool', 'read', 'search'].map(tool);
+      const folder = document.createElement('span');
+      folder.className = 'YDXeBa_folder';
+      folder.appendChild(svg());
+      fixture.appendChild(folder);
+
+      const input = document.createElement('textarea');
+      input.className = 'uV2eYG_input';
+      const backdrop = document.createElement('div');
+      backdrop.className = 'uV2eYG_backdrop';
+      const mirror = document.createElement('div');
+      mirror.className = 'uV2eYG_mirror';
+      fixture.append(input, backdrop, mirror);
+
+      const turnStatus = document.createElement('span');
+      turnStatus.className = 'Md3f7G_turnStatus';
+      turnStatus.textContent = 'Deep diving…';
+      fixture.appendChild(turnStatus);
+      document.body.appendChild(fixture);
+
+      const pseudo = (element, name) => getComputedStyle(element, name);
+      const mask = (style) => style.maskImage || style.webkitMaskImage;
+      const toolMetrics = tools.map(({ leading, idle }) => ({
+        mask: mask(pseudo(idle, '::after')),
+        size: [pseudo(idle, '::after').width, pseudo(idle, '::after').height],
+        hostVisibility: getComputedStyle(idle.querySelector('svg')).visibility,
+        color: getComputedStyle(leading).color,
+      }));
+      const folderBefore = pseudo(folder, '::before');
+      const fontFamilies = [input, backdrop, mirror].map((element) => getComputedStyle(element).fontFamily);
+      const statusStyle = getComputedStyle(turnStatus);
+      const result = {
+        tools: toolMetrics,
+        folder: {
+          mask: mask(folderBefore),
+          size: [folderBefore.width, folderBefore.height],
+          hostVisibility: getComputedStyle(folder.querySelector('svg')).visibility,
+        },
+        fontFamilies,
+        status: {
+          backgroundImage: statusStyle.backgroundImage,
+          filter: statusStyle.filter,
+          animationName: statusStyle.animationName,
+        },
+      };
+      fixture.remove();
+      return result;
+    });
+    const toolMasks = iconSet.tools.map(({ mask }) => mask);
+    check(`${tag}-generic-tool-icon-set-runtime`,
+      iconSet.tools.every(({ mask, size, hostVisibility }) => mask.includes('image/svg')
+        && size[0] === '16px' && size[1] === '16px' && hostVisibility === 'hidden')
+        && new Set(toolMasks).size === 3,
+      iconSet.tools);
+    check(`${tag}-folder-icon-runtime`,
+      iconSet.folder.mask.includes('image/svg')
+        && iconSet.folder.size[0] === '16px'
+        && iconSet.folder.size[1] === '16px'
+        && iconSet.folder.hostVisibility === 'hidden',
+      iconSet.folder);
+    check(`${tag}-composer-font-unified`,
+      iconSet.fontFamilies.every((family) => family === iconSet.fontFamilies[0] && family.includes('PingFang SC')),
+      iconSet.fontFamilies);
+    check(`${tag}-turn-status-chrysanthemum`,
+      iconSet.status.backgroundImage.includes('linear-gradient')
+        && iconSet.status.filter.includes('drop-shadow')
+        && iconSet.status.animationName.includes('turn-shimmer'),
+      iconSet.status);
     await page.screenshot({ path: `${OUT}/${tag}-terminal.png` });
     await page.close();
   }

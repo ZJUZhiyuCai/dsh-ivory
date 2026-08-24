@@ -99,7 +99,7 @@ npm 包固定为八个白名单文件，每次 CI 都会检查。完整边界可
 
 > [!NOTE]
 > DeepSeek Harness 仍处于开发者预览阶段，UI 可能发生破坏性变化。
-> Ivory 0.2.x 已针对 DSH 0.1.0-rc.7 和当前 0.1.0-rc.8 Web 客户端模块完成验证。
+> Ivory 0.2.x 已针对 DSH 0.1.1-rc.2 及其当前 Web 客户端模块完成验证。
 > 无法确认当前结构契约时，Ivory 会保留 token 级主题，并把布局控制权交还给 DSH。
 
 <details>
@@ -107,10 +107,10 @@ npm 包固定为八个白名单文件，每次 CI 都会检查。完整边界可
 
 ```sh
 npm ci
-npm test          # 渲染器单元测试，随后 14 项静态、构建、publint 与包检查
+npm test          # 渲染器单元测试，随后 15 项静态、构建、publint 与包检查
 npm run qa:r2     # 73 项浏览器回归，要求 DSH 运行于 127.0.0.1:3080
 npm run qa:adversarial  # 29 项压测：宿主协调安全、开关/resize 风暴、降级模式
-npm run qa:activity     # 16 项思考/工具调用行、图标与终端打磨检查
+npm run qa:activity     # 24 项思考/工具调用行、图标与终端打磨检查
 npm run qa:micro        # 28 项 Vision Toolkit/Ivory 微组件检查；若工具箱未安装在 DSH Web profile，请设置 DVT_CLIENT_JS
 ```
 

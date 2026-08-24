@@ -103,8 +103,8 @@ and [third-party notices](https://github.com/ZJUZhiyuCai/dsh-ivory/blob/main/THI
 
 > [!NOTE]
 > DeepSeek Harness is in developer preview and may make breaking UI changes.
-> Ivory 0.2.x is verified against DSH 0.1.0-rc.7 with the current 0.1.0-rc.8
-> web client modules. When Ivory cannot prove the current structural contract,
+> Ivory 0.2.x is verified against DSH 0.1.1-rc.2 and its current web client
+> modules. When Ivory cannot prove the current structural contract,
 > it keeps token-level theming and releases the host layout back to DSH.
 
 <details>
@@ -112,10 +112,10 @@ and [third-party notices](https://github.com/ZJUZhiyuCai/dsh-ivory/blob/main/THI
 
 ```sh
 npm ci
-npm test          # renderer unit tests, then 14 static, build, publint, and package checks
+npm test          # renderer unit tests, then 15 static, build, publint, and package checks
 npm run qa:r2     # 73 browser regressions; DSH must run at 127.0.0.1:3080
 npm run qa:adversarial  # 29 stress checks: reconciliation safety, toggle/resize storms, degraded mode
-npm run qa:activity     # 16 checks for thinking/tool-call rows, icons, and terminal polish
+npm run qa:activity     # 24 checks for thinking/tool-call rows, icons, and terminal polish
 npm run qa:micro        # 28 Vision Toolkit/Ivory micro-component checks; set DVT_CLIENT_JS if the toolkit is not installed in the DSH web profile
 ```
 

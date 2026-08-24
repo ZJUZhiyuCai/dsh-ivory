@@ -14,6 +14,21 @@ All notable changes to Ivory are documented here. The project follows
 ### Changed
 
 - Refresh README screenshots for the latest Ivory visual language.
+- Verify the full browser QA suite against DSH 0.1.1-rc.2 and update the
+  README compatibility note.
+- Restyle the "Deep diving…" turn status from a muted-ink sheen to a
+  chrysanthemum/clay gradient with a faint clay glow (light `#a94a25`,
+  dark `#e88b62`, both WCAG AA on the page background).
+- Redraw every activity-row icon as one 16px, 1.1px-stroke currentColor mask
+  set from an external Claude-family design pass: an organic seven-curve spark
+  with an open center for think, compact open wrench for tool
+  call, rx-2 terminal with wide prompt for bash, dog-ear document with stepped
+  lines for read, clear-lens magnifier for glob, and an S-curve tab folder for
+  the sidebar. Idle icons move from muted to ink-strong so the rows read more
+  substantial.
+- Unify composer typography on `--cl-input` (PingFang SC first) for the
+  textarea, backdrop, and mirror, removing the Latin/CJK font split inside the
+  input box.
 
 ## [0.2.6] - 2026-08-20
 
