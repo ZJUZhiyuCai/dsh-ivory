@@ -33,9 +33,10 @@ settings section stores only the enabled and focus preferences. When enabled:
 
 1. stable DSH design tokens receive the warm neutral theme;
 2. a small selector contract checks that the current frame can accept structural
-   enhancements;
+   enhancements (anchored on the 0.1.2 `data-slot` seams with class-level
+   fallbacks);
 3. narrow observers enhance new Markdown blocks, per-block copy controls,
-   completed assistant turns, and composer clearance;
+   completed assistant turns, and safe source notes;
 4. cleanup disconnects every observer and removes every injected node when the
    theme is disabled or unloaded.
 

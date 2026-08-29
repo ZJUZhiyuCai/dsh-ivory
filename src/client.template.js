@@ -14,15 +14,20 @@ window.__ModuleLoader__.load({
     // by scripts/build.mjs (do not edit in place).
     /*__MARKDOWN_JS__*/
     const CODE_COPY_SELECTOR = [
+      '.Pio91W_body pre',
       '.Sxvs8a_body pre',
       '[class*="code-block"] pre',
       '.dshcs-md pre',
+      '.nArs4W_editorMd pre',
       '.W-zNGW_editorMd pre',
       '.aionui-preview-col pre',
+      '.dvt-tool pre',
     ].join(',');
     const TEXT_COPY_SELECTOR = [
+      '.CeRoOG_bubble',
       '.gdEzaW_bubble',
       '.dshcs-md p',
+      '.nArs4W_editorMd p',
       '.W-zNGW_editorMd p',
     ].join(',');
 
@@ -257,27 +262,23 @@ body[data-ds-dark-theme] .dshcs-knob{background:var(--cl-ink)}
     let stateWantsReprobe = false;
     let stateStorageListening = false;
     let pendingRoots = new Set();
-    let composerObserver = null;
-    let observedComposer = null;
-    let resizeListening = false;
-    let composerSyncFrame = 0;
     let contractTimer = 0;
     let contractAttempts = 0;
     let contractProbeAt = 0;
     // Drift telemetry families: each lists alternative host selectors for one
     // surface, so a rename inside a family does not alarm while a whole-surface
-    // disappearance does. Only the sidebar is reportable — it exists in every
-    // app-shell view. The composer and conversation surfaces are view-dependent
-    // (the home composer exists without any message root), so a static check
-    // there produces false alarms; instead they act as candidate nodes that
-    // trigger a throttled re-check, below.
+    // disappearance does. Anchors are the 0.1.2 app-shell slot seams
+    // ([data-slot]) — the stable plugin contract — with class-level fallbacks
+    // for the same surfaces.
     const DRIFT_FAMILIES = {
-      sidebar: ['.pI_x6G_sidebarCol', '.hHd-Xa_root'],
+      sidebar: ['[data-slot="sidebar"]', '.CUGzGG_sidebarCol', '.KAPaMa_root'],
     };
     const CONTRACT_CANDIDATE_SELECTORS = [
-      '.pI_x6G_frame', '.pI_x6G_centerCol',
-      '.uV2eYG_card', '.uV2eYG_root',
-      '.Sxvs8a_root', '.Sxvs8a_body',
+      '[data-slot="root"]', '[data-slot="conversation"]',
+      '.CUGzGG_frame', '.CUGzGG_centerCol',
+      '.FK8dIa_root', '.FK8dIa_scrollBody',
+      '.hYB0Yq_card', '.hYB0Yq_root',
+      '.Pio91W_root', '.Pio91W_body',
     ];
     let checkedPanes = new WeakSet();
     let whaleNode = null;
@@ -312,7 +313,7 @@ body[data-ds-dark-theme] .dshcs-knob{background:var(--cl-ink)}
     }
 
     function isInsideStreamingMessage(element) {
-      return isStreamingMessage(element.closest?.('.Sxvs8a_root'));
+      return isStreamingMessage(element.closest?.('.Pio91W_root'));
     }
 
     // ---- per-block copy controls ----
@@ -653,7 +654,7 @@ body[data-ds-dark-theme] .dshcs-knob{background:var(--cl-ink)}
 
     function enhanceSafeSourceNotes(root = document) {
       if (!isEnabled()) return;
-      for (const pane of collectNear(root, '.W-zNGW_editorMd')) {
+      for (const pane of collectNear(root, '.nArs4W_editorMd, .W-zNGW_editorMd')) {
         if (pane.querySelector(':scope > .dshcs-safe-source-note')) continue;
         // One detection pass per mounted panel: the note is decorative and the
         // full-text scan must not run on every keystroke mutation.
@@ -678,18 +679,18 @@ body[data-ds-dark-theme] .dshcs-knob{background:var(--cl-ink)}
 
     function enhanceTurnMarks(root = document) {
       if (!isEnabled()) return;
-      for (const msg of collectNear(root, '.Sxvs8a_root')) {
+      for (const msg of collectNear(root, '.Pio91W_root')) {
         if (isStreamingMessage(msg)) {
           msg.querySelectorAll('.dshcs-turn-mark').forEach((mark) => mark.remove());
           continue;
         }
         if (msg.querySelector('.dshcs-turn-mark')) continue;
-        const body = msg.querySelector('.Sxvs8a_body');
+        const body = msg.querySelector('.Pio91W_body');
         if (!body || !(body.textContent || '').trim()) continue;
         const blocks = [...body.querySelectorAll('p, h1, h2, h3, h4, h5, h6, li')]
           .filter((node) => (node.textContent || '').trim()
             && !node.closest('.dshcs-md')
-            && !node.closest('.QWLzlG_root, .CY-8Ka_root, [data-terminal], [class*="callRow"]'));
+            && !node.closest('.EIRQwq_root, ._6t6-Wa_root, ._11c_Vq_root, [data-terminal], [class*="callRow"]'));
         if (!blocks.length) continue;
         const host = blocks.at(-1) ?? body;
         if (host.querySelector('.dshcs-turn-mark')) continue;
@@ -703,43 +704,9 @@ body[data-ds-dark-theme] .dshcs-knob{background:var(--cl-ink)}
       }
     }
 
-    function syncComposerClearance() {
-      composerSyncFrame = 0;
-      if (!isEnabled()) return;
-      const rects = [...document.querySelectorAll('.uV2eYG_root')]
-        .map((node) => ({ node, rect: node.getBoundingClientRect() }))
-        .filter(({ rect }) => rect.width > 0 && rect.height > 0 && rect.bottom > 0 && rect.top < innerHeight);
-      if (!rects.length) {
-        document.body.style.removeProperty('--dshcs-composer-clearance');
-        return;
-      }
-      rects.sort((a, b) => a.rect.bottom - b.rect.bottom);
-      const composer = rects.at(-1);
-      if (composerObserver && observedComposer !== composer.node) {
-        composerObserver.disconnect();
-        composerObserver.observe(composer.node);
-        observedComposer = composer.node;
-      }
-      const clearance = Math.max(144, Math.ceil(innerHeight - composer.rect.top + 12));
-      document.body.style.setProperty('--dshcs-composer-clearance', clearance + 'px');
-    }
-
-    // All composer-clearance triggers (resize, ResizeObserver, enhancement
-    // flushes) merge into one rAF so a drag-resize never stacks layout reads.
-    function scheduleComposerSync() {
-      if (!isEnabled() || composerSyncFrame) return;
-      composerSyncFrame = requestAnimationFrame(syncComposerClearance);
-    }
-
-    function observeComposer() {
-      if (!composerObserver && typeof ResizeObserver === 'function') composerObserver = new ResizeObserver(scheduleComposerSync);
-      if (!resizeListening) {
-        window.addEventListener('resize', scheduleComposerSync, { passive: true });
-        resizeListening = true;
-      }
-      scheduleComposerSync();
-    }
-
+    // Composer-clearance (--dshcs-composer-clearance) was consumed by the
+    // host's outline panel, which DSH 0.1.2 removed; the machinery is retired
+    // along with the panel. Keep the injection flush cheap.
     function flushEnhancements() {
       flowFrame = 0;
       if (!isEnabled()) { pendingRoots.clear(); return; }
@@ -752,7 +719,6 @@ body[data-ds-dark-theme] .dshcs-knob{background:var(--cl-ink)}
         enhanceTurnMarks(root);
         enhanceSafeSourceNotes(root);
       }
-      scheduleComposerSync();
     }
 
     function observeFlow() {
@@ -783,8 +749,8 @@ body[data-ds-dark-theme] .dshcs-knob{background:var(--cl-ink)}
         const degraded = compat === 'token-only' || document.body.classList.contains('dshcs-contract-mismatch');
         if (compat !== 'ok'
           && !degraded
-          && document.querySelector('.pI_x6G_frame')
-          && document.querySelector('.pI_x6G_centerCol')) {
+          && document.querySelector('[data-slot="root"]')
+          && document.querySelector('[data-slot="conversation"]')) {
           contractAttempts = 0;
           validateHostContract();
         }
@@ -853,7 +819,7 @@ body[data-ds-dark-theme] .dshcs-knob{background:var(--cl-ink)}
 
     function validateHostContract() {
       if (!isEnabled()) return;
-      const required = ['.pI_x6G_frame', '.pI_x6G_centerCol'];
+      const required = ['[data-slot="root"]', '[data-slot="conversation"]'];
       const missing = required.filter((selector) => !document.querySelector(selector));
       if (missing.length && contractAttempts++ < 20) {
         clearTimeout(contractTimer);
@@ -930,7 +896,6 @@ body[data-ds-dark-theme] .dshcs-knob{background:var(--cl-ink)}
       enhanceTurnMarks(document);
       enhanceSafeSourceNotes(document);
       observeFlow();
-      observeComposer();
     }
 
     function disableEnhancements() {
@@ -938,22 +903,13 @@ body[data-ds-dark-theme] .dshcs-knob{background:var(--cl-ink)}
       contractTimer = 0;
       if (flowFrame) cancelAnimationFrame(flowFrame);
       flowFrame = 0;
-      if (composerSyncFrame) cancelAnimationFrame(composerSyncFrame);
-      composerSyncFrame = 0;
       pendingRoots.clear();
       if (flowObserver) { flowObserver.disconnect(); flowObserver = null; }
-      if (composerObserver) { composerObserver.disconnect(); composerObserver = null; }
-      observedComposer = null;
-      if (resizeListening) {
-        window.removeEventListener('resize', scheduleComposerSync);
-        resizeListening = false;
-      }
       checkedPanes = new WeakSet();
       contractProbeAt = 0;
       cleanupMarkdown();
       cleanupCopyControls();
       document.querySelectorAll('.dshcs-turn-mark, .dshcs-safe-source-note').forEach((node) => node.remove());
-      document.body.style.removeProperty('--dshcs-composer-clearance');
       document.body.classList.remove('dshcs-contract-mismatch');
       delete document.body.dataset.dshcsCompat;
       delete document.body.dataset.dshcsDrift;

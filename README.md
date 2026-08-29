@@ -47,7 +47,7 @@ focus mode stays off until you choose it.
 Install the exact GitHub release without using npm.
 
 ```sh
-dsh plugin --profile web add github:ZJUZhiyuCai/dsh-ivory#v0.2.6
+dsh plugin --profile web add github:ZJUZhiyuCai/dsh-ivory#v0.2.7
 ```
 
 Remove Ivory and return to the native DSH interface.
@@ -103,7 +103,7 @@ and [third-party notices](https://github.com/ZJUZhiyuCai/dsh-ivory/blob/main/THI
 
 > [!NOTE]
 > DeepSeek Harness is in developer preview and may make breaking UI changes.
-> Ivory 0.2.x is verified against DSH 0.1.1-rc.2 and its current web client
+> Ivory 0.2.x is verified against DSH 0.1.2-alpha.1 and its current web client
 > modules. When Ivory cannot prove the current structural contract,
 > it keeps token-level theming and releases the host layout back to DSH.
 

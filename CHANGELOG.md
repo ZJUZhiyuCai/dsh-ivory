@@ -10,12 +10,39 @@ All notable changes to Ivory are documented here. The project follows
 - Add browser regression coverage for the plain-text fenced Markdown heuristic,
   including a positive document preview case and a false-positive guard for
   ordinary long text notes.
+- Verify the full browser QA suite (r2-fixes 70/70, verify-activity 24/24,
+  adversarial 29/29, verify-fixes, micro-components 28/28) live on DSH
+  0.1.2-alpha.1; the QA helpers now accept the auth token via `DSH_QA_TOKEN`.
 
 ### Changed
 
+- Migrate the selector contract to DSH 0.1.2-alpha.1, which replaced per-build
+  CSS-module hashes with a stable slots system (`data-slot="root"`,
+  `data-slot="sidebar"`, `data-slot="conversation"`, `data-slot="details"`).
+  The contract check now anchors on the two slot seams with class-level
+  fallbacks, and every hardcoded host class in the skin is re-mapped to the
+  new build. Compat verification (`dshcs-compat = ok`) no longer degrades to
+  token-only mode on the new host.
+- Restyle the new single-contenteditable composer (0.1.2 removed the
+  textarea/mirror/backdrop layer trick): draft text paints directly on
+  `.hYB0Yq_input` in `--cl-ink` with the PingFang-first `--cl-input` stack,
+  and the hint is a sibling `.hYB0Yq_placeholder` in muted ink. The old
+  ghost-layer exposure check in the browser QA is replaced by an assertion
+  that no backdrop/mirror layer exists and the placeholder is not visible
+  while typing.
+- Outrank the host theme's alias-token block: `--dsw-alias-*` is now mapped on
+  `body.dsh-ivory:not([data-ds-dark-theme])` and
+  `body.dsh-ivory[data-ds-dark-theme]` (both 0,2,1) so the Ivory page
+  background (#151515 dark, #fcfcfb light) wins over whichever
+  design-platform.css block injects later.
+- Retire the outline/TOC surface styling and its
+  `--dshcs-composer-clearance` machinery: DSH 0.1.2 removed the floating
+  outline panel (`d5Qffq_*`), so the ResizeObserver that tracked the composer
+  top (and the QA checks that pinned it) are removed with it.
+- Drive the chat column width from the host's content-width axis
+  (`--dsh-chat-content-width: 720px`) and drop the old scrollbar-gutter
+  overrides that fought the new scroll containers.
 - Refresh README screenshots for the latest Ivory visual language.
-- Verify the full browser QA suite against DSH 0.1.1-rc.2 and update the
-  README compatibility note.
 - Restyle the "Deep diving…" turn status from a muted-ink sheen to a
   chrysanthemum/clay gradient with a faint clay glow (light `#a94a25`,
   dark `#e88b62`, both WCAG AA on the page background).
