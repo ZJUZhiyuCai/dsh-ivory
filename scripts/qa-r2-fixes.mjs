@@ -21,7 +21,7 @@ const colorAlpha = (color) => {
 
 async function openConversation(page) {
   await expandSidebar(page).catch(() => {});
-  const rows = page.locator('.YDXeBa_sessionRow');
+  const rows = page.locator('.j_bVPG_sessionRow');
   const count = await rows.count();
   if (!count) throw new Error('Browser QA requires at least one saved conversation.');
   for (let index = 0; index < count; index++) {
@@ -29,7 +29,7 @@ async function openConversation(page) {
     if (/^(?:新会话|New chat)(?:\s|$)/i.test(label)) continue;
     await rows.nth(index).click();
     await page.waitForTimeout(1200);
-    if (await page.locator('.wSkVaW_crumb, .Md3f7G_column, .Sxvs8a_root').count()) return true;
+    if (await page.locator('.FK8dIa_crumb, .qk2Vjq_column, .Pio91W_root').count()) return true;
     await expandSidebar(page).catch(() => {});
   }
   throw new Error('No saved sidebar row opened a conversation view.');
@@ -43,12 +43,12 @@ try {
     if (width >= 1024) await expandSidebar(page).catch(() => {});
     const geometry = await page.evaluate(() => {
       const rect = (element) => { if (!element) return null; const r = element.getBoundingClientRect(); return [r.x, r.y, r.width, r.height, r.right, r.bottom].map(Math.round); };
-      const frame = document.querySelector('.pI_x6G_frame');
-      const center = document.querySelector('.pI_x6G_centerCol');
+      const frame = document.querySelector('.CUGzGG_frame');
+      const center = document.querySelector('.CUGzGG_centerCol');
       // The mismatch class must actually drop host-dependent structural styles.
       // Sidebar background cannot prove this because the host repaints it from
       // our token aliases; geometry (272px new-chat row) only comes from Ivory.
-      const nav = document.querySelector('.hHd-Xa_newSession');
+      const nav = document.querySelector('.KAPaMa_newSession');
       const gating = nav ? (() => {
         const before = getComputedStyle(nav).width;
         document.body.classList.add('dshcs-contract-mismatch');
@@ -94,16 +94,16 @@ try {
         const value = element.getBoundingClientRect();
         return [value.x, value.y, value.width, value.height, value.right, value.bottom].map(Math.round);
       };
-      const composer = document.querySelector('.uV2eYG_card');
+      const composer = document.querySelector('.hYB0Yq_card');
       return {
         viewport: [innerWidth, innerHeight],
         bodyWidth: document.body.scrollWidth,
-        center: rect(document.querySelector('.pI_x6G_centerCol')),
-        crumb: rect(document.querySelector('.wSkVaW_crumb')),
-        headerActions: rect(document.querySelector('.wSkVaW_headerActions')),
-        sessionLog: rect(document.querySelector('.nL4_yW_sessionLogButton')),
+        center: rect(document.querySelector('.CUGzGG_centerCol')),
+        crumb: rect(document.querySelector('.FK8dIa_crumb')),
+        headerActions: rect(document.querySelector('.FK8dIa_headerActions')),
+        sessionLog: rect(document.querySelector('.U5gABW_sessionLogButton')),
         composer: rect(composer),
-        controls: [...document.querySelectorAll('.uV2eYG_row button')].map(rect),
+        controls: [...document.querySelectorAll('.hYB0Yq_row button')].map(rect),
       };
     });
     const headerFits = mobile.crumb && mobile.headerActions && mobile.sessionLog
@@ -128,13 +128,13 @@ try {
     await openConversation(page);
     const expectedCard = [488, 768, 752, 100];
     await page.waitForFunction((expected) => {
-      const element = document.querySelector('.uV2eYG_card');
+      const element = document.querySelector('.hYB0Yq_card');
       if (!element) return false;
       const rect = element.getBoundingClientRect();
       const actual = [rect.x, rect.y, rect.width, rect.height].map(Math.round);
       return actual.every((value, index) => value === expected[index]);
     }, expectedCard, { timeout: 5000 }).catch(() => {});
-    const card = await page.locator('.uV2eYG_card').evaluate((element) => {
+    const card = await page.locator('.hYB0Yq_card').evaluate((element) => {
       const rect = element.getBoundingClientRect();
       return [rect.x, rect.y, rect.width, rect.height].map(Math.round);
     });
@@ -144,9 +144,12 @@ try {
   }
 
   // F2 plus requested focus treatment: one visible text layer and no blue card ring.
+  // DSH 0.1.2 composer is a single contenteditable (.hYB0Yq_input) with a
+  // sibling hint (.hYB0Yq_placeholder) — the old backdrop/mirror layer trick
+  // is gone, so the invariant is: draft text paints directly, no ghost layer.
   {
     const { page, errors } = await openPage(browser, { w: 1440, h: 900, focus: false });
-    const input = page.locator('.uV2eYG_input');
+    const input = page.locator('.hYB0Yq_input');
     await input.fill('重影检查 ABC 123');
     await input.focus();
     await page.waitForTimeout(200);
@@ -154,6 +157,7 @@ try {
       const rect = (element) => { if (!element) return null; const r = element.getBoundingClientRect(); return [r.x, r.y, r.width, r.height, r.right, r.bottom].map(Math.round); };
       const read = (selector) => {
         const element = document.querySelector(selector);
+        if (!element) return null;
         const style = getComputedStyle(element);
         return {
           color: style.color,
@@ -164,17 +168,21 @@ try {
           rect: rect(element),
         };
       };
-      const card = document.querySelector('.uV2eYG_card');
+      const card = document.querySelector('.hYB0Yq_card');
       const cardStyle = getComputedStyle(card);
       return {
-        input: read('.uV2eYG_input'),
-        backdrop: read('.uV2eYG_backdrop'),
-        mirror: read('.uV2eYG_mirror'),
+        input: read('.hYB0Yq_input'),
+        placeholder: read('.hYB0Yq_placeholder'),
+        ghostLayers: [...document.querySelectorAll('.hYB0Yq_backdrop, .hYB0Yq_mirror, [data-dshcs-mirror]')].length,
         cardOutline: [cardStyle.outlineStyle, cardStyle.outlineWidth, cardStyle.outlineColor],
         transition: [cardStyle.transitionProperty, cardStyle.transitionDuration],
       };
     });
-    check('composer-single-visible-layer', colorAlpha(layers.input.color) === 0 && colorAlpha(layers.backdrop.color) > 0 && layers.mirror.visibility === 'hidden', layers);
+    check('composer-single-visible-layer',
+      layers.input !== null && colorAlpha(layers.input.color) > 0
+      && (layers.placeholder === null || (layers.placeholder.text || '').trim() === '')
+      && layers.ghostLayers === 0,
+      layers);
     check('composer-focus-no-outer-ring', layers.cardOutline[0] === 'none' || layers.cardOutline[1] === '0px', layers.cardOutline);
     check('composer-paint-only-transition', !layers.transition[0].includes('all') && layers.transition[1].includes('0.15s'), layers.transition);
     check('composer-no-page-errors', errors.length === 0, errors);
@@ -187,8 +195,8 @@ try {
   for (const [theme, tag] of [['浅色', 'light'], ['深色', 'dark']]) {
     const { page, errors } = await openPage(browser, { w: 1440, h: 900, focus: false });
     await setTheme(page, theme);
-    const input = page.locator('.uV2eYG_input:visible').last();
-    const button = page.locator('.uV2eYG_primary:visible').last();
+    const input = page.locator('.hYB0Yq_input:visible').last();
+    const button = page.locator('.hYB0Yq_primary:visible').last();
     const read = () => button.evaluate((element) => {
       const style = getComputedStyle(element);
       return {
@@ -234,7 +242,7 @@ try {
   for (const [theme, tag] of [['浅色', 'light'], ['深色', 'dark']]) {
     const { page, errors } = await openPage(browser, { w: 1440, h: 900, focus: false });
     await setTheme(page, theme);
-    const badge = await page.locator('.pXSMma_previewBadge:visible').first().evaluate((element) => {
+    const badge = await page.locator('.Xyrcsq_previewBadge:visible').first().evaluate((element) => {
       const resolveColor = (value) => {
         const probe = document.createElement('span');
         probe.style.color = value;
@@ -411,10 +419,10 @@ try {
       });
 
       const fixture = document.createElement('article');
-      fixture.className = 'Sxvs8a_root dshcs-copy-fixture';
+      fixture.className = 'Pio91W_root dshcs-copy-fixture';
       fixture.style.cssText = 'position:fixed;left:16px;top:16px;width:420px;z-index:99999;background:var(--cl-page)';
       const body = document.createElement('div');
-      body.className = 'Sxvs8a_body';
+      body.className = 'Pio91W_body';
       const nativeParagraph = document.createElement('p');
       nativeParagraph.className = 'dshcs-copy-fixture-native';
       nativeParagraph.textContent = '原生 assistant 段落不补复制';
@@ -439,7 +447,7 @@ try {
       fixture.appendChild(body);
 
       const bubble = document.createElement('div');
-      bubble.className = 'gdEzaW_bubble dshcs-copy-fixture-bubble';
+      bubble.className = 'CeRoOG_bubble dshcs-copy-fixture-bubble';
       bubble.style.cssText = 'position:fixed;left:16px;top:240px;z-index:99999';
       bubble.textContent = '用户文字块';
       document.body.append(fixture, bubble);
@@ -491,47 +499,20 @@ try {
     await page.close();
   }
 
-  // F3: outline may float, but it must end above the live composer.
-  {
-    const { page, errors } = await openPage(browser, { w: 1440, h: 900, focus: false });
-    const trigger = page.locator('.d5Qffq_edgeTrigger');
-    if (await trigger.count()) {
-      await trigger.click();
-      await page.waitForTimeout(300);
-      const outline = await page.evaluate(() => {
-        const rect = (element) => { if (!element) return null; const r = element.getBoundingClientRect(); return [r.x, r.y, r.width, r.height, r.right, r.bottom].map(Math.round); };
-        const panel = document.querySelector('.d5Qffq_panel');
-        const composer = [...document.querySelectorAll('.uV2eYG_root')].filter((element) => element.getBoundingClientRect().height > 0).at(-1);
-        const send = document.querySelector('.uV2eYG_primary');
-        const sendRect = send.getBoundingClientRect();
-        const hit = document.elementFromPoint(sendRect.x + sendRect.width / 2, sendRect.y + sendRect.height / 2);
-        return {
-          panel: rect(panel),
-          composer: rect(composer),
-          send: rect(send),
-          sendHit: Boolean(hit?.closest('.uV2eYG_primary')),
-          clearance: getComputedStyle(document.body).getPropertyValue('--dshcs-composer-clearance'),
-        };
-      });
-      check('outline-clears-composer', outline.panel?.[5] <= outline.composer?.[1] - 8, outline);
-      check('outline-send-hit-test', outline.sendHit, outline);
-      await page.screenshot({ path: `${OUT}/outline-clearance.png` });
-    } else {
-      check('outline-fixture-present', false, 'missing .d5Qffq_edgeTrigger');
-    }
-    check('outline-no-page-errors', errors.length === 0, errors);
-    await page.close();
-  }
+  // F3 (removed in DSH 0.1.2): the host dropped the outline/TOC edge-trigger
+  // panel (d5Qffq_edgeTrigger / d5Qffq_panel) in favour of the details column
+  // (RDJYkq_*). The clearance invariant no longer has a host surface to bind
+  // to, so the check is retired rather than re-pointed at a different widget.
 
   // F4: switching the skin off performs symmetric DOM/observer cleanup.
   {
     const { page, errors } = await openPage(browser, { focus: false });
     await page.evaluate(() => {
       const message = document.createElement('article');
-      message.className = 'Sxvs8a_root dshcs-stream-fixture';
+      message.className = 'Pio91W_root dshcs-stream-fixture';
       message.setAttribute('aria-busy', 'true');
       const body = document.createElement('div');
-      body.className = 'Sxvs8a_body';
+      body.className = 'Pio91W_body';
       const paragraph = document.createElement('p');
       paragraph.textContent = '流式回复测试';
       body.appendChild(paragraph);
@@ -580,11 +561,11 @@ try {
     const { page, errors } = await openPage(browser, { focus: false });
     await openConversation(page);
     const before = await page.evaluate(() => ({
-      messages: document.querySelectorAll('.Sxvs8a_root').length,
+      messages: document.querySelectorAll('.Pio91W_root').length,
       marks: document.querySelectorAll('.dshcs-turn-mark').length,
       copyControls: document.querySelectorAll('.dshcs-copy-button').length,
     }));
-    await page.locator('.VOzbGW_trigger').last().click();
+    await page.locator('._rzeWq_trigger').last().click();
     await page.waitForTimeout(300);
     await page.getByRole('button', { name: 'Ivory 主题', exact: true }).click();
     const enabledSwitch = page.getByRole('switch', { name: '启用 Ivory 主题', exact: true });
@@ -615,9 +596,9 @@ try {
   {
     const { page, errors } = await openPage(browser, { w: 1440, h: 900, focus: false });
     await page.evaluate(() => {
-      if (document.querySelector('.W-zNGW_editorMd table')) return;
+      if (document.querySelector('.nArs4W_editorMd table')) return;
       const pane = document.createElement('div');
-      pane.className = 'W-zNGW_editorMd dshcs-workbench-table-fixture';
+      pane.className = 'nArs4W_editorMd dshcs-workbench-table-fixture';
       pane.style.cssText = 'position:fixed;left:0;top:0;width:320px;visibility:hidden;pointer-events:none';
       pane.appendChild(document.createTextNode('<img src=x onerror=alert(1)>'));
       const table = document.createElement('table');
@@ -629,14 +610,14 @@ try {
     await page.waitForTimeout(300);
     const workbench = await page.evaluate(() => {
       const rect = (element) => { if (!element) return null; const r = element.getBoundingClientRect(); return [r.x, r.y, r.width, r.height, r.right, r.bottom].map(Math.round); };
-      const rowData = [...document.querySelectorAll('.W-zNGW_explorerRow')].map((row) => {
+      const rowData = [...document.querySelectorAll('.nArs4W_explorerRow')].map((row) => {
         const parent = row.parentElement;
         return { row: rect(row), parent: rect(parent), boxSizing: getComputedStyle(row).boxSizing };
       });
-      const targetData = [...document.querySelectorAll('.W-zNGW_tabClose, .W-zNGW_tabBarPlus, .W-zNGW_editorModeButton')]
+      const targetData = [...document.querySelectorAll('.nArs4W_tabClose, .nArs4W_tabBarPlus, .nArs4W_editorModeButton')]
         .filter((element) => element.getBoundingClientRect().width > 0)
         .map((element) => ({ className: element.className, rect: rect(element) }));
-      const tables = [...document.querySelectorAll('.W-zNGW_editorMd table')].map((table) => ({ rect: rect(table), overflow: getComputedStyle(table).overflowX }));
+      const tables = [...document.querySelectorAll('.nArs4W_editorMd table')].map((table) => ({ rect: rect(table), overflow: getComputedStyle(table).overflowX }));
       return {
         rowData,
         targetData,
@@ -661,19 +642,19 @@ try {
     await openConversation(page);
     const flow = await page.evaluate(() => {
       const rect = (element) => { if (!element) return null; const r = element.getBoundingClientRect(); return [r.x, r.y, r.width, r.height, r.right, r.bottom].map(Math.round); };
-      const column = document.querySelector('.Md3f7G_column');
+      const column = document.querySelector('.qk2Vjq_column');
       const columnRect = column?.getBoundingClientRect();
-      const actions = [...document.querySelectorAll('.osXY9a_actions, .p-xYUq_actions')]
+      const actions = [...document.querySelectorAll('.a2J_ua_actions, .kZFLrG_actions')]
         .filter((element) => element.getBoundingClientRect().width > 0)
         .map((element) => rect(element));
-      const times = [...document.querySelectorAll('.p-xYUq_timeEnd')]
+      const times = [...document.querySelectorAll('.kZFLrG_timeEnd')]
         .filter((element) => element.getBoundingClientRect().width > 0)
         .map((element) => rect(element));
-      const rows = [...document.querySelectorAll('.YDXeBa_sessionRow')]
+      const rows = [...document.querySelectorAll('.j_bVPG_sessionRow')]
         .filter((element) => element.getBoundingClientRect().height > 0)
         .map((element) => rect(element));
-      const composer = document.querySelector('.uV2eYG_card');
-      const controls = [...document.querySelectorAll('.uV2eYG_row button')].map((element) => rect(element));
+      const composer = document.querySelector('.hYB0Yq_card');
+      const controls = [...document.querySelectorAll('.hYB0Yq_row button')].map((element) => rect(element));
       return { column: columnRect ? rect(column) : null, actions, times, rows, composer: rect(composer), controls };
     });
     const withinColumn = (item) => !flow.column || (item[0] >= flow.column[0] - 1 && item[4] <= flow.column[4] + 1);
@@ -692,7 +673,7 @@ try {
     const tag = theme === '浅色' ? 'light' : 'dark';
     const { page, errors } = await openPage(browser, { w: 1440, h: 900, focus: false });
     await setTheme(page, theme);
-    await page.locator('.VOzbGW_trigger').last().click();
+    await page.locator('._rzeWq_trigger').last().click();
     await page.getByRole('button', { name: '视觉工具' }).click();
     await page.waitForTimeout(150);
     const visual = await page.evaluate(() => {
@@ -750,9 +731,9 @@ try {
   // F10: reduced-motion is opt-in; ordinary mode retains the 150ms paint cue.
   {
     const { page, errors } = await openPage(browser, { focus: false });
-    const normal = await page.evaluate(() => getComputedStyle(document.querySelector('.uV2eYG_card')).transitionDuration);
+    const normal = await page.evaluate(() => getComputedStyle(document.querySelector('.hYB0Yq_card')).transitionDuration);
     await page.emulateMedia({ reducedMotion: 'reduce' });
-    const reduced = await page.evaluate(() => getComputedStyle(document.querySelector('.uV2eYG_card')).transitionDuration);
+    const reduced = await page.evaluate(() => getComputedStyle(document.querySelector('.hYB0Yq_card')).transitionDuration);
     check('motion-normal-150ms', normal.includes('0.15s'), normal);
     check('motion-reduced-near-zero', reduced.includes('1e-06s') || reduced.includes('0.001ms') || reduced === '0s', reduced);
     check('motion-no-page-errors', errors.length === 0, errors);
@@ -765,7 +746,7 @@ try {
   {
     const { page, errors } = await openPage(browser, { focus: false });
     await page.emulateMedia({ forcedColors: 'active' });
-    const button = page.locator('.hHd-Xa_newSession').first();
+    const button = page.locator('.KAPaMa_newSession').first();
     await button.focus();
     const focus = await button.evaluate((element) => {
       const style = getComputedStyle(element);
@@ -783,7 +764,7 @@ try {
     const { page, errors } = await openPage(browser, { focus: false });
     const drift = await page.evaluate(() => {
       const before = document.body.dataset.dshcsDrift ?? '';
-      document.querySelectorAll('.pI_x6G_sidebarCol, .hHd-Xa_root').forEach((node) => node.remove());
+      document.querySelectorAll('.CUGzGG_sidebarCol, .KAPaMa_root').forEach((node) => node.remove());
       return { before };
     });
     // The recheck is throttled (≤5s window) but never silently dropped, so

@@ -23,7 +23,10 @@ function findChromium() {
 }
 
 export const EXE = findChromium();
-export const BASE = 'http://127.0.0.1:3080';
+export const BASE = process.env.DSH_QA_BASE ?? 'http://127.0.0.1:3080';
+// DSH 0.1.2 requires the per-run auth token in the URL (see `dsh web` output).
+// Pass it via DSH_QA_TOKEN, or embed it directly in DSH_QA_BASE.
+export const HOME = BASE + (process.env.DSH_QA_TOKEN ? `?token=${process.env.DSH_QA_TOKEN}` : '');
 
 export async function launch() {
   if (!EXE) throw new Error('No Chromium executable found. Set DSH_QA_CHROMIUM to an absolute browser path.');
@@ -38,14 +41,14 @@ export async function openPage(browser, { w = 1440, h = 900, enabled = true, foc
     localStorage.setItem('dsh-ivory.enabled', en ? '1' : '0');
     localStorage.setItem('dsh-ivory.focus', fo ? '1' : '0');
   }, [BASE, enabled, focus]);
-  await page.goto(BASE, { waitUntil: 'domcontentloaded' });
+  await page.goto(HOME, { waitUntil: 'domcontentloaded' });
   await page.waitForTimeout(4500);
   return { page, errors };
 }
 
 // expand sidebar if collapsed; returns whether it was collapsed
 export async function expandSidebar(page) {
-  const btn = page.locator('.hHd-Xa_toggle[aria-label="打开侧边栏"]');
+  const btn = page.locator('.KAPaMa_toggle[aria-label="打开侧边栏"]');
   if (await btn.count()) {
     await btn.first().click();
     await page.waitForTimeout(800);
@@ -55,18 +58,18 @@ export async function expandSidebar(page) {
 }
 
 export async function newChat(page) {
-  await page.click('.hHd-Xa_newSession');
+  await page.click('.KAPaMa_newSession');
   await page.waitForTimeout(1500);
 }
 
 // real theme switch via settings modal
 export async function setTheme(page, label /* 浅色|深色 */) {
-  await page.locator('.VOzbGW_trigger').last().click();
+  await page.locator('._rzeWq_trigger').last().click();
   await page.waitForTimeout(1200);
-  const cube = page.locator(`._8HJdBW_themeCube`, { hasText: label });
+  const cube = page.locator(`._4xzD8a_themeCube`, { hasText: label });
   await cube.click();
   await page.waitForTimeout(800);
-  await page.locator('.VOzbGW_close').click();
+  await page.locator('._rzeWq_close').click();
   await page.waitForTimeout(800);
 }
 
@@ -160,14 +163,14 @@ export async function probeGeometry(page) {
       return { rect: [Math.round(r.x), Math.round(r.y), Math.round(r.width), Math.round(r.height)], radius: cs.borderRadius, bg: cs.backgroundColor, color: cs.color, font: cs.font, pad: cs.padding };
     };
     return {
-      sidebarCol: pick('.pI_x6G_sidebarCol'),
-      newSession: pick('.hHd-Xa_newSession'),
-      heroCard: pick('.wSkVaW_composerHero .uV2eYG_card'),
-      headline: pick('.pXSMma_headlineText'),
-      msgColumn: pick('.Md3f7G_column'),
-      userBubble: pick('.gdEzaW_bubble'),
+      sidebarCol: pick('.CUGzGG_sidebarCol'),
+      newSession: pick('.KAPaMa_newSession'),
+      heroCard: pick('.FK8dIa_composerHero .hYB0Yq_card'),
+      headline: pick('.Xyrcsq_headlineText'),
+      msgColumn: pick('.qk2Vjq_column'),
+      userBubble: pick('.CeRoOG_bubble'),
       composerCard: (() => {
-        const cards = [...document.querySelectorAll('.uV2eYG_card')];
+        const cards = [...document.querySelectorAll('.hYB0Yq_card')];
         const el = cards.find((c) => c.getBoundingClientRect().y > 600) ?? cards.at(-1);
         if (!el) return null;
         const r = el.getBoundingClientRect();
@@ -175,12 +178,12 @@ export async function probeGeometry(page) {
         return { rect: [Math.round(r.x), Math.round(r.y), Math.round(r.width), Math.round(r.height)], radius: cs.borderRadius, bg: cs.backgroundColor, shadow: cs.boxShadow.slice(0, 120) };
       })(),
       inputField: (() => {
-        const el = document.querySelector('.uV2eYG_input') ?? document.querySelector('[contenteditable=true]');
+        const el = document.querySelector('.hYB0Yq_input') ?? document.querySelector('[contenteditable=true]');
         if (!el) return null;
         const cs = getComputedStyle(el);
         return { font: cs.font, color: cs.color, caret: cs.caretColor };
       })(),
-      assistantBody: pick('.Sxvs8a_body'),
+      assistantBody: pick('.Pio91W_body'),
       bodyBg: getComputedStyle(document.body).backgroundColor,
       bodyText: getComputedStyle(document.body).color,
       fontStacks: {

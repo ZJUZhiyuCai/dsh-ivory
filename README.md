@@ -103,7 +103,7 @@ and [third-party notices](https://github.com/ZJUZhiyuCai/dsh-ivory/blob/main/THI
 
 > [!NOTE]
 > DeepSeek Harness is in developer preview and may make breaking UI changes.
-> Ivory 0.2.x is verified against DSH 0.1.1-rc.2 and its current web client
+> Ivory 0.2.x is verified against DSH 0.1.2-alpha.1 and its current web client
 > modules. When Ivory cannot prove the current structural contract,
 > it keeps token-level theming and releases the host layout back to DSH.
 

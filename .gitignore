@@ -12,6 +12,9 @@ ADVERSARIAL-*.md
 .env
 .env.*
 .release/
+# Local tool output dirs (vision toolkit evidence, workbuddy notes).
+.dsh-vision-toolkit/
+.workbuddy/
 
 # Keep the reproducible release surface; ignore one-off local research probes.
 scripts/*

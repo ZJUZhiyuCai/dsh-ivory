@@ -17,20 +17,20 @@ const check = (name, pass, detail = null) => {
 async function openExpandableToolRow(page) {
   await expandSidebar(page).catch(() => {});
   for (let pass = 0; pass < 8; pass++) {
-    const folders = page.locator('.YDXeBa_projectRow');
+    const folders = page.locator('.j_bVPG_projectRow');
     if (await folders.nth(pass).count()) {
       await folders.nth(pass).click().catch(() => {});
       await page.waitForTimeout(400);
     }
-    const rows = page.locator('.YDXeBa_sessionRow');
+    const rows = page.locator('.j_bVPG_sessionRow');
     for (let i = 0; i < await rows.count(); i++) {
       const label = (await rows.nth(i).innerText()).trim();
       if (/^(?:新会话|New chat)/i.test(label)) continue;
       await rows.nth(i).click().catch(() => {});
       await page.waitForTimeout(1200);
-      if (!(await page.locator('.CY-8Ka_root[data-expandable="true"]').count())) continue;
+      if (!(await page.locator('._6t6-Wa_root[data-expandable="true"]').count())) continue;
       await page.evaluate(() => {
-        const row = document.querySelector('.CY-8Ka_root[data-expandable="true"]');
+        const row = document.querySelector('._6t6-Wa_root[data-expandable="true"]');
         row?.scrollIntoView({ block: 'center' });
         row?.click();
       });
@@ -50,14 +50,14 @@ try {
     const probe = await page.evaluate(() => {
       const cs = (el) => el ? getComputedStyle(el) : null;
       const after = (el) => el ? getComputedStyle(el, '::after') : null;
-      const row = document.querySelector('.CY-8Ka_root[aria-expanded="false"]') ?? document.querySelector('.CY-8Ka_root');
-      const title = row?.querySelector('.CY-8Ka_title');
-      const leading = row?.querySelector('.CY-8Ka_leading');
-      const iconHost = row?.querySelector('.CY-8Ka_iconIdle') ?? leading;
-      const iconSvg = leading?.querySelector('svg:not(.CY-8Ka_chevron)');
+      const row = document.querySelector('._6t6-Wa_root[aria-expanded="false"]') ?? document.querySelector('._6t6-Wa_root');
+      const title = row?.querySelector('._6t6-Wa_title');
+      const leading = row?.querySelector('._6t6-Wa_leading');
+      const iconHost = row?.querySelector('._6t6-Wa_iconIdle') ?? leading;
+      const iconSvg = leading?.querySelector('svg:not(._6t6-Wa_chevron)');
       const terminal = document.querySelector('[data-terminal]');
       const dot = terminal?.querySelector('[class*="_dot_"]');
-      const errorRow = document.querySelector('.CY-8Ka_root[data-state="error"]');
+      const errorRow = document.querySelector('._6t6-Wa_root[data-state="error"]');
       return {
         rowFont: cs(row)?.font.slice(0, 40),
         rowColor: cs(row)?.color,
@@ -75,7 +75,7 @@ try {
           lineColor: cs(terminal.querySelector('[class*="_line"]'))?.color,
         } : null,
         dotBg: dot ? cs(dot).backgroundColor : null,
-        errorTitleColor: errorRow ? cs(errorRow.querySelector('.CY-8Ka_title')).color : 'no-error-row',
+        errorTitleColor: errorRow ? cs(errorRow.querySelector('._6t6-Wa_title')).color : 'no-error-row',
         errorRowColor: errorRow ? cs(errorRow).color : null,
       };
     });
@@ -111,11 +111,11 @@ try {
       };
       const tool = (variant) => {
         const root = document.createElement('div');
-        root.className = 'o3BgMG_root';
+        root.className = '_11c_Vq_root';
         root.dataset.variant = variant;
         root.dataset.state = 'ok';
         const leading = document.createElement('span');
-        leading.className = 'o3BgMG_leading';
+        leading.className = '_11c_Vq_leading';
         const idle = document.createElement('span');
         idle.className = '_iconIdle_qa';
         idle.appendChild(svg());
@@ -127,20 +127,21 @@ try {
 
       const tools = ['tool', 'read', 'search'].map(tool);
       const folder = document.createElement('span');
-      folder.className = 'YDXeBa_folder';
+      folder.className = 'j_bVPG_folder';
       folder.appendChild(svg());
       fixture.appendChild(folder);
 
-      const input = document.createElement('textarea');
-      input.className = 'uV2eYG_input';
-      const backdrop = document.createElement('div');
-      backdrop.className = 'uV2eYG_backdrop';
-      const mirror = document.createElement('div');
-      mirror.className = 'uV2eYG_mirror';
-      fixture.append(input, backdrop, mirror);
+      // 0.1.2 composer: text paints directly on .hYB0Yq_input; the hint is a
+      // sibling .hYB0Yq_placeholder. Assert one unified CJK-capable family.
+      const input = document.createElement('div');
+      input.className = 'hYB0Yq_input';
+      input.contentEditable = 'true';
+      const placeholder = document.createElement('div');
+      placeholder.className = 'hYB0Yq_placeholder';
+      fixture.append(input, placeholder);
 
       const turnStatus = document.createElement('span');
-      turnStatus.className = 'Md3f7G_turnStatus';
+      turnStatus.className = 'qk2Vjq_turnStatus';
       turnStatus.textContent = 'Deep diving…';
       fixture.appendChild(turnStatus);
       document.body.appendChild(fixture);
@@ -154,7 +155,7 @@ try {
         color: getComputedStyle(leading).color,
       }));
       const folderBefore = pseudo(folder, '::before');
-      const fontFamilies = [input, backdrop, mirror].map((element) => getComputedStyle(element).fontFamily);
+      const fontFamilies = [input, placeholder].map((element) => getComputedStyle(element).fontFamily);
       const statusStyle = getComputedStyle(turnStatus);
       const result = {
         tools: toolMetrics,
@@ -200,20 +201,20 @@ try {
   // live running animation layers + reduced-motion behavior
   {
     const { page } = await openPage(browser, { w: 1440, h: 900, focus: false });
-    await page.click('.hHd-Xa_newSession');
+    await page.click('.KAPaMa_newSession');
     await page.waitForTimeout(1200);
-    const input = page.locator('.uV2eYG_input:visible').last();
+    const input = page.locator('.hYB0Yq_input:visible').last();
     await input.fill('运行 bash 命令 sleep 3 && echo ok');
     await page.keyboard.press('Enter');
     let anim = null;
     for (let i = 0; i < 40; i++) {
       await page.waitForTimeout(200);
       anim = await page.evaluate(() => {
-        const row = document.querySelector('.CY-8Ka_root[data-state="running"]');
+        const row = document.querySelector('._6t6-Wa_root[data-state="running"]');
         if (!row) return null;
-        const leading = row.querySelector('.CY-8Ka_leading');
+        const leading = row.querySelector('._6t6-Wa_leading');
         const before = getComputedStyle(leading, '::before');
-        const icon = leading.querySelector('.CY-8Ka_iconIdle') ?? leading;
+        const icon = leading.querySelector('._6t6-Wa_iconIdle') ?? leading;
         const after = getComputedStyle(icon, '::after');
         return {
           leadingColor: getComputedStyle(leading).color,
@@ -229,20 +230,20 @@ try {
       anim = await page.evaluate(() => {
         const fixture = document.createElement('div');
         fixture.dataset.dshcsActivityFixture = 'running-tool';
-        fixture.className = 'CY-8Ka_root';
+        fixture.className = '_6t6-Wa_root';
         fixture.dataset.state = 'running';
         fixture.dataset.sample = 'bash';
         fixture.dataset.variant = 'bash';
 
         const leading = document.createElement('span');
-        leading.className = 'CY-8Ka_leading';
+        leading.className = '_6t6-Wa_leading';
         const chevron = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
-        chevron.classList.add('CY-8Ka_chevron');
+        chevron.classList.add('_6t6-Wa_chevron');
         chevron.setAttribute('viewBox', '0 0 14 14');
         leading.append(chevron);
 
         const title = document.createElement('span');
-        title.className = 'CY-8Ka_title';
+        title.className = '_6t6-Wa_title';
         title.textContent = 'Bash';
         fixture.append(leading, title);
         document.body.append(fixture);
@@ -277,29 +278,29 @@ try {
     const expanded = await page.evaluate(() => {
       const root = document.createElement('div');
       root.dataset.dshcsActivityFixture = 'expanded-think';
-      root.className = 'QWLzlG_root';
+      root.className = 'EIRQwq_root';
       root.dataset.variant = 'think';
       root.dataset.state = 'running';
       const inner = document.createElement('div');
       const row = document.createElement('div');
-      row.className = 'QWLzlG_row';
+      row.className = 'EIRQwq_row';
       row.setAttribute('role', 'button');
       row.setAttribute('aria-expanded', 'true');
       const leading = document.createElement('span');
-      leading.className = 'QWLzlG_leading';
+      leading.className = 'EIRQwq_leading';
       const iconIdle = document.createElement('span');
       iconIdle.className = '_iconIdle_qa';
       leading.appendChild(iconIdle);
       const chevron = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
-      chevron.classList.add('QWLzlG_chevron');
+      chevron.classList.add('EIRQwq_chevron');
       chevron.setAttribute('viewBox', '0 0 14 14');
       leading.appendChild(chevron);
       const title = document.createElement('span');
-      title.className = 'QWLzlG_title';
+      title.className = 'EIRQwq_title';
       title.textContent = '已深度思考';
       row.append(leading, title);
       const thinkBody = document.createElement('div');
-      thinkBody.className = 'QWLzlG_thinkBody';
+      thinkBody.className = 'EIRQwq_thinkBody';
       thinkBody.textContent = '先核对约束，再比较两个方案的成本。';
       inner.append(row, thinkBody);
       root.appendChild(inner);
@@ -320,14 +321,14 @@ try {
         && /13px/.test(expanded.bodyFont) && /sans/i.test(expanded.bodyFont)
         && expanded.bodyWhitespace === 'pre-wrap', expanded);
     const thinkRunning = await page.evaluate(() => {
-      const row = document.querySelector('.QWLzlG_root[data-state="running"]');
+      const row = document.querySelector('.EIRQwq_root[data-state="running"]');
       if (!row) return null;
-      const host = row.querySelector('[class*="_iconIdle_"]') ?? row.querySelector('.QWLzlG_leading');
+      const host = row.querySelector('[class*="_iconIdle_"]') ?? row.querySelector('.EIRQwq_leading');
       const after = host ? getComputedStyle(host, '::after') : null;
       return {
         mask: after?.maskImage?.slice(0, 30) || after?.webkitMaskImage?.slice(0, 30),
         anim: after?.animationName,
-        titleFont: getComputedStyle(row.querySelector('.QWLzlG_title') ?? row).font.slice(0, 40),
+        titleFont: getComputedStyle(row.querySelector('.EIRQwq_title') ?? row).font.slice(0, 40),
       };
     });
     if (thinkRunning) {
@@ -335,11 +336,11 @@ try {
     }
     await page.screenshot({ path: `${OUT}/running-row.png` });
     // wait for completion, expand the think row, verify the quiet body styles
-    try { await page.waitForSelector('.QWLzlG_root[data-state="ok"]', { timeout: 30000 }); } catch { /* fall through */ }
-    await page.evaluate(() => document.querySelector('.QWLzlG_row[aria-expanded="false"]')?.click());
+    try { await page.waitForSelector('.EIRQwq_root[data-state="ok"]', { timeout: 30000 }); } catch { /* fall through */ }
+    await page.evaluate(() => document.querySelector('.EIRQwq_row[aria-expanded="false"]')?.click());
     await page.waitForTimeout(500);
     const think = await page.evaluate(() => {
-      const body = document.querySelector('.QWLzlG_thinkBody');
+      const body = document.querySelector('.EIRQwq_thinkBody');
       if (!body) return null;
       const cs = getComputedStyle(body);
       return {
@@ -354,10 +355,10 @@ try {
     await page.emulateMedia({ reducedMotion: 'reduce' });
     await page.waitForTimeout(400);
     const reduced = await page.evaluate(() => {
-      const row = document.querySelector('.CY-8Ka_root[data-state="running"]');
-      const leading = row?.querySelector('.CY-8Ka_leading');
+      const row = document.querySelector('._6t6-Wa_root[data-state="running"]');
+      const leading = row?.querySelector('._6t6-Wa_leading');
       const before = leading ? getComputedStyle(leading, '::before') : null;
-      const expandedLeading = document.querySelector('[data-dshcs-activity-fixture="expanded-think"] .QWLzlG_leading');
+      const expandedLeading = document.querySelector('[data-dshcs-activity-fixture="expanded-think"] .EIRQwq_leading');
       const expandedBefore = expandedLeading ? getComputedStyle(expandedLeading, '::before') : null;
       return {
         ringDuration: before?.animationDuration,

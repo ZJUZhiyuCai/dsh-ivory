@@ -2,7 +2,7 @@
 // streaming guards, toggle storms, resize storms, degraded-mode cost, and
 // corrupted storage. Requires a running DSH instance at http://127.0.0.1:3080.
 import fs from 'node:fs';
-import { launch, openPage, expandSidebar, setTheme, BASE } from './qa-lib.mjs';
+import { launch, openPage, expandSidebar, setTheme, HOME } from './qa-lib.mjs';
 
 const OUT = 'output/playwright/adversarial-20260818';
 fs.mkdirSync(OUT, { recursive: true });
@@ -16,14 +16,14 @@ const check = (name, pass, detail = null) => {
 
 async function openConversation(page) {
   await expandSidebar(page).catch(() => {});
-  const rows = page.locator('.YDXeBa_sessionRow');
+  const rows = page.locator('.j_bVPG_sessionRow');
   const count = await rows.count();
   for (let index = 0; index < count; index++) {
     const label = (await rows.nth(index).innerText()).trim();
     if (/^(?:新会话|New chat)(?:\s|$)/i.test(label)) continue;
     await rows.nth(index).click();
     await page.waitForTimeout(1200);
-    if (await page.locator('.Sxvs8a_body').count()) return true;
+    if (await page.locator('.Pio91W_body').count()) return true;
     await expandSidebar(page).catch(() => {});
   }
   return false;
@@ -33,10 +33,10 @@ async function addMarkdownFixture(page, className, source, options = {}) {
   await page.evaluate(([fixtureClass, fixtureSource, busy]) => {
     if (document.querySelector(`.${fixtureClass}`)) return;
     const message = document.createElement('article');
-    message.className = `Sxvs8a_root ${fixtureClass}`;
+    message.className = `Pio91W_root ${fixtureClass}`;
     if (busy) message.setAttribute('aria-busy', 'true');
     const body = document.createElement('div');
-    body.className = 'Sxvs8a_body';
+    body.className = 'Pio91W_body';
     const paragraph = document.createElement('p');
     paragraph.className = `${fixtureClass}-prose`;
     paragraph.textContent = '正文段落。';
@@ -168,11 +168,11 @@ try {
     await addMarkdownFixture(page, 'md-whale-fixture', '# 结尾\n\n- 最后一项');
     await page.evaluate(() => {
       const message = document.createElement('article');
-      message.className = 'Sxvs8a_root md-whale-activity';
+      message.className = 'Pio91W_root md-whale-activity';
       const body = document.createElement('div');
-      body.className = 'Sxvs8a_body';
+      body.className = 'Pio91W_body';
       const think = document.createElement('div');
-      think.className = 'QWLzlG_root';
+      think.className = 'EIRQwq_root';
       think.dataset.variant = 'think';
       think.dataset.state = 'ok';
       think.textContent = 'Think 活动阶段完成';
@@ -224,7 +224,7 @@ try {
       marks: document.querySelectorAll('.dshcs-turn-mark').length,
       copyControls: document.querySelectorAll('.dshcs-copy-button').length,
     }));
-    await page.locator('.VOzbGW_trigger').last().click();
+    await page.locator('._rzeWq_trigger').last().click();
     await page.waitForTimeout(800);
     await page.getByRole('button', { name: 'Ivory 主题', exact: true }).click();
     const enabledSwitch = page.getByRole('switch', { name: '启用 Ivory 主题', exact: true });
@@ -237,10 +237,9 @@ try {
       enabled: document.body.classList.contains('dsh-ivory'),
       marks: document.querySelectorAll('.dshcs-turn-mark').length,
       copyControls: document.querySelectorAll('.dshcs-copy-button').length,
-      clearance: document.body.style.getPropertyValue('--dshcs-composer-clearance'),
     }));
     const restored = !hasConversation || (on.marks === before.marks && on.copyControls === before.copyControls);
-    check('toggle-storm-ends-enabled-and-restored', on.enabled && restored && on.clearance !== '', { before, on, hasConversation });
+    check('toggle-storm-ends-enabled-and-restored', on.enabled && restored, { before, on, hasConversation });
     check('toggle-storm-no-page-errors', errors.length === 0, errors);
     await page.close();
   }
@@ -327,8 +326,9 @@ try {
     await page.close();
   }
 
-  // A7: resize storm — drag-like viewport churn must not throw and the outline
-  // clearance must settle at a sane value.
+  // A7: resize storm — drag-like viewport churn must not throw and no stale
+  // clearance variable may leak (the outline panel that consumed it was
+  // removed in DSH 0.1.2).
   {
     const { page, errors } = await openPage(browser, { w: 1440, h: 900, focus: false });
     for (let index = 0; index < 24; index++) {
@@ -338,12 +338,9 @@ try {
     const settled = await page.evaluate(() => ({
       clearance: getComputedStyle(document.body).getPropertyValue('--dshcs-composer-clearance').trim(),
       viewport: [innerWidth, innerHeight],
-      composerTop: document.querySelector('.uV2eYG_root')?.getBoundingClientRect().top,
+      composerTop: document.querySelector('.hYB0Yq_root')?.getBoundingClientRect().top,
     }));
-    const clearancePx = Number.parseInt(settled.clearance, 10);
-    const expected = Math.max(144, Math.ceil(settled.viewport[1] - (settled.composerTop ?? 0) + 12));
-    const sane = Number.isFinite(clearancePx) && clearancePx >= 144 && Math.abs(clearancePx - expected) <= 2;
-    check('resize-storm-clearance-settles', sane, settled);
+    check('resize-storm-no-stale-clearance', settled.clearance === '', settled);
     check('resize-storm-no-page-errors', errors.length === 0, errors);
     await page.close();
   }
@@ -354,8 +351,8 @@ try {
   {
     const { page, errors } = await openPage(browser, { focus: false });
     await page.evaluate(() => {
-      document.querySelector('.pI_x6G_frame')?.remove();
-      document.querySelector('.pI_x6G_centerCol')?.remove();
+      document.querySelector('.CUGzGG_frame')?.remove();
+      document.querySelector('.CUGzGG_centerCol')?.remove();
       document.body.dataset.dshcsCompat = 'token-only';
       document.body.classList.add('dshcs-contract-mismatch');
     });
@@ -366,7 +363,7 @@ try {
       const original = document.querySelector.bind(document);
       document.querySelector = (selector) => {
         totalCalls += 1;
-        if (selector === '.pI_x6G_frame' || selector === '.pI_x6G_centerCol') calls += 1;
+        if (selector === '.CUGzGG_frame' || selector === '.CUGzGG_centerCol') calls += 1;
         return original(selector);
       };
       const hot = document.createElement('div');
@@ -399,7 +396,7 @@ try {
       localStorage.setItem('dsh-ivory.enabled', '\u0000garbage{');
       localStorage.setItem('dsh-ivory.focus', '{"not":"a-flag"}');
     });
-    await hostile.goto(BASE, { waitUntil: 'domcontentloaded' });
+    await hostile.goto(HOME, { waitUntil: 'domcontentloaded' });
     await hostile.waitForTimeout(4500);
     const corrupted = await hostile.evaluate(() => ({
       enabled: document.body.classList.contains('dsh-ivory'),
@@ -420,7 +417,7 @@ try {
         return originalSet.call(this, key, value);
       };
     });
-    await blocked.goto(BASE, { waitUntil: 'domcontentloaded' });
+    await blocked.goto(HOME, { waitUntil: 'domcontentloaded' });
     await blocked.waitForTimeout(4500);
     const blockedState = await blocked.evaluate(() => ({
       enabled: document.body.classList.contains('dsh-ivory'),
@@ -437,9 +434,9 @@ try {
     const { page, errors } = await openPage(browser, { focus: false });
     const soak = await page.evaluate(async () => {
       const hot = document.createElement('div');
-      hot.className = 'Sxvs8a_root soak-fixture';
+      hot.className = 'Pio91W_root soak-fixture';
       const body = document.createElement('div');
-      body.className = 'Sxvs8a_body';
+      body.className = 'Pio91W_body';
       const paragraph = document.createElement('p');
       body.appendChild(paragraph);
       hot.appendChild(body);

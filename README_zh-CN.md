@@ -99,7 +99,7 @@ npm 包固定为八个白名单文件，每次 CI 都会检查。完整边界可
 
 > [!NOTE]
 > DeepSeek Harness 仍处于开发者预览阶段，UI 可能发生破坏性变化。
-> Ivory 0.2.x 已针对 DSH 0.1.1-rc.2 及其当前 Web 客户端模块完成验证。
+> Ivory 0.2.x 已针对 DSH 0.1.2-alpha.1 及其当前 Web 客户端模块完成验证。
 > 无法确认当前结构契约时，Ivory 会保留 token 级主题，并把布局控制权交还给 DSH。
 
 <details>
