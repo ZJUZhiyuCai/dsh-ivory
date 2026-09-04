@@ -47,7 +47,7 @@ focus mode stays off until you choose it.
 Install the exact GitHub release without using npm.
 
 ```sh
-dsh plugin --profile web add github:ZJUZhiyuCai/dsh-ivory#v0.2.7
+dsh plugin --profile web add github:ZJUZhiyuCai/dsh-ivory#v0.2.8
 ```
 
 Remove Ivory and return to the native DSH interface.
@@ -63,7 +63,7 @@ dsh plugin --profile web remove dsh-ivory
 | Area | What Ivory changes |
 | --- | --- |
 | **Appearance** | A complete warm-neutral palette for light and dark mode, with restrained shadows, corners, and editorial typography. |
-| **Responsive layout** | Fluid conversation geometry tested at 375, 768, 1,440, and 1,920 pixels. |
+| **Responsive layout** | Host-adaptive, drag-resizable conversation geometry tested at 375, 768, 1,440, and 1,920 pixels. |
 | **Reading and copying** | Independent controls for prose, user bubbles, and code blocks, plus a small end-of-response marker. |
 | **Markdown documents** | A bounded, DOM-built preview for `.md` output with source view always available and HTTP(S)-only links. |
 | **Accessibility** | Keyboard focus, reduced-motion behavior, forced-colors fallbacks, and WCAG AA muted text contrast. |
@@ -103,7 +103,7 @@ and [third-party notices](https://github.com/ZJUZhiyuCai/dsh-ivory/blob/main/THI
 
 > [!NOTE]
 > DeepSeek Harness is in developer preview and may make breaking UI changes.
-> Ivory 0.2.x is verified against DSH 0.1.2-alpha.1 and its current web client
+> Ivory 0.2.8 is verified against DSH 0.1.2-rc.1 and its current web client
 > modules. When Ivory cannot prove the current structural contract,
 > it keeps token-level theming and releases the host layout back to DSH.
 
@@ -113,9 +113,9 @@ and [third-party notices](https://github.com/ZJUZhiyuCai/dsh-ivory/blob/main/THI
 ```sh
 npm ci
 npm test          # renderer unit tests, then 15 static, build, publint, and package checks
-npm run qa:r2     # 73 browser regressions; DSH must run at 127.0.0.1:3080
-npm run qa:adversarial  # 29 stress checks: reconciliation safety, toggle/resize storms, degraded mode
-npm run qa:activity     # 24 checks for thinking/tool-call rows, icons, and terminal polish
+npm run qa:r2     # 74 browser regressions; DSH must run at 127.0.0.1:3080
+npm run qa:adversarial  # 30 stress checks: reconciliation safety, toggle/resize storms, degraded mode
+npm run qa:activity     # 26 checks for thinking/tool-call rows, icons, and terminal polish
 npm run qa:micro        # 28 Vision Toolkit/Ivory micro-component checks; set DVT_CLIENT_JS if the toolkit is not installed in the DSH web profile
 ```
 

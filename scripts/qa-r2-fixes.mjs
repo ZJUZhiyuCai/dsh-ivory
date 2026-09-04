@@ -21,7 +21,18 @@ const colorAlpha = (color) => {
 
 async function openConversation(page) {
   await expandSidebar(page).catch(() => {});
-  const rows = page.locator('.j_bVPG_sessionRow');
+  const rows = page.locator('.YDXeBa_sessionRow');
+  if (!(await rows.count())) {
+    const projects = page.locator('.YDXeBa_projectRow');
+    for (let index = 0; index < await projects.count(); index++) {
+      const project = projects.nth(index);
+      if (await project.getAttribute('aria-expanded') !== 'true') {
+        await project.click();
+        await page.waitForTimeout(400);
+      }
+      if (await rows.count()) break;
+    }
+  }
   const count = await rows.count();
   if (!count) throw new Error('Browser QA requires at least one saved conversation.');
   for (let index = 0; index < count; index++) {
@@ -29,7 +40,7 @@ async function openConversation(page) {
     if (/^(?:新会话|New chat)(?:\s|$)/i.test(label)) continue;
     await rows.nth(index).click();
     await page.waitForTimeout(1200);
-    if (await page.locator('.FK8dIa_crumb, .qk2Vjq_column, .Pio91W_root').count()) return true;
+    if (await page.locator('.wSkVaW_crumb, .EvIC1a_column, .hWmORq_root').count()) return true;
     await expandSidebar(page).catch(() => {});
   }
   throw new Error('No saved sidebar row opened a conversation view.');
@@ -43,12 +54,12 @@ try {
     if (width >= 1024) await expandSidebar(page).catch(() => {});
     const geometry = await page.evaluate(() => {
       const rect = (element) => { if (!element) return null; const r = element.getBoundingClientRect(); return [r.x, r.y, r.width, r.height, r.right, r.bottom].map(Math.round); };
-      const frame = document.querySelector('.CUGzGG_frame');
-      const center = document.querySelector('.CUGzGG_centerCol');
+      const frame = document.querySelector('.pI_x6G_frame');
+      const center = document.querySelector('.pI_x6G_centerCol');
       // The mismatch class must actually drop host-dependent structural styles.
       // Sidebar background cannot prove this because the host repaints it from
       // our token aliases; geometry (272px new-chat row) only comes from Ivory.
-      const nav = document.querySelector('.KAPaMa_newSession');
+      const nav = document.querySelector('.hHd-Xa_newSession');
       const gating = nav ? (() => {
         const before = getComputedStyle(nav).width;
         document.body.classList.add('dshcs-contract-mismatch');
@@ -77,33 +88,93 @@ try {
     await page.close();
   }
 
-  // F1/mobile: navigate directly so the responsive rail stays collapsed. The
-  // title, header actions and every composer control must remain usable.
+  // rc.1 makes the conversation width adaptive and user-draggable. Ivory may
+  // style the shared axis, but must not pin it back to the old 720px width.
   {
-    const desktop = await openPage(browser, { w: 1440, h: 900, focus: false });
-    await openConversation(desktop.page);
-    const sessionUrl = desktop.page.url();
-    await desktop.page.close();
+    const { page, errors } = await openPage(browser, { w: 1440, h: 900, focus: false });
+    const widths = await page.evaluate(() => {
+      const root = document.querySelector('.wSkVaW_root');
+      const composer = document.querySelector('.uV2eYG_root');
+      if (!root || !composer) return null;
+      const before = getComputedStyle(composer).maxWidth;
+      root.style.setProperty('--dsh-chat-user-width', '820px');
+      const dragged = getComputedStyle(composer).maxWidth;
+      root.style.removeProperty('--dsh-chat-user-width');
+      const restored = getComputedStyle(composer).maxWidth;
+      return { before, dragged, restored };
+    });
+    check('rc1-content-width-axis-remains-draggable',
+      widths?.dragged === '852px' && widths.restored === widths.before,
+      { widths, errors });
+    check('rc1-content-width-axis-no-page-errors', errors.length === 0, errors);
+    await page.close();
+  }
 
-    const { page, errors } = await openPage(browser, { w: 375, h: 900, focus: false });
-    await page.goto(sessionUrl, { waitUntil: 'domcontentloaded' });
-    await page.waitForTimeout(2500);
+  // rc.1's General settings expose a 12–17px conversation font axis. Keep
+  // Ivory's typefaces, but require every conversation text tier to follow it.
+  {
+    const { page, errors } = await openPage(browser, { w: 1440, h: 900, focus: false });
+    const sizes = await page.evaluate(() => {
+      const fixture = document.createElement('div');
+      fixture.style.cssText = 'position:fixed;visibility:hidden;pointer-events:none';
+      const input = Object.assign(document.createElement('div'), { className: 'uV2eYG_input' });
+      const assistant = Object.assign(document.createElement('div'), { className: 'hWmORq_root' });
+      const user = Object.assign(document.createElement('div'), { className: 'Sixlwa_bubble' });
+      const tool = Object.assign(document.createElement('div'), { className: 'CY-8Ka_root' });
+      const title = Object.assign(document.createElement('span'), { className: 'CY-8Ka_title' });
+      const markdown = Object.assign(document.createElement('div'), { className: 'dshcs-md' });
+      tool.appendChild(title);
+      fixture.append(input, assistant, user, tool, markdown);
+      document.body.appendChild(fixture);
+      const original = document.body.style.getPropertyValue('--dsh-content-font-size');
+      const read = () => [input, assistant, user, title, markdown]
+        .map((element) => getComputedStyle(element).fontSize);
+      document.body.style.setProperty('--dsh-content-font-size', '14px');
+      const base = read();
+      document.body.style.setProperty('--dsh-content-font-size', '17px');
+      const large = read();
+      if (original) document.body.style.setProperty('--dsh-content-font-size', original);
+      else document.body.style.removeProperty('--dsh-content-font-size');
+      fixture.remove();
+      return { base, large };
+    });
+    check('rc1-conversation-font-axis-propagates',
+      JSON.stringify(sizes.base) === JSON.stringify(['14px', '14px', '14px', '13px', '14px'])
+      && JSON.stringify(sizes.large) === JSON.stringify(['17px', '17px', '17px', '15px', '17px']),
+      sizes);
+    check('rc1-conversation-font-axis-no-page-errors', errors.length === 0, errors);
+    await page.close();
+  }
+
+  // F1/mobile: rc.1 keeps the selected session in client state instead of the
+  // page URL. Resize the live conversation in place and keep its responsive
+  // rail collapsed; the title, actions, and composer must remain usable.
+  {
+    const { page, errors } = await openPage(browser, { w: 1440, h: 900, focus: false });
+    await openConversation(page);
+    await page.setViewportSize({ width: 375, height: 900 });
+    await page.waitForTimeout(800);
+    const expandedAtMobile = page.locator('.pI_x6G_frame:not([data-sidebar-collapsed="true"]) .hHd-Xa_root:not(.hHd-Xa_collapsed)');
+    if (await expandedAtMobile.count()) {
+      await page.locator('.hHd-Xa_toggle').first().click();
+      await page.waitForTimeout(500);
+    }
     const mobile = await page.evaluate(() => {
       const rect = (element) => {
         if (!element) return null;
         const value = element.getBoundingClientRect();
         return [value.x, value.y, value.width, value.height, value.right, value.bottom].map(Math.round);
       };
-      const composer = document.querySelector('.hYB0Yq_card');
+      const composer = document.querySelector('.uV2eYG_card');
       return {
         viewport: [innerWidth, innerHeight],
         bodyWidth: document.body.scrollWidth,
-        center: rect(document.querySelector('.CUGzGG_centerCol')),
-        crumb: rect(document.querySelector('.FK8dIa_crumb')),
-        headerActions: rect(document.querySelector('.FK8dIa_headerActions')),
-        sessionLog: rect(document.querySelector('.U5gABW_sessionLogButton')),
+        center: rect(document.querySelector('.pI_x6G_centerCol')),
+        crumb: rect(document.querySelector('.wSkVaW_crumb')),
+        headerActions: rect(document.querySelector('.wSkVaW_headerActions')),
+        sessionLog: rect(document.querySelector('.nL4_yW_sessionLogButton')),
         composer: rect(composer),
-        controls: [...document.querySelectorAll('.hYB0Yq_row button')].map(rect),
+        controls: [...document.querySelectorAll('.uV2eYG_row button')].map(rect),
       };
     });
     const headerFits = mobile.crumb && mobile.headerActions && mobile.sessionLog
@@ -120,36 +191,46 @@ try {
     await page.close();
   }
 
-  // Focus mode is the pixel-comparison baseline: test the visible card rather
-  // than its padded wrapper so documentation cannot drift from the UI again.
+  // Focus mode keeps a centered card, but rc.1's adaptive/dragged width axis
+  // replaces the old fixed 752px reference geometry.
   {
     const { page, errors } = await openPage(browser, { w: 1440, h: 900, focus: true });
     await expandSidebar(page).catch(() => {});
     await openConversation(page);
-    const expectedCard = [488, 768, 752, 100];
-    await page.waitForFunction((expected) => {
-      const element = document.querySelector('.hYB0Yq_card');
-      if (!element) return false;
-      const rect = element.getBoundingClientRect();
-      const actual = [rect.x, rect.y, rect.width, rect.height].map(Math.round);
-      return actual.every((value, index) => value === expected[index]);
-    }, expectedCard, { timeout: 5000 }).catch(() => {});
-    const card = await page.locator('.hYB0Yq_card').evaluate((element) => {
-      const rect = element.getBoundingClientRect();
-      return [rect.x, rect.y, rect.width, rect.height].map(Math.round);
+    const geometry = await page.evaluate(() => {
+      const card = document.querySelector('.uV2eYG_card');
+      const wrapper = document.querySelector('.uV2eYG_root');
+      const center = document.querySelector('.pI_x6G_centerCol');
+      if (!card || !wrapper || !center) return null;
+      const cardRect = card.getBoundingClientRect();
+      const centerRect = center.getBoundingClientRect();
+      return {
+        card: [cardRect.x, cardRect.y, cardRect.width, cardRect.height, cardRect.right, cardRect.bottom],
+        center: [centerRect.x, centerRect.width, centerRect.right],
+        axisWidth: Number.parseFloat(getComputedStyle(wrapper).maxWidth),
+        viewportHeight: innerHeight,
+      };
     });
-    check('focus-conversation-card-reference-geometry', card.every((value, index) => value === expectedCard[index]), { expected: expectedCard, actual: card });
+    const centered = geometry
+      && Math.abs((geometry.card[0] + geometry.card[4]) / 2 - (geometry.center[0] + geometry.center[2]) / 2) < 1;
+    check('focus-conversation-card-shared-axis-geometry',
+      geometry
+      && centered
+      && Math.abs(geometry.card[2] - geometry.axisWidth) < 1
+      && Math.abs(geometry.card[3] - 100) < 1
+      && geometry.card[5] <= geometry.viewportHeight,
+      geometry);
     check('focus-conversation-no-page-errors', errors.length === 0, errors);
     await page.close();
   }
 
   // F2 plus requested focus treatment: one visible text layer and no blue card ring.
-  // DSH 0.1.2 composer is a single contenteditable (.hYB0Yq_input) with a
-  // sibling hint (.hYB0Yq_placeholder) — the old backdrop/mirror layer trick
+  // DSH 0.1.2 composer is a single contenteditable (.uV2eYG_input) with a
+  // sibling hint (.uV2eYG_placeholder) — the old backdrop/mirror layer trick
   // is gone, so the invariant is: draft text paints directly, no ghost layer.
   {
     const { page, errors } = await openPage(browser, { w: 1440, h: 900, focus: false });
-    const input = page.locator('.hYB0Yq_input');
+    const input = page.locator('.uV2eYG_input');
     await input.fill('重影检查 ABC 123');
     await input.focus();
     await page.waitForTimeout(200);
@@ -168,12 +249,12 @@ try {
           rect: rect(element),
         };
       };
-      const card = document.querySelector('.hYB0Yq_card');
+      const card = document.querySelector('.uV2eYG_card');
       const cardStyle = getComputedStyle(card);
       return {
-        input: read('.hYB0Yq_input'),
-        placeholder: read('.hYB0Yq_placeholder'),
-        ghostLayers: [...document.querySelectorAll('.hYB0Yq_backdrop, .hYB0Yq_mirror, [data-dshcs-mirror]')].length,
+        input: read('.uV2eYG_input'),
+        placeholder: read('.uV2eYG_placeholder'),
+        ghostLayers: [...document.querySelectorAll('.uV2eYG_backdrop, .uV2eYG_mirror, [data-dshcs-mirror]')].length,
         cardOutline: [cardStyle.outlineStyle, cardStyle.outlineWidth, cardStyle.outlineColor],
         transition: [cardStyle.transitionProperty, cardStyle.transitionDuration],
       };
@@ -195,8 +276,8 @@ try {
   for (const [theme, tag] of [['浅色', 'light'], ['深色', 'dark']]) {
     const { page, errors } = await openPage(browser, { w: 1440, h: 900, focus: false });
     await setTheme(page, theme);
-    const input = page.locator('.hYB0Yq_input:visible').last();
-    const button = page.locator('.hYB0Yq_primary:visible').last();
+    const input = page.locator('.uV2eYG_input:visible').last();
+    const button = page.locator('.uV2eYG_primary:visible').last();
     const read = () => button.evaluate((element) => {
       const style = getComputedStyle(element);
       return {
@@ -242,7 +323,7 @@ try {
   for (const [theme, tag] of [['浅色', 'light'], ['深色', 'dark']]) {
     const { page, errors } = await openPage(browser, { w: 1440, h: 900, focus: false });
     await setTheme(page, theme);
-    const badge = await page.locator('.Xyrcsq_previewBadge:visible').first().evaluate((element) => {
+    const badge = await page.locator('.pXSMma_previewBadge:visible').first().evaluate((element) => {
       const resolveColor = (value) => {
         const probe = document.createElement('span');
         probe.style.color = value;
@@ -419,10 +500,10 @@ try {
       });
 
       const fixture = document.createElement('article');
-      fixture.className = 'Pio91W_root dshcs-copy-fixture';
+      fixture.className = 'hWmORq_root dshcs-copy-fixture';
       fixture.style.cssText = 'position:fixed;left:16px;top:16px;width:420px;z-index:99999;background:var(--cl-page)';
       const body = document.createElement('div');
-      body.className = 'Pio91W_body';
+      body.className = 'hWmORq_body';
       const nativeParagraph = document.createElement('p');
       nativeParagraph.className = 'dshcs-copy-fixture-native';
       nativeParagraph.textContent = '原生 assistant 段落不补复制';
@@ -447,7 +528,7 @@ try {
       fixture.appendChild(body);
 
       const bubble = document.createElement('div');
-      bubble.className = 'CeRoOG_bubble dshcs-copy-fixture-bubble';
+      bubble.className = 'Sixlwa_bubble dshcs-copy-fixture-bubble';
       bubble.style.cssText = 'position:fixed;left:16px;top:240px;z-index:99999';
       bubble.textContent = '用户文字块';
       document.body.append(fixture, bubble);
@@ -509,10 +590,10 @@ try {
     const { page, errors } = await openPage(browser, { focus: false });
     await page.evaluate(() => {
       const message = document.createElement('article');
-      message.className = 'Pio91W_root dshcs-stream-fixture';
+      message.className = 'hWmORq_root dshcs-stream-fixture';
       message.setAttribute('aria-busy', 'true');
       const body = document.createElement('div');
-      body.className = 'Pio91W_body';
+      body.className = 'hWmORq_body';
       const paragraph = document.createElement('p');
       paragraph.textContent = '流式回复测试';
       body.appendChild(paragraph);
@@ -561,11 +642,11 @@ try {
     const { page, errors } = await openPage(browser, { focus: false });
     await openConversation(page);
     const before = await page.evaluate(() => ({
-      messages: document.querySelectorAll('.Pio91W_root').length,
+      messages: document.querySelectorAll('.hWmORq_root').length,
       marks: document.querySelectorAll('.dshcs-turn-mark').length,
       copyControls: document.querySelectorAll('.dshcs-copy-button').length,
     }));
-    await page.locator('._rzeWq_trigger').last().click();
+    await page.locator('.VOzbGW_trigger').last().click();
     await page.waitForTimeout(300);
     await page.getByRole('button', { name: 'Ivory 主题', exact: true }).click();
     const enabledSwitch = page.getByRole('switch', { name: '启用 Ivory 主题', exact: true });
@@ -642,19 +723,19 @@ try {
     await openConversation(page);
     const flow = await page.evaluate(() => {
       const rect = (element) => { if (!element) return null; const r = element.getBoundingClientRect(); return [r.x, r.y, r.width, r.height, r.right, r.bottom].map(Math.round); };
-      const column = document.querySelector('.qk2Vjq_column');
+      const column = document.querySelector('.EvIC1a_column');
       const columnRect = column?.getBoundingClientRect();
-      const actions = [...document.querySelectorAll('.a2J_ua_actions, .kZFLrG_actions')]
+      const actions = [...document.querySelectorAll('.xzv4MW_actions, .TS9iAW_actions')]
         .filter((element) => element.getBoundingClientRect().width > 0)
         .map((element) => rect(element));
-      const times = [...document.querySelectorAll('.kZFLrG_timeEnd')]
+      const times = [...document.querySelectorAll('.xzv4MW_timeEnd')]
         .filter((element) => element.getBoundingClientRect().width > 0)
         .map((element) => rect(element));
-      const rows = [...document.querySelectorAll('.j_bVPG_sessionRow')]
+      const rows = [...document.querySelectorAll('.YDXeBa_sessionRow')]
         .filter((element) => element.getBoundingClientRect().height > 0)
         .map((element) => rect(element));
-      const composer = document.querySelector('.hYB0Yq_card');
-      const controls = [...document.querySelectorAll('.hYB0Yq_row button')].map((element) => rect(element));
+      const composer = document.querySelector('.uV2eYG_card');
+      const controls = [...document.querySelectorAll('.uV2eYG_row button')].map((element) => rect(element));
       return { column: columnRect ? rect(column) : null, actions, times, rows, composer: rect(composer), controls };
     });
     const withinColumn = (item) => !flow.column || (item[0] >= flow.column[0] - 1 && item[4] <= flow.column[4] + 1);
@@ -673,8 +754,22 @@ try {
     const tag = theme === '浅色' ? 'light' : 'dark';
     const { page, errors } = await openPage(browser, { w: 1440, h: 900, focus: false });
     await setTheme(page, theme);
-    await page.locator('._rzeWq_trigger').last().click();
-    await page.getByRole('button', { name: '视觉工具' }).click();
+    await page.locator('.VOzbGW_trigger').last().click();
+    const visualTab = page.getByRole('button', { name: '视觉工具' });
+    const visualSource = await visualTab.count() ? 'live' : 'fixture';
+    if (visualSource === 'live') await visualTab.click();
+    else await page.evaluate(() => {
+      const fixture = document.createElement('section');
+      fixture.dataset.dshcsPluginSettingsFixture = 'visual';
+      const alert = document.createElement('div');
+      alert.className = 'dvt-alert notice';
+      const panel = document.createElement('div');
+      panel.className = 'dvt-panel';
+      const badge = document.createElement('span');
+      badge.className = 'dvt-badge';
+      fixture.append(alert, panel, badge);
+      document.body.appendChild(fixture);
+    });
     await page.waitForTimeout(150);
     const visual = await page.evaluate(() => {
       const alert = document.querySelector('.dvt-alert.notice');
@@ -683,23 +778,41 @@ try {
       const read = (element) => element ? { bg: getComputedStyle(element).backgroundColor, color: getComputedStyle(element).color, border: getComputedStyle(element).borderTopColor } : null;
       return { alert: read(alert), panel: read(panel), badge: read(badge) };
     });
-    check(`settings-visual-neutral-${tag}`, visual.alert && visual.alert.color !== 'rgb(42, 120, 214)' && visual.panel.border !== 'rgb(42, 120, 214)', visual);
+    check(`settings-visual-neutral-${tag}`, visual.alert && visual.alert.color !== 'rgb(42, 120, 214)' && visual.panel.border !== 'rgb(42, 120, 214)', { ...visual, source: visualSource });
     await page.screenshot({ path: `${OUT}/settings-visual-${tag}.png` });
-    await page.getByRole('button', { name: '侧边卡片' }).click();
+    const sidecardsTab = page.getByRole('button', { name: '侧边卡片' });
+    const sidecardsSource = await sidecardsTab.count() ? 'live' : 'fixture';
+    if (sidecardsSource === 'live') await sidecardsTab.click();
+    else await page.evaluate(() => {
+      const fixture = document.createElement('section');
+      fixture.dataset.dshcsPluginSettingsFixture = 'sidecards';
+      const group = document.createElement('div');
+      group.className = '_2vuxea_group';
+      const card = document.createElement('div');
+      card.className = '_2vuxea_card _2vuxea_cardOn';
+      const gear = document.createElement('button');
+      gear.className = '_2vuxea_rowGear';
+      card.appendChild(gear);
+      group.appendChild(card);
+      fixture.appendChild(group);
+      document.body.appendChild(fixture);
+    });
     await page.waitForTimeout(150);
     const sidecards = await page.evaluate(() => {
       const rect = (element) => { if (!element) return null; const r = element.getBoundingClientRect(); return [r.x, r.y, r.width, r.height, r.right, r.bottom].map(Math.round); };
       // DSH renamed the section from Pz1RTq to _2vuxea; probe both contracts.
       const group = document.querySelector('._2vuxea_group') || document.querySelector('.Pz1RTq_group');
       const card = document.querySelector('._2vuxea_cardOn') || document.querySelector('.Pz1RTq_cardOn');
-      const gear = document.querySelector('._2vuxea_cardGear') || document.querySelector('.Pz1RTq_cardGear');
+      const gear = document.querySelector('._2vuxea_rowGear')
+        || document.querySelector('._2vuxea_cardGear')
+        || document.querySelector('.Pz1RTq_cardGear');
       return {
         group: group && { bg: getComputedStyle(group).backgroundColor, border: getComputedStyle(group).borderTopColor },
         card: card && { bg: getComputedStyle(card).backgroundColor, border: getComputedStyle(card).borderTopColor },
         gear: rect(gear),
       };
     });
-    check(`settings-sidecards-neutral-${tag}`, Boolean(sidecards.group && sidecards.card) && (!sidecards.gear || (sidecards.gear[2] >= 24 && sidecards.gear[3] >= 24)), sidecards);
+    check(`settings-sidecards-neutral-${tag}`, Boolean(sidecards.group && sidecards.card) && (!sidecards.gear || (sidecards.gear[2] >= 24 && sidecards.gear[3] >= 24)), { ...sidecards, source: sidecardsSource });
     await page.screenshot({ path: `${OUT}/settings-sidecards-${tag}.png` });
     await page.getByRole('button', { name: 'Ivory 主题', exact: true }).click();
     await page.waitForTimeout(150);
@@ -731,9 +844,9 @@ try {
   // F10: reduced-motion is opt-in; ordinary mode retains the 150ms paint cue.
   {
     const { page, errors } = await openPage(browser, { focus: false });
-    const normal = await page.evaluate(() => getComputedStyle(document.querySelector('.hYB0Yq_card')).transitionDuration);
+    const normal = await page.evaluate(() => getComputedStyle(document.querySelector('.uV2eYG_card')).transitionDuration);
     await page.emulateMedia({ reducedMotion: 'reduce' });
-    const reduced = await page.evaluate(() => getComputedStyle(document.querySelector('.hYB0Yq_card')).transitionDuration);
+    const reduced = await page.evaluate(() => getComputedStyle(document.querySelector('.uV2eYG_card')).transitionDuration);
     check('motion-normal-150ms', normal.includes('0.15s'), normal);
     check('motion-reduced-near-zero', reduced.includes('1e-06s') || reduced.includes('0.001ms') || reduced === '0s', reduced);
     check('motion-no-page-errors', errors.length === 0, errors);
@@ -746,8 +859,12 @@ try {
   {
     const { page, errors } = await openPage(browser, { focus: false });
     await page.emulateMedia({ forcedColors: 'active' });
-    const button = page.locator('.KAPaMa_newSession').first();
+    const button = page.locator('.hHd-Xa_newSession').first();
+    // Programmatic focus alone does not opt into Chromium's :focus-visible
+    // heuristic. Return with the keyboard so this verifies the real a11y path.
     await button.focus();
+    await page.keyboard.press('Tab');
+    await page.keyboard.press('Shift+Tab');
     const focus = await button.evaluate((element) => {
       const style = getComputedStyle(element);
       return { style: style.outlineStyle, width: style.outlineWidth, color: style.outlineColor };
@@ -764,19 +881,25 @@ try {
     const { page, errors } = await openPage(browser, { focus: false });
     const drift = await page.evaluate(() => {
       const before = document.body.dataset.dshcsDrift ?? '';
-      document.querySelectorAll('.CUGzGG_sidebarCol, .KAPaMa_root').forEach((node) => node.remove());
+      document.querySelectorAll('.pI_x6G_sidebarCol, .hHd-Xa_root').forEach((node) => node.remove());
       return { before };
     });
     // The recheck is throttled (≤5s window) but never silently dropped, so
     // poll until the removal is reported instead of betting on a fixed delay.
     const deadline = Date.now() + 7_000;
     let after = '';
+    let compat = '';
     while (Date.now() < deadline) {
-      after = await page.evaluate(() => document.body.dataset.dshcsDrift ?? '');
-      if (after.includes('sidebar')) break;
+      ({ drift: after, compat } = await page.evaluate(() => ({
+        drift: document.body.dataset.dshcsDrift ?? '',
+        compat: document.body.dataset.dshcsCompat ?? '',
+      })));
+      if (after.includes('sidebar') && compat === 'token-only') break;
       await page.waitForTimeout(250);
     }
-    check('drift-telemetry-flags-removed-sidebar', after.includes('sidebar'), { ...drift, after, errors });
+    check('drift-telemetry-flags-removed-sidebar',
+      after.includes('sidebar') && compat === 'token-only',
+      { ...drift, after, compat, errors });
     check('drift-telemetry-no-page-errors', errors.length === 0, errors);
     await page.close();
   }

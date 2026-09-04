@@ -44,7 +44,7 @@ dsh web
 绕过 npm，安装确切的 GitHub 标签版本。
 
 ```sh
-dsh plugin --profile web add github:ZJUZhiyuCai/dsh-ivory#v0.2.7
+dsh plugin --profile web add github:ZJUZhiyuCai/dsh-ivory#v0.2.8
 ```
 
 移除 Ivory，恢复 DSH 原生界面。
@@ -60,7 +60,7 @@ dsh plugin --profile web remove dsh-ivory
 | 范围 | Ivory 做了什么 |
 | --- | --- |
 | **界面外观** | 暖中性色明暗主题，搭配克制的阴影、圆角和更适合长文阅读的字体。 |
-| **响应式布局** | 会话区会随视口伸缩，已覆盖 375、768、1,440 和 1,920 像素。 |
+| **响应式布局** | 会话区跟随宿主自适应，也可拖拽调整宽度；已覆盖 375、768、1,440 和 1,920 像素。 |
 | **阅读与复制** | 正文、用户气泡和代码块都有独立复制按钮，回复结尾带有轻量鲸鱼标记。 |
 | **Markdown 文档** | `.md` 输出可在安全预览与源码之间切换，只允许 HTTP(S) 链接，并限制极端输入规模。 |
 | **可访问性** | 保留键盘焦点，支持 reduced-motion 与 forced-colors，弱化文字达到 WCAG AA 对比度。 |
@@ -99,7 +99,7 @@ npm 包固定为八个白名单文件，每次 CI 都会检查。完整边界可
 
 > [!NOTE]
 > DeepSeek Harness 仍处于开发者预览阶段，UI 可能发生破坏性变化。
-> Ivory 0.2.x 已针对 DSH 0.1.2-alpha.1 及其当前 Web 客户端模块完成验证。
+> Ivory 0.2.8 已针对 DSH 0.1.2-rc.1 及其当前 Web 客户端模块完成验证。
 > 无法确认当前结构契约时，Ivory 会保留 token 级主题，并把布局控制权交还给 DSH。
 
 <details>
@@ -108,9 +108,9 @@ npm 包固定为八个白名单文件，每次 CI 都会检查。完整边界可
 ```sh
 npm ci
 npm test          # 渲染器单元测试，随后 15 项静态、构建、publint 与包检查
-npm run qa:r2     # 73 项浏览器回归，要求 DSH 运行于 127.0.0.1:3080
-npm run qa:adversarial  # 29 项压测：宿主协调安全、开关/resize 风暴、降级模式
-npm run qa:activity     # 24 项思考/工具调用行、图标与终端打磨检查
+npm run qa:r2     # 74 项浏览器回归，要求 DSH 运行于 127.0.0.1:3080
+npm run qa:adversarial  # 30 项压测：宿主协调安全、开关/resize 风暴、降级模式
+npm run qa:activity     # 26 项思考/工具调用行、图标与终端打磨检查
 npm run qa:micro        # 28 项 Vision Toolkit/Ivory 微组件检查；若工具箱未安装在 DSH Web profile，请设置 DVT_CLIENT_JS
 ```
 

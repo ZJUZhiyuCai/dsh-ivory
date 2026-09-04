@@ -5,6 +5,48 @@ All notable changes to Ivory are documented here. The project follows
 
 ## [Unreleased]
 
+## [0.2.8] - 2026-09-04
+
+### Added
+
+- Add a browser regression for DSH 0.1.2-rc.1's adaptive and draggable
+  conversation-width axis.
+- Verify 74 layout/behavior regressions, 26 activity-row checks, 30
+  adversarial lifecycle checks, and 28 micro-component checks against an
+  isolated DSH 0.1.2-rc.1 Web profile.
+
+### Changed
+
+- Port every native layout, sidebar, conversation, composer, message, tool,
+  and activity-row selector to the CSS-module contract shipped by DSH
+  0.1.2-rc.1.
+- Let the host own `--dsh-chat-content-width` again, so rc.1's adaptive default
+  and persisted drag preference resize the transcript, composer, docks, turn
+  navigator, and usage controls together.
+- Keep Ivory's serif/sans/mono typography while routing conversation prose,
+  user bubbles, the composer, Markdown previews, and activity rows through
+  rc.1's 12–17px conversation font-size axis.
+- Restore the host's 8px scrollbar measurement in normal mode so overlay
+  composer seats stay aligned; only zero it when Ivory focus mode actually
+  hides the scrollbar.
+- Replace the retired `dsh-client-runtime` activation edge with
+  `dsh-client-ui-renderer`, drop the static `dsh-client-ui-slots` graph edge,
+  and set the optional DSH peer floor to 0.1.2-rc.1.
+- Let activity QA opt into a fixture-only path that exercises rc.1's generated
+  classes without creating a conversation or making a model request.
+
+### Fixed
+
+- Validate generated structural sentinels as well as stable `data-slot`
+  anchors, including conditional chat, assistant, reasoning, Bash, and generic
+  tool families when those surfaces are mounted. A future hash-only DSH
+  release now enters token-only mode instead of reporting a false-positive
+  compatible state while structural rules miss.
+- Retarget Markdown previews, per-block copy controls, streaming guards, and
+  response-end markers to rc.1's assistant and user-message surfaces.
+
+## [0.2.7] - 2026-08-29
+
 ### Added
 
 - Add browser regression coverage for the plain-text fenced Markdown heuristic,
@@ -228,7 +270,9 @@ All notable changes to Ivory are documented here. The project follows
 - Explicit npm file allowlist, MIT license, third-party notices, and bilingual
   documentation.
 
-[Unreleased]: https://github.com/ZJUZhiyuCai/dsh-ivory/compare/v0.2.6...HEAD
+[Unreleased]: https://github.com/ZJUZhiyuCai/dsh-ivory/compare/v0.2.8...HEAD
+[0.2.8]: https://github.com/ZJUZhiyuCai/dsh-ivory/compare/v0.2.7...v0.2.8
+[0.2.7]: https://github.com/ZJUZhiyuCai/dsh-ivory/compare/v0.2.6...v0.2.7
 [0.2.6]: https://github.com/ZJUZhiyuCai/dsh-ivory/compare/v0.2.5...v0.2.6
 [0.2.5]: https://github.com/ZJUZhiyuCai/dsh-ivory/compare/v0.2.4...v0.2.5
 [0.2.4]: https://github.com/ZJUZhiyuCai/dsh-ivory/compare/v0.2.3...v0.2.4

@@ -1,6 +1,6 @@
 {
   "name": "dsh-ivory",
-  "version": "0.2.7",
+  "version": "0.2.8",
   "description": "An unofficial Claude-inspired light/dark theme for DeepSeek Harness with responsive layout, safe Markdown preview, and zero telemetry.",
   "keywords": [
     "dsh-plugin",
@@ -26,10 +26,9 @@
     },
     "client": {
       "inject": [
-        "@deepseek-ai/dsh-client-runtime",
         "@deepseek-ai/dsh-client-locale",
-        "@deepseek-ai/dsh-client-ui-settings",
-        "@deepseek-ai/dsh-client-ui-slots"
+        "@deepseek-ai/dsh-client-ui-renderer",
+        "@deepseek-ai/dsh-client-ui-settings"
       ],
       "platform": "web"
     }
@@ -77,23 +76,19 @@
     "access": "public"
   },
   "peerDependencies": {
-    "@deepseek-ai/dsh-client-locale": ">=0.1.0-rc.6 <0.2.0",
-    "@deepseek-ai/dsh-client-runtime": ">=0.1.0-rc.6 <0.2.0",
-    "@deepseek-ai/dsh-client-ui-settings": ">=0.1.0-rc.6 <0.2.0",
-    "@deepseek-ai/dsh-client-ui-slots": ">=0.1.0-rc.6 <0.2.0",
+    "@deepseek-ai/dsh-client-locale": ">=0.1.2-rc.1 <0.2.0",
+    "@deepseek-ai/dsh-client-ui-renderer": ">=0.1.2-rc.1 <0.2.0",
+    "@deepseek-ai/dsh-client-ui-settings": ">=0.1.2-rc.1 <0.2.0",
     "react": "^18.2.0"
   },
   "peerDependenciesMeta": {
     "@deepseek-ai/dsh-client-locale": {
       "optional": true
     },
-    "@deepseek-ai/dsh-client-runtime": {
+    "@deepseek-ai/dsh-client-ui-renderer": {
       "optional": true
     },
     "@deepseek-ai/dsh-client-ui-settings": {
-      "optional": true
-    },
-    "@deepseek-ai/dsh-client-ui-slots": {
       "optional": true
     },
     "react": {
