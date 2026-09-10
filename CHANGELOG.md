@@ -5,6 +5,34 @@ All notable changes to Ivory are documented here. The project follows
 
 ## [Unreleased]
 
+## [0.2.11] - 2026-09-10
+
+### Added
+
+- Report sub-selector drift, not just whole-surface drift. A family-level check
+  fires only when an entire surface vanishes, so a single structural selector
+  Ivory styles can rot while its parent survives — that is how
+  `.fThDlq_entryRow` was lost, and how rc.1's matrix-spinner scope changed
+  unnoticed. Eleven probes now watch the selectors Ivory depends on and write
+  `body[data-dshcs-drift-probe]`.
+
+  A probe reports only when it was **observed present earlier in the session**
+  and has since disappeared, so a surface that simply has not mounted yet never
+  raises a false positive. The channel is deliberately advisory — it never
+  drives degradation, so a bad probe cannot drop the skin into token-only mode.
+  Covered by three new adversarial checks.
+
+### Changed
+
+- Converge Ivory's motion vocabulary onto a two-step scale: **120ms for paint**
+  (background-color, color, border-color, box-shadow) and **150ms for
+  micro-motion** (transform, opacity). Ivory previously used 120/150/160ms for
+  paint and 180ms for press transforms.
+
+  The host's own 180ms reveal and 300ms layout steps are deliberately slower and
+  are left alone — compressing structural animation reads as abrupt. A new
+  release check pins the two-step scale.
+
 ## [0.2.10] - 2026-09-10
 
 ### Fixed

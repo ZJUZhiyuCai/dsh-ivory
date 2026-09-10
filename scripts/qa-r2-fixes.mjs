@@ -274,7 +274,7 @@ try {
       && layers.ghostLayers === 0,
       layers);
     check('composer-focus-no-outer-ring', layers.cardOutline[0] === 'none' || layers.cardOutline[1] === '0px', layers.cardOutline);
-    check('composer-paint-only-transition', !layers.transition[0].includes('all') && layers.transition[1].includes('0.15s'), layers.transition);
+    check('composer-paint-only-transition', !layers.transition[0].includes('all') && layers.transition[1].includes('0.12s'), layers.transition);
     check('composer-no-page-errors', errors.length === 0, errors);
     await page.screenshot({ path: `${OUT}/composer-single-layer.png` });
     await page.close();
@@ -850,13 +850,14 @@ try {
     await page.close();
   }
 
-  // F10: reduced-motion is opt-in; ordinary mode retains the 150ms paint cue.
+  // F10 / D8: reduced-motion is opt-in; ordinary mode keeps the 120ms paint
+  // step (Ivory's paint duration, chosen to match the host's own paint step).
   {
     const { page, errors } = await openPage(browser, { focus: false });
     const normal = await page.evaluate(() => getComputedStyle(document.querySelector('.uV2eYG_card')).transitionDuration);
     await page.emulateMedia({ reducedMotion: 'reduce' });
     const reduced = await page.evaluate(() => getComputedStyle(document.querySelector('.uV2eYG_card')).transitionDuration);
-    check('motion-normal-150ms', normal.includes('0.15s'), normal);
+    check('motion-normal-120ms', normal.includes('0.12s'), normal);
     check('motion-reduced-near-zero', reduced.includes('1e-06s') || reduced.includes('0.001ms') || reduced === '0s', reduced);
     check('motion-no-page-errors', errors.length === 0, errors);
     await page.close();

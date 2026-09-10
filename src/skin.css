@@ -749,8 +749,8 @@ body.dsh-ivory .dshcs-copy-button {
   font: 500 11px/16px var(--cl-sans) !important;
   letter-spacing: 0 !important;
   cursor: pointer !important;
-  transition: opacity 160ms ease, color 160ms ease, background-color 160ms ease,
-    transform 180ms cubic-bezier(0.2, 0.8, 0.2, 1) !important;
+  transition: opacity 120ms ease, color 120ms ease, background-color 120ms ease,
+    transform 150ms cubic-bezier(0.2, 0.8, 0.2, 1) !important;
 }
 body.dsh-ivory .dshcs-copy-button:hover {
   background: color-mix(in srgb, var(--cl-hover) 72%, transparent) !important;
@@ -927,10 +927,10 @@ body.dsh-ivory:not(.dshcs-contract-mismatch) button.uV2eYG_primary:disabled {
  * every textarea resize, while disabling all transitions removed useful state
  * feedback. */
 body.dsh-ivory:not(.dshcs-contract-mismatch) .uV2eYG_card {
-  transition: background-color 150ms ease, border-color 150ms ease, box-shadow 150ms ease !important;
+  transition: background-color 120ms ease, border-color 120ms ease, box-shadow 120ms ease !important;
 }
 body.dsh-ivory:not(.dshcs-contract-mismatch) .uV2eYG_cardWorkspaceTrigger::after {
-  transition: opacity 150ms ease, border-color 150ms ease !important;
+  transition: opacity 150ms ease, border-color 120ms ease !important;
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -1688,8 +1688,8 @@ body.dsh-ivory .dshcs-md-toggle {
   border-radius: 6px;
   padding: 2px 10px;
   cursor: pointer;
-  transition: background-color 160ms ease, color 160ms ease,
-    transform 180ms cubic-bezier(0.2, 0.8, 0.2, 1);
+  transition: background-color 120ms ease, color 120ms ease,
+    transform 150ms cubic-bezier(0.2, 0.8, 0.2, 1);
 }
 body.dsh-ivory .dshcs-md-toggle:hover { background: var(--cl-hover); color: var(--cl-ink-strong); }
 body.dsh-ivory .dshcs-md-toggle:active { transform: scale(0.96); }
