@@ -612,6 +612,11 @@ body.dsh-ivory:not(.dshcs-contract-mismatch) .uV2eYG_tools button,
 body.dsh-ivory:not(.dshcs-contract-mismatch) .uV2eYG_trailing button {
   border-radius: 8px !important;
   color: var(--cl-ink) !important;
+  /* Watchlist #3 touch-target floor. The host's file-upload pair
+   * (.dsh-files-btn) ships at 22x22 — the only buttons in these rows under the
+   * invariant. R3.2 measured 375/768/1440/1920: it was the sole miss. */
+  min-width: 24px !important;
+  min-height: 24px !important;
 }
 body.dsh-ivory:not(.dshcs-contract-mismatch) .uV2eYG_tools button:hover,
 body.dsh-ivory:not(.dshcs-contract-mismatch) .uV2eYG_trailing button:hover {

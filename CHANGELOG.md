@@ -5,6 +5,15 @@ All notable changes to Ivory are documented here. The project follows
 
 ## [Unreleased]
 
+## [0.2.9] - 2026-09-10
+
+### Fixed
+
+- Clear the 24px touch-target floor in the composer control row. The host's
+  file-upload pair (`.dsh-files-btn`) ships at 22x22 — the only interactive
+  element still under the invariant when measured at 375/768/1440/1920. Both
+  buttons now measure 24x24, and no sub-24px target remains anywhere in the UI.
+
 ## [0.2.8] - 2026-09-04
 
 ### Added
