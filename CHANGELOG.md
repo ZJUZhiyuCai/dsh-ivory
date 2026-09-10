@@ -44,6 +44,12 @@ All notable changes to Ivory are documented here. The project follows
   compatible state while structural rules miss.
 - Retarget Markdown previews, per-block copy controls, streaming guards, and
   response-end markers to rc.1's assistant and user-message surfaces.
+- Bind a workspace before composer-dependent browser QA. rc.1 renders the
+  composer inert (`data-phase="inert"`, `contenteditable="false"`) until a
+  workspace is chosen, so `qa:r2` and `qa:activity` could not type at all in a
+  cold context. `openPage` now selects the workspace the host marks as
+  selected, and the conversation walk waits for the sidebar tree to hydrate
+  and re-snapshots its row count as rows stream in.
 
 ## [0.2.7] - 2026-08-29
 

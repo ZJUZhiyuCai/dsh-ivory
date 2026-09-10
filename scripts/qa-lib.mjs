@@ -33,6 +33,39 @@ export async function launch() {
   return chromium.launch({ headless: true, executablePath: EXE });
 }
 
+// DSH 0.1.2-rc.1 keeps the composer inert until a workspace is bound: a fresh
+// browser context renders .uV2eYG_input with data-phase="inert",
+// contenteditable="false" and the aria-label "选择工作区". QA scripts that type into the
+// composer therefore cannot run against a cold context. The picker is the
+// composer itself (aria-haspopup="menu"), so open it and choose the workspace
+// the host already marks as selected, falling back to the first real entry.
+export async function selectWorkspace(page) {
+  const isBound = () => page.evaluate(() => {
+    const input = document.querySelector('.uV2eYG_input');
+    return Boolean(input) && input.getAttribute('contenteditable') === 'true';
+  });
+  if (await isBound().catch(() => false)) return true;
+  const input = page.locator('.uV2eYG_input').first();
+  if (!(await input.count())) return false;
+  await input.click({ timeout: 5000 }).catch(() => {});
+  await page.waitForTimeout(900);
+  const items = page.locator('[role="menu"] [role="menuitem"]');
+  const total = await items.count().catch(() => 0);
+  if (!total) return false;
+  let pick = -1;
+  for (let index = 0; index < total; index += 1) {
+    const label = (await items.nth(index).innerText().catch(() => '')).trim();
+    if (/^(?:\u6dfb\u52a0\u5de5\u4f5c\u533a|Add workspace)/.test(label)) continue;
+    const cls = (await items.nth(index).getAttribute('class').catch(() => '')) || '';
+    if (/_selected_/.test(cls)) { pick = index; break; }
+    if (pick < 0) pick = index;
+  }
+  if (pick < 0) return false;
+  await items.nth(pick).click({ timeout: 5000 }).catch(() => {});
+  await page.waitForTimeout(1200);
+  return isBound().catch(() => false);
+}
+
 export async function openPage(browser, { w = 1440, h = 900, enabled = true, focus = false } = {}) {
   const page = await browser.newPage({ viewport: { width: w, height: h } });
   const errors = [];
@@ -56,6 +89,8 @@ export async function openPage(browser, { w = 1440, h = 900, enabled = true, foc
     await button.click();
     await page.waitForTimeout(800);
   }
+  // rc.1 cold-start: bind a workspace so composer-dependent QA can type.
+  await selectWorkspace(page).catch(() => {});
   return { page, errors };
 }
 

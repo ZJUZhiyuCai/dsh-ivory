@@ -22,6 +22,11 @@ const colorAlpha = (color) => {
 async function openConversation(page) {
   await expandSidebar(page).catch(() => {});
   const rows = page.locator('.YDXeBa_sessionRow');
+  const view = page.locator('.wSkVaW_crumb, .EvIC1a_column, .hWmORq_root');
+  // A cold context hydrates the sidebar tree asynchronously. Wait for the first
+  // row before deciding the tree is empty, otherwise the walk below runs against
+  // a half-populated list and reports "no row opened a conversation view".
+  await rows.first().waitFor({ state: 'attached', timeout: 5000 }).catch(() => {});
   if (!(await rows.count())) {
     const projects = page.locator('.YDXeBa_projectRow');
     for (let index = 0; index < await projects.count(); index++) {
@@ -33,15 +38,19 @@ async function openConversation(page) {
       if (await rows.count()) break;
     }
   }
-  const count = await rows.count();
-  if (!count) throw new Error('Browser QA requires at least one saved conversation.');
-  for (let index = 0; index < count; index++) {
-    const label = (await rows.nth(index).innerText()).trim();
-    if (/^(?:新会话|New chat)(?:\s|$)/i.test(label)) continue;
-    await rows.nth(index).click();
-    await page.waitForTimeout(1200);
-    if (await page.locator('.wSkVaW_crumb, .EvIC1a_column, .hWmORq_root').count()) return true;
-    await expandSidebar(page).catch(() => {});
+  if (!(await rows.count())) throw new Error('Browser QA requires at least one saved conversation.');
+  // Rows keep streaming in while we walk, so re-snapshot the count each pass.
+  for (let attempt = 0; attempt < 3; attempt++) {
+    const count = await rows.count();
+    for (let index = 0; index < count; index++) {
+      const label = (await rows.nth(index).innerText().catch(() => '')).trim();
+      if (/^(?:新会话|New chat)(?:\s|$)/i.test(label)) continue;
+      await rows.nth(index).click().catch(() => {});
+      await page.waitForTimeout(1200);
+      if (await view.count()) return true;
+      await expandSidebar(page).catch(() => {});
+    }
+    await page.waitForTimeout(1000);
   }
   throw new Error('No saved sidebar row opened a conversation view.');
 }
