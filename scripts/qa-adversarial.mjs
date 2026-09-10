@@ -16,14 +16,25 @@ const check = (name, pass, detail = null) => {
 
 async function openConversation(page) {
   await expandSidebar(page).catch(() => {});
-  const rows = page.locator('.j_bVPG_sessionRow');
+  const rows = page.locator('.YDXeBa_sessionRow');
+  if (!(await rows.count())) {
+    const projects = page.locator('.YDXeBa_projectRow');
+    for (let index = 0; index < await projects.count(); index++) {
+      const project = projects.nth(index);
+      if (await project.getAttribute('aria-expanded') !== 'true') {
+        await project.click();
+        await page.waitForTimeout(400);
+      }
+      if (await rows.count()) break;
+    }
+  }
   const count = await rows.count();
   for (let index = 0; index < count; index++) {
     const label = (await rows.nth(index).innerText()).trim();
     if (/^(?:新会话|New chat)(?:\s|$)/i.test(label)) continue;
     await rows.nth(index).click();
     await page.waitForTimeout(1200);
-    if (await page.locator('.Pio91W_body').count()) return true;
+    if (await page.locator('.hWmORq_body').count()) return true;
     await expandSidebar(page).catch(() => {});
   }
   return false;
@@ -33,10 +44,10 @@ async function addMarkdownFixture(page, className, source, options = {}) {
   await page.evaluate(([fixtureClass, fixtureSource, busy]) => {
     if (document.querySelector(`.${fixtureClass}`)) return;
     const message = document.createElement('article');
-    message.className = `Pio91W_root ${fixtureClass}`;
+    message.className = `hWmORq_root ${fixtureClass}`;
     if (busy) message.setAttribute('aria-busy', 'true');
     const body = document.createElement('div');
-    body.className = 'Pio91W_body';
+    body.className = 'hWmORq_body';
     const paragraph = document.createElement('p');
     paragraph.className = `${fixtureClass}-prose`;
     paragraph.textContent = '正文段落。';
@@ -168,11 +179,11 @@ try {
     await addMarkdownFixture(page, 'md-whale-fixture', '# 结尾\n\n- 最后一项');
     await page.evaluate(() => {
       const message = document.createElement('article');
-      message.className = 'Pio91W_root md-whale-activity';
+      message.className = 'hWmORq_root md-whale-activity';
       const body = document.createElement('div');
-      body.className = 'Pio91W_body';
+      body.className = 'hWmORq_body';
       const think = document.createElement('div');
-      think.className = 'EIRQwq_root';
+      think.className = 'lcKema_root';
       think.dataset.variant = 'think';
       think.dataset.state = 'ok';
       think.textContent = 'Think 活动阶段完成';
@@ -224,7 +235,7 @@ try {
       marks: document.querySelectorAll('.dshcs-turn-mark').length,
       copyControls: document.querySelectorAll('.dshcs-copy-button').length,
     }));
-    await page.locator('._rzeWq_trigger').last().click();
+    await page.locator('.VOzbGW_trigger').last().click();
     await page.waitForTimeout(800);
     await page.getByRole('button', { name: 'Ivory 主题', exact: true }).click();
     const enabledSwitch = page.getByRole('switch', { name: '启用 Ivory 主题', exact: true });
@@ -338,7 +349,7 @@ try {
     const settled = await page.evaluate(() => ({
       clearance: getComputedStyle(document.body).getPropertyValue('--dshcs-composer-clearance').trim(),
       viewport: [innerWidth, innerHeight],
-      composerTop: document.querySelector('.hYB0Yq_root')?.getBoundingClientRect().top,
+      composerTop: document.querySelector('.uV2eYG_root')?.getBoundingClientRect().top,
     }));
     check('resize-storm-no-stale-clearance', settled.clearance === '', settled);
     check('resize-storm-no-page-errors', errors.length === 0, errors);
@@ -351,8 +362,8 @@ try {
   {
     const { page, errors } = await openPage(browser, { focus: false });
     await page.evaluate(() => {
-      document.querySelector('.CUGzGG_frame')?.remove();
-      document.querySelector('.CUGzGG_centerCol')?.remove();
+      document.querySelector('.pI_x6G_frame')?.remove();
+      document.querySelector('.pI_x6G_centerCol')?.remove();
       document.body.dataset.dshcsCompat = 'token-only';
       document.body.classList.add('dshcs-contract-mismatch');
     });
@@ -363,7 +374,7 @@ try {
       const original = document.querySelector.bind(document);
       document.querySelector = (selector) => {
         totalCalls += 1;
-        if (selector === '.CUGzGG_frame' || selector === '.CUGzGG_centerCol') calls += 1;
+        if (selector === '.pI_x6G_frame' || selector === '.pI_x6G_centerCol') calls += 1;
         return original(selector);
       };
       const hot = document.createElement('div');
@@ -383,6 +394,72 @@ try {
     });
     check('token-only-mode-no-scan-storm', probe.ticks === 30 && probe.calls <= 6, probe);
     check('token-only-no-page-errors', errors.length === 0, errors);
+    await page.close();
+  }
+
+  // A8b: stable slots alone cannot prove that generated chat/tool classes
+  // still match. Mount every conditional rc.1 sentinel, then remove only the
+  // generic-tool class family and require a bounded token-only degradation.
+  {
+    const { page, errors } = await openPage(browser, { focus: false });
+    const before = await page.evaluate(() => {
+      const chat = document.createElement('div');
+      chat.className = 'EvIC1a_column';
+      chat.dataset.chatFlow = '';
+
+      const assistantSeat = document.createElement('div');
+      assistantSeat.dataset.slot = 'conversation.chat.assistant-actions';
+      const assistant = document.createElement('div');
+      assistant.className = 'hWmORq_root';
+      const assistantBody = document.createElement('div');
+      assistantBody.className = 'hWmORq_body';
+      assistantBody.textContent = 'assistant contract fixture';
+      assistant.appendChild(assistantBody);
+      assistantSeat.appendChild(assistant);
+
+      const reasoning = document.createElement('div');
+      reasoning.className = 'lcKema_root';
+      reasoning.dataset.variant = 'think';
+      const bash = document.createElement('div');
+      bash.className = 'CY-8Ka_root';
+      bash.dataset.sample = 'bash';
+      bash.dataset.variant = 'bash';
+      const tool = document.createElement('div');
+      tool.className = 'o3BgMG_root';
+      tool.dataset.tool = 'read';
+      tool.dataset.variant = 'read';
+      tool.dataset.dshcsConditionalDriftFixture = '';
+
+      chat.append(assistantSeat, reasoning, bash, tool);
+      document.body.appendChild(chat);
+      return {
+        compat: document.body.dataset.dshcsCompat,
+        drift: document.body.dataset.dshcsDrift ?? '',
+      };
+    });
+    await page.waitForTimeout(300);
+    await page.locator('[data-dshcs-conditional-drift-fixture]').evaluate((node) => {
+      const replacement = node.cloneNode(false);
+      replacement.className = 'future-tool-hash_root';
+      node.replaceWith(replacement);
+    });
+    const deadline = Date.now() + 7_000;
+    let after = null;
+    while (Date.now() < deadline) {
+      after = await page.evaluate(() => ({
+        compat: document.body.dataset.dshcsCompat,
+        drift: document.body.dataset.dshcsDrift ?? '',
+      }));
+      if (after.compat === 'token-only') break;
+      await page.waitForTimeout(250);
+    }
+    check('conditional-tool-drift-enters-token-only',
+      before.compat === 'ok'
+      && before.drift === ''
+      && after?.compat === 'token-only'
+      && after.drift.split(',').includes('tool')
+      && errors.length === 0,
+      { before, after, errors });
     await page.close();
   }
 
@@ -434,9 +511,9 @@ try {
     const { page, errors } = await openPage(browser, { focus: false });
     const soak = await page.evaluate(async () => {
       const hot = document.createElement('div');
-      hot.className = 'Pio91W_root soak-fixture';
+      hot.className = 'hWmORq_root soak-fixture';
       const body = document.createElement('div');
-      body.className = 'Pio91W_body';
+      body.className = 'hWmORq_body';
       const paragraph = document.createElement('p');
       body.appendChild(paragraph);
       hot.appendChild(body);

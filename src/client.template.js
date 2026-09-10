@@ -14,7 +14,7 @@ window.__ModuleLoader__.load({
     // by scripts/build.mjs (do not edit in place).
     /*__MARKDOWN_JS__*/
     const CODE_COPY_SELECTOR = [
-      '.Pio91W_body pre',
+      '.hWmORq_body pre',
       '.Sxvs8a_body pre',
       '[class*="code-block"] pre',
       '.dshcs-md pre',
@@ -24,7 +24,7 @@ window.__ModuleLoader__.load({
       '.dvt-tool pre',
     ].join(',');
     const TEXT_COPY_SELECTOR = [
-      '.CeRoOG_bubble',
+      '.Sixlwa_bubble',
       '.gdEzaW_bubble',
       '.dshcs-md p',
       '.nArs4W_editorMd p',
@@ -265,20 +265,47 @@ body[data-ds-dark-theme] .dshcs-knob{background:var(--cl-ink)}
     let contractTimer = 0;
     let contractAttempts = 0;
     let contractProbeAt = 0;
-    // Drift telemetry families: each lists alternative host selectors for one
-    // surface, so a rename inside a family does not alarm while a whole-surface
-    // disappearance does. Anchors are the 0.1.2 app-shell slot seams
-    // ([data-slot]) — the stable plugin contract — with class-level fallbacks
-    // for the same surfaces.
+    // DSH's slot names are the stable composition seam, while its generated
+    // CSS-module names are the structural styling seam. Verify both: accepting
+    // only the slots would report "ok" after a hash-only release even though
+    // every structural Ivory rule had stopped matching.
+    const REQUIRED_SLOT_SELECTORS = [
+      '[data-slot="root"]',
+      '[data-slot="conversation"]',
+    ];
     const DRIFT_FAMILIES = {
-      sidebar: ['[data-slot="sidebar"]', '.CUGzGG_sidebarCol', '.KAPaMa_root'],
+      layout: ['.pI_x6G_frame'],
+      sidebar: ['.hHd-Xa_root'],
+      conversation: ['.wSkVaW_root'],
+      workspace: ['.bhn1Oq_root'],
+      composer: ['.uV2eYG_root'],
+    };
+    const CONDITIONAL_DRIFT_FAMILIES = {
+      chat: { when: '[data-chat-flow]', selectors: ['.EvIC1a_column'] },
+      assistant: {
+        when: '[data-slot="conversation.chat.assistant-actions"]',
+        selectors: ['.hWmORq_root'],
+      },
+      reasoning: {
+        when: '[data-chat-flow] [data-variant="think"]',
+        selectors: ['.lcKema_root[data-variant="think"]'],
+      },
+      bash: {
+        when: '[data-chat-flow] [data-sample="bash"]',
+        selectors: ['.CY-8Ka_root[data-sample="bash"]'],
+      },
+      tool: {
+        when: '[data-chat-flow] [data-tool][data-variant]',
+        selectors: ['.o3BgMG_root[data-tool][data-variant]'],
+      },
     };
     const CONTRACT_CANDIDATE_SELECTORS = [
-      '[data-slot="root"]', '[data-slot="conversation"]',
-      '.CUGzGG_frame', '.CUGzGG_centerCol',
-      '.FK8dIa_root', '.FK8dIa_scrollBody',
-      '.hYB0Yq_card', '.hYB0Yq_root',
-      '.Pio91W_root', '.Pio91W_body',
+      ...REQUIRED_SLOT_SELECTORS,
+      '.pI_x6G_frame', '.pI_x6G_centerCol',
+      '.wSkVaW_root', '.wSkVaW_scrollBody',
+      '.uV2eYG_card', '.uV2eYG_root',
+      '.EvIC1a_column', '.lcKema_root', '.CY-8Ka_root', '.o3BgMG_root',
+      '.hWmORq_root', '.hWmORq_body',
     ];
     let checkedPanes = new WeakSet();
     let whaleNode = null;
@@ -313,7 +340,7 @@ body[data-ds-dark-theme] .dshcs-knob{background:var(--cl-ink)}
     }
 
     function isInsideStreamingMessage(element) {
-      return isStreamingMessage(element.closest?.('.Pio91W_root'));
+      return isStreamingMessage(element.closest?.('.hWmORq_root'));
     }
 
     // ---- per-block copy controls ----
@@ -679,18 +706,18 @@ body[data-ds-dark-theme] .dshcs-knob{background:var(--cl-ink)}
 
     function enhanceTurnMarks(root = document) {
       if (!isEnabled()) return;
-      for (const msg of collectNear(root, '.Pio91W_root')) {
+      for (const msg of collectNear(root, '.hWmORq_root')) {
         if (isStreamingMessage(msg)) {
           msg.querySelectorAll('.dshcs-turn-mark').forEach((mark) => mark.remove());
           continue;
         }
         if (msg.querySelector('.dshcs-turn-mark')) continue;
-        const body = msg.querySelector('.Pio91W_body');
+        const body = msg.querySelector('.hWmORq_body');
         if (!body || !(body.textContent || '').trim()) continue;
         const blocks = [...body.querySelectorAll('p, h1, h2, h3, h4, h5, h6, li')]
           .filter((node) => (node.textContent || '').trim()
             && !node.closest('.dshcs-md')
-            && !node.closest('.EIRQwq_root, ._6t6-Wa_root, ._11c_Vq_root, [data-terminal], [class*="callRow"]'));
+            && !node.closest('.lcKema_root, .CY-8Ka_root, .o3BgMG_root, [data-terminal], [class*="callRow"]'));
         if (!blocks.length) continue;
         const host = blocks.at(-1) ?? body;
         if (host.querySelector('.dshcs-turn-mark')) continue;
@@ -777,7 +804,9 @@ body[data-ds-dark-theme] .dshcs-knob{background:var(--cl-ink)}
 
     function containsHostContractNode(element) {
       const contractSelectors = CONTRACT_CANDIDATE_SELECTORS
-        .concat(Object.values(DRIFT_FAMILIES).flat());
+        .concat(Object.values(DRIFT_FAMILIES).flat())
+        .concat(Object.values(CONDITIONAL_DRIFT_FAMILIES)
+          .flatMap(({ when, selectors }) => [when, ...selectors]));
       const joined = contractSelectors.join(', ');
       return Boolean(element.matches?.(joined) || element.querySelector?.(joined));
     }
@@ -803,9 +832,18 @@ body[data-ds-dark-theme] .dshcs-knob{background:var(--cl-ink)}
 
     // Drift telemetry. Findings are written to body[data-dshcs-drift] and
     // logged once per family state change (no warning storms).
-    function reportContractDrift() {
-      const missing = [];
-      if (!DRIFT_FAMILIES.sidebar.some((selector) => document.querySelector(selector))) missing.push('sidebar');
+    function missingDriftFamilies() {
+      const missing = Object.entries(DRIFT_FAMILIES)
+        .filter(([, selectors]) => !selectors.some((selector) => document.querySelector(selector)))
+        .map(([name]) => name);
+      for (const [name, { when, selectors }] of Object.entries(CONDITIONAL_DRIFT_FAMILIES)) {
+        if (document.querySelector(when)
+          && !selectors.some((selector) => document.querySelector(selector))) missing.push(name);
+      }
+      return missing;
+    }
+
+    function reportContractDrift(missing = missingDriftFamilies()) {
       if (missing.length) {
         const next = missing.join(',');
         if (document.body.dataset.dshcsDrift !== next) {
@@ -819,9 +857,15 @@ body[data-ds-dark-theme] .dshcs-knob{background:var(--cl-ink)}
 
     function validateHostContract() {
       if (!isEnabled()) return;
-      const required = ['[data-slot="root"]', '[data-slot="conversation"]'];
-      const missing = required.filter((selector) => !document.querySelector(selector));
-      if (missing.length && contractAttempts++ < 20) {
+      const wasHealthy = document.body.dataset.dshcsCompat === 'ok';
+      const missingSlots = REQUIRED_SLOT_SELECTORS
+        .filter((selector) => !document.querySelector(selector));
+      const missingFamilies = missingDriftFamilies();
+      const missing = [
+        ...missingSlots,
+        ...missingFamilies.map((name) => `family:${name}`),
+      ];
+      if (missing.length && !wasHealthy && contractAttempts++ < 20) {
         clearTimeout(contractTimer);
         contractTimer = window.setTimeout(validateHostContract, 250);
         document.body.dataset.dshcsCompat = 'pending';
@@ -832,14 +876,12 @@ body[data-ds-dark-theme] .dshcs-knob{background:var(--cl-ink)}
       const ok = missing.length === 0;
       document.body.dataset.dshcsCompat = ok ? 'ok' : 'token-only';
       document.body.classList.toggle('dshcs-contract-mismatch', !ok);
+      reportContractDrift(missingFamilies);
       if (!ok) {
         // Degraded mode self-heals via a throttled re-probe instead of scanning
         // the whole document on every mutation batch.
         contractProbeAt = Date.now() + 5_000;
         console.warn('[dsh-ivory] Selector contract mismatch; layout enhancements degraded to token-only.', missing);
-        delete document.body.dataset.dshcsDrift;
-      } else {
-        reportContractDrift();
       }
     }
 

@@ -33,6 +33,39 @@ export async function launch() {
   return chromium.launch({ headless: true, executablePath: EXE });
 }
 
+// DSH 0.1.2-rc.1 keeps the composer inert until a workspace is bound: a fresh
+// browser context renders .uV2eYG_input with data-phase="inert",
+// contenteditable="false" and the aria-label "选择工作区". QA scripts that type into the
+// composer therefore cannot run against a cold context. The picker is the
+// composer itself (aria-haspopup="menu"), so open it and choose the workspace
+// the host already marks as selected, falling back to the first real entry.
+export async function selectWorkspace(page) {
+  const isBound = () => page.evaluate(() => {
+    const input = document.querySelector('.uV2eYG_input');
+    return Boolean(input) && input.getAttribute('contenteditable') === 'true';
+  });
+  if (await isBound().catch(() => false)) return true;
+  const input = page.locator('.uV2eYG_input').first();
+  if (!(await input.count())) return false;
+  await input.click({ timeout: 5000 }).catch(() => {});
+  await page.waitForTimeout(900);
+  const items = page.locator('[role="menu"] [role="menuitem"]');
+  const total = await items.count().catch(() => 0);
+  if (!total) return false;
+  let pick = -1;
+  for (let index = 0; index < total; index += 1) {
+    const label = (await items.nth(index).innerText().catch(() => '')).trim();
+    if (/^(?:\u6dfb\u52a0\u5de5\u4f5c\u533a|Add workspace)/.test(label)) continue;
+    const cls = (await items.nth(index).getAttribute('class').catch(() => '')) || '';
+    if (/_selected_/.test(cls)) { pick = index; break; }
+    if (pick < 0) pick = index;
+  }
+  if (pick < 0) return false;
+  await items.nth(pick).click({ timeout: 5000 }).catch(() => {});
+  await page.waitForTimeout(1200);
+  return isBound().catch(() => false);
+}
+
 export async function openPage(browser, { w = 1440, h = 900, enabled = true, focus = false } = {}) {
   const page = await browser.newPage({ viewport: { width: w, height: h } });
   const errors = [];
@@ -43,13 +76,29 @@ export async function openPage(browser, { w = 1440, h = 900, enabled = true, foc
   }, [BASE, enabled, focus]);
   await page.goto(HOME, { waitUntil: 'domcontentloaded' });
   await page.waitForTimeout(4500);
+  // A disposable DSH_HOME shows the rc.1 preview notice and provider setup on
+  // every fresh browser context. Dismiss only their explicit non-destructive
+  // actions so browser QA can reach the app without storing credentials.
+  for (let step = 0; step < 3; step++) {
+    const dialog = page.getByRole('dialog');
+    if (!(await dialog.count())) break;
+    const next = dialog.getByRole('button', { name: /^(?:继续|Continue)$/i });
+    const later = dialog.getByRole('button', { name: /^(?:稍后配置|Set up later)$/i });
+    const button = await next.count() ? next : await later.count() ? later : null;
+    if (button === null) break;
+    await button.click();
+    await page.waitForTimeout(800);
+  }
+  // rc.1 cold-start: bind a workspace so composer-dependent QA can type.
+  await selectWorkspace(page).catch(() => {});
   return { page, errors };
 }
 
 // expand sidebar if collapsed; returns whether it was collapsed
 export async function expandSidebar(page) {
-  const btn = page.locator('.KAPaMa_toggle[aria-label="打开侧边栏"]');
-  if (await btn.count()) {
+  const collapsed = page.locator('.pI_x6G_frame[data-sidebar-collapsed="true"], .hHd-Xa_root.hHd-Xa_collapsed');
+  const btn = page.locator('.hHd-Xa_toggle');
+  if (await collapsed.count() && await btn.count()) {
     await btn.first().click();
     await page.waitForTimeout(800);
     return true;
@@ -58,18 +107,18 @@ export async function expandSidebar(page) {
 }
 
 export async function newChat(page) {
-  await page.click('.KAPaMa_newSession');
+  await page.click('.hHd-Xa_newSession');
   await page.waitForTimeout(1500);
 }
 
 // real theme switch via settings modal
 export async function setTheme(page, label /* 浅色|深色 */) {
-  await page.locator('._rzeWq_trigger').last().click();
+  await page.locator('.VOzbGW_trigger').last().click();
   await page.waitForTimeout(1200);
-  const cube = page.locator(`._4xzD8a_themeCube`, { hasText: label });
+  const cube = page.locator(`._8HJdBW_themeCube`, { hasText: label });
   await cube.click();
   await page.waitForTimeout(800);
-  await page.locator('._rzeWq_close').click();
+  await page.locator('.VOzbGW_close').click();
   await page.waitForTimeout(800);
 }
 
@@ -163,14 +212,14 @@ export async function probeGeometry(page) {
       return { rect: [Math.round(r.x), Math.round(r.y), Math.round(r.width), Math.round(r.height)], radius: cs.borderRadius, bg: cs.backgroundColor, color: cs.color, font: cs.font, pad: cs.padding };
     };
     return {
-      sidebarCol: pick('.CUGzGG_sidebarCol'),
-      newSession: pick('.KAPaMa_newSession'),
-      heroCard: pick('.FK8dIa_composerHero .hYB0Yq_card'),
-      headline: pick('.Xyrcsq_headlineText'),
-      msgColumn: pick('.qk2Vjq_column'),
-      userBubble: pick('.CeRoOG_bubble'),
+      sidebarCol: pick('.pI_x6G_sidebarCol'),
+      newSession: pick('.hHd-Xa_newSession'),
+      heroCard: pick('.wSkVaW_composerHero .uV2eYG_card'),
+      headline: pick('.pXSMma_headlineText'),
+      msgColumn: pick('.EvIC1a_column'),
+      userBubble: pick('.Sixlwa_bubble'),
       composerCard: (() => {
-        const cards = [...document.querySelectorAll('.hYB0Yq_card')];
+        const cards = [...document.querySelectorAll('.uV2eYG_card')];
         const el = cards.find((c) => c.getBoundingClientRect().y > 600) ?? cards.at(-1);
         if (!el) return null;
         const r = el.getBoundingClientRect();
@@ -178,12 +227,12 @@ export async function probeGeometry(page) {
         return { rect: [Math.round(r.x), Math.round(r.y), Math.round(r.width), Math.round(r.height)], radius: cs.borderRadius, bg: cs.backgroundColor, shadow: cs.boxShadow.slice(0, 120) };
       })(),
       inputField: (() => {
-        const el = document.querySelector('.hYB0Yq_input') ?? document.querySelector('[contenteditable=true]');
+        const el = document.querySelector('.uV2eYG_input') ?? document.querySelector('[contenteditable=true]');
         if (!el) return null;
         const cs = getComputedStyle(el);
         return { font: cs.font, color: cs.color, caret: cs.caretColor };
       })(),
-      assistantBody: pick('.Pio91W_body'),
+      assistantBody: pick('.hWmORq_body'),
       bodyBg: getComputedStyle(document.body).backgroundColor,
       bodyText: getComputedStyle(document.body).color,
       fontStacks: {

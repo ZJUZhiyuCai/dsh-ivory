@@ -22,7 +22,7 @@ const contrastRatio = (a, b) => {
   return (lighter + 0.05) / (darker + 0.05);
 };
 
-const [packageText, patch, host, template, markdown, css, whale, built, readme, readmeZh, notices, publishWorkflow] = await Promise.all([
+const [packageText, patch, host, template, markdown, css, whale, built, readme, readmeZh, changelog, notices, publishWorkflow] = await Promise.all([
   read('package.json'),
   read('cordis.patch.yml'),
   read('lib/index.js'),
@@ -33,6 +33,7 @@ const [packageText, patch, host, template, markdown, css, whale, built, readme, 
   read('lib/client.js'),
   read('README.md'),
   read('README_zh-CN.md'),
+  read('CHANGELOG.md'),
   read('THIRD_PARTY_NOTICES.md'),
   read('.github/workflows/publish-npm.yml'),
 ]);
@@ -40,7 +41,7 @@ const pkg = JSON.parse(packageText);
 
 check('package metadata', () => {
   assert.equal(pkg.name, 'dsh-ivory');
-  assert.equal(pkg.version, '0.2.7');
+  assert.equal(pkg.version, '0.2.8');
   assert.equal(pkg.private, undefined);
   assert.equal(pkg.license, 'MIT');
   assert.equal(pkg.publishConfig?.access, 'public');
@@ -67,12 +68,17 @@ check('bundle contract', () => {
   assert.match(patch, /name:\s*['"]dsh-ivory['"]/);
   assert.match(template, /id:\s*'dsh-ivory'/);
   assert.match(template, /const inject = \['slots', 'locale'\]/);
-  for (const dependency of [
-    '@deepseek-ai/dsh-client-runtime',
+  assert.deepEqual(pkg.dsh.client.inject, [
     '@deepseek-ai/dsh-client-locale',
+    '@deepseek-ai/dsh-client-ui-renderer',
     '@deepseek-ai/dsh-client-ui-settings',
-    '@deepseek-ai/dsh-client-ui-slots',
-  ]) assert.ok(pkg.dsh.client.inject.includes(dependency), `missing client inject ${dependency}`);
+  ]);
+  for (const dependency of pkg.dsh.client.inject) {
+    assert.equal(pkg.peerDependencies?.[dependency], '>=0.1.2-rc.1 <0.2.0');
+    assert.equal(pkg.peerDependenciesMeta?.[dependency]?.optional, true);
+  }
+  assert.ok(!pkg.dsh.client.inject.includes('@deepseek-ai/dsh-client-runtime'));
+  assert.ok(!pkg.dsh.client.inject.includes('@deepseek-ai/dsh-client-ui-slots'));
 });
 
 check('inert host boundary', () => {
@@ -137,6 +143,7 @@ check('documentation contract', () => {
     assert.match(doc, /unofficial|非官方/i);
     assert.match(doc, /zero telemetry|无遥测/i);
   }
+  assert.match(changelog, new RegExp(`^## \\[${pkg.version.replaceAll('.', '\\.')}\\] - \\d{4}-\\d{2}-\\d{2}$`, 'm'));
 });
 
 check('tokenless npm publishing', () => {
@@ -147,7 +154,7 @@ check('tokenless npm publishing', () => {
   assert.doesNotMatch(publishWorkflow, /NPM_TOKEN|NODE_AUTH_TOKEN|--provenance/);
 });
 
-check('token-only degradation is wired into the CSS', () => {
+check('DSH rc.1 selector, width, and degradation contract', () => {
   assert.ok(css.includes('body.dsh-ivory:not(.dshcs-contract-mismatch)'), 'structural gating selector missing');
   const gated = css.match(/body\.dsh-ivory:not\(\.dshcs-contract-mismatch\)/g) ?? [];
   assert.ok(gated.length >= 200, `expected ≥200 gated structural selectors, found ${gated.length}`);
@@ -156,9 +163,29 @@ check('token-only degradation is wired into the CSS', () => {
   assert.match(css, /body\.dsh-ivory:not\(\[data-ds-dark-theme\]\),\nbody\.dsh-ivory\[data-ds-dark-theme\] \{\s*\n\s*--dsw-font-family: var\(--cl-sans\)/);
   // Plugin-owned enhancements stay usable even when the host contract fails.
   assert.match(css, /body\.dsh-ivory \.dshcs-copy-button/);
-  for (const hostSelector of ['\\.CUGzGG_frame', '\\.FK8dIa_header', '\\.hYB0Yq_card', '\\.KAPaMa_root', '\\.Pio91W_body']) {
+  for (const hostSelector of ['\\.pI_x6G_frame', '\\.wSkVaW_header', '\\.uV2eYG_card', '\\.hHd-Xa_root', '\\.hWmORq_body']) {
     const ungated = new RegExp(`body\\.dsh-ivory(?![^\\n]*dshcs-contract-mismatch)[^\\n]*${hostSelector}`);
     assert.doesNotMatch(css, ungated, `structural selector ${hostSelector} is not gated`);
+  }
+  for (const selector of ['pI_x6G_frame', 'hHd-Xa_root', 'wSkVaW_root']) {
+    assert.ok(template.includes(`'.${selector}'`), `runtime contract is missing ${selector}`);
+  }
+  for (const family of ['chat', 'assistant', 'reasoning', 'bash', 'tool']) {
+    assert.match(template, new RegExp(`\\b${family}:\\s*\\{[\\s\\S]{0,120}?when:`));
+  }
+  assert.match(template, /\.\.\.missingFamilies\.map\(\(name\) => `family:\$\{name\}`\)/);
+  assert.doesNotMatch(css, /--dsh-chat-content-width:\s*720px/);
+  assert.match(css, /\.uV2eYG_root\s*\{[\s\S]*?max-width:\s*var\(--dsh-composer-card-max-width\)/);
+  assert.match(css, /\.EvIC1a_column\s*\{[\s\S]*?max-width:\s*var\(--dsh-chat-content-width\)/);
+  assert.match(css, /\.Sixlwa_userRow\s*\{[\s\S]*?max-width:\s*var\(--dsh-chat-content-width\)/);
+  assert.match(css, /--dsw-font-markdown-base-font-size:\s*var\(--dsh-content-font-size/);
+  for (const selector of ['uV2eYG_input', 'Sixlwa_bubble', 'hWmORq_root']) {
+    assert.match(css, new RegExp(`\\.${selector}[^{]*\\{[\\s\\S]*?font-size:\\s*var\\(--dsh-content-font-size`));
+  }
+  assert.match(css, /\.CY-8Ka_root[^{]*,[\s\S]*?font-size:\s*var\(--dsh-content-font-size-secondary/);
+  assert.doesNotMatch(css, /body\.dsh-ivory:not\(\.dshcs-contract-mismatch\)\s*\{\s*--dsh-scrollbar-width:\s*0px/);
+  for (const stale of ['CUGzGG', 'FK8dIa', 'hYB0Yq', 'KAPaMa', 'Pio91W', 'qk2Vjq', 'EIRQwq', '_6t6-Wa', '_11c_Vq']) {
+    assert.ok(!css.includes(stale) && !template.includes(stale), `stale DSH alpha.1 selector ${stale}`);
   }
 });
 
@@ -186,15 +213,15 @@ check('deep-diving chrysanthemum contrast and icon set', () => {
   assert.ok(contrastRatio(token(light, 'cl-chrys'), lightPage) >= 4.5, 'light --cl-chrys vs --cl-page below 4.5:1');
   assert.ok(contrastRatio(token(dark, 'cl-chrys'), darkPage) >= 4.5, 'dark --cl-chrys vs --cl-page below 4.5:1');
   assert.match(css, /--cl-input: "PingFang SC"/);
-  const thinkIcon = css.match(/\.EIRQwq_leading\s*\{\s*--dshcs-icon:\s*url\("data:image\/svg\+xml,([^"]+)"\)/);
+  const thinkIcon = css.match(/\.lcKema_leading\s*\{\s*--dshcs-icon:\s*url\("data:image\/svg\+xml,([^"]+)"\)/);
   assert.ok(thinkIcon, 'missing think icon data URL');
   const thinkSvg = decodeURIComponent(thinkIcon[1]);
   assert.equal((thinkSvg.match(/M/g) ?? []).length, 7, 'think icon must keep seven curved rays');
   assert.doesNotMatch(thinkSvg, /<(?:circle|ellipse)\b/, 'think icon center must stay open');
-  assert.match(css, /\._11c_Vq_root\[data-variant="read"\] \._11c_Vq_leading/);
-  assert.match(css, /\._11c_Vq_root\[data-variant="search"\] \._11c_Vq_leading/);
-  assert.match(css, /\.j_bVPG_folder::before/);
-  assert.match(css, /\.qk2Vjq_turnStatus[\s\S]*?--cl-chrys/);
+  assert.match(css, /\.o3BgMG_root\[data-variant="read"\] \.o3BgMG_leading/);
+  assert.match(css, /\.o3BgMG_root\[data-variant="search"\] \.o3BgMG_leading/);
+  assert.match(css, /\.YDXeBa_folder::before/);
+  assert.match(css, /\.EvIC1a_turnStatus[\s\S]*?--cl-chrys/);
 });
 
 check('dark mask and renderer hardening boundaries', () => {
