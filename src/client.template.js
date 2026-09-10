@@ -299,6 +299,33 @@ body[data-ds-dark-theme] .dshcs-knob{background:var(--cl-ink)}
         selectors: ['.o3BgMG_root[data-tool][data-variant]'],
       },
     };
+    // Sub-selector probes (D7). A family-level check fires only when a whole
+    // surface vanishes, so one structural selector Ivory styles directly can
+    // rot while its parent survives — that is how .fThDlq_entryRow was lost in
+    // R1, and how the rc.1 matrix-spinner scope changed unnoticed in R3.
+    //
+    // A probe reports only when it was OBSERVED PRESENT earlier in this session
+    // and has since disappeared, so a surface that simply has not mounted yet
+    // (no tool row, no user bubble) never raises a false positive. These probes
+    // are advisory by design: they write their own attribute and never drive
+    // degradation, so a bad probe cannot drop the skin into token-only mode.
+    const DRIFT_PROBES = [
+      { name: 'composer.input', when: '.uV2eYG_root', selectors: ['.uV2eYG_input', '.uV2eYG_placeholder'] },
+      { name: 'composer.card', when: '.uV2eYG_root', selectors: ['.uV2eYG_card'] },
+      { name: 'composer.row', when: '.uV2eYG_root', selectors: ['.uV2eYG_row'] },
+      { name: 'sidebar.tree', when: '.hHd-Xa_root', selectors: ['.YDXeBa_sessionRow', '.bhn1Oq_list'] },
+      { name: 'sidebar.footer', when: '.hHd-Xa_root', selectors: ['.hHd-Xa_footArea'] },
+      { name: 'conversation.column', when: '.wSkVaW_root', selectors: ['.EvIC1a_column'] },
+      { name: 'conversation.userBubble', when: '.EvIC1a_column', selectors: ['.Sixlwa_bubble'] },
+      { name: 'tool.row', when: '.EvIC1a_column', selectors: ['.o3BgMG_root'] },
+      { name: 'reasoning.row', when: '.EvIC1a_column', selectors: ['.lcKema_root'] },
+      { name: 'bash.row', when: '.EvIC1a_column', selectors: ['.CY-8Ka_root'] },
+      // The running-state spinner is the exact shape this probe exists for: the
+      // class survives host upgrades while the CONTAINER changes, so a
+      // scope-scoped rule keeps matching nothing and the brand blue returns.
+      { name: 'state.spinner', when: '.hHd-Xa_root, .EvIC1a_column', selectors: ['[class*="_matrix_"]', '[class*="_cell_"]'] },
+    ];
+    const driftSeenProbes = new Set();
     const CONTRACT_CANDIDATE_SELECTORS = [
       ...REQUIRED_SLOT_SELECTORS,
       '.pI_x6G_frame', '.pI_x6G_centerCol',
@@ -855,6 +882,30 @@ body[data-ds-dark-theme] .dshcs-knob{background:var(--cl-ink)}
       }
     }
 
+    // Advisory sub-selector probe pass. A probe that has been seen present and
+    // then disappears is real drift even though its family still resolves.
+    function reportDriftProbes() {
+      if (!isEnabled()) return;
+      const vanished = [];
+      for (const { name, when, selectors } of DRIFT_PROBES) {
+        if (when && !document.querySelector(when)) continue;
+        if (selectors.some((selector) => document.querySelector(selector))) {
+          driftSeenProbes.add(name);
+          continue;
+        }
+        if (driftSeenProbes.has(name)) vanished.push(name);
+      }
+      if (!vanished.length) {
+        delete document.body.dataset.dshcsDriftProbe;
+        return;
+      }
+      const next = vanished.join(',');
+      if (document.body.dataset.dshcsDriftProbe !== next) {
+        console.warn('[dsh-ivory] Sub-selector drift; a styled element disappeared while its surface survived:', next);
+      }
+      document.body.dataset.dshcsDriftProbe = next;
+    }
+
     function validateHostContract() {
       if (!isEnabled()) return;
       const wasHealthy = document.body.dataset.dshcsCompat === 'ok';
@@ -877,6 +928,7 @@ body[data-ds-dark-theme] .dshcs-knob{background:var(--cl-ink)}
       document.body.dataset.dshcsCompat = ok ? 'ok' : 'token-only';
       document.body.classList.toggle('dshcs-contract-mismatch', !ok);
       reportContractDrift(missingFamilies);
+      reportDriftProbes();
       if (!ok) {
         // Degraded mode self-heals via a throttled re-probe instead of scanning
         // the whole document on every mutation batch.

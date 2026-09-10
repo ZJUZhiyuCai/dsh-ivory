@@ -463,6 +463,46 @@ try {
     await page.close();
   }
 
+  // A8b (D7): a single styled sub-selector can vanish while its surface family
+  // still resolves — that is how the ledger rotted and how the rc.1 spinner
+  // scope changed unnoticed. The advisory probe must catch it, and must NOT
+  // drop the skin into token-only mode when it does.
+  {
+    const { page, errors } = await openPage(browser, { w: 1440, h: 900 });
+    const seeded = await page.evaluate(() => ({
+      compat: document.body.dataset.dshcsCompat ?? '',
+      probe: document.body.dataset.dshcsDriftProbe ?? '',
+      composerCard: document.querySelectorAll('.uV2eYG_card').length,
+      composerRoot: document.querySelectorAll('.uV2eYG_root').length,
+    }));
+    await page.evaluate(() => {
+      for (const node of document.querySelectorAll('.uV2eYG_card')) node.remove();
+    });
+    const deadline = Date.now() + 9_000;
+    let after = null;
+    while (Date.now() < deadline) {
+      after = await page.evaluate(() => ({
+        compat: document.body.dataset.dshcsCompat ?? '',
+        probe: document.body.dataset.dshcsDriftProbe ?? '',
+        composerRoot: document.querySelectorAll('.uV2eYG_root').length,
+      }));
+      if (after.probe.split(',').includes('composer.card')) break;
+      await page.waitForTimeout(250);
+    }
+    check('sub-selector-drift-is-reported',
+      seeded.composerCard > 0
+      && seeded.probe === ''
+      && Boolean(after) && after.probe.split(',').includes('composer.card'),
+      { seeded, after });
+    // Advisory by contract: reporting sub-selector drift must never degrade.
+    check('sub-selector-drift-stays-advisory',
+      Boolean(after) && after.compat === 'ok'
+      && !(await page.evaluate(() => document.body.classList.contains('dshcs-contract-mismatch'))),
+      { after });
+    check('sub-selector-drift-no-page-errors', errors.length === 0, errors);
+    await page.close();
+  }
+
   // A9: corrupted localStorage flags and a read-only Storage API must not
   // break the plugin; defaults apply and the settings UI keeps working.
   {

@@ -41,7 +41,7 @@ const pkg = JSON.parse(packageText);
 
 check('package metadata', () => {
   assert.equal(pkg.name, 'dsh-ivory');
-  assert.equal(pkg.version, '0.2.10');
+  assert.equal(pkg.version, '0.2.11');
   assert.equal(pkg.private, undefined);
   assert.equal(pkg.license, 'MIT');
   assert.equal(pkg.publishConfig?.access, 'public');
@@ -222,6 +222,16 @@ check('deep-diving chrysanthemum contrast and icon set', () => {
   assert.match(css, /\.o3BgMG_root\[data-variant="search"\] \.o3BgMG_leading/);
   assert.match(css, /\.YDXeBa_folder::before/);
   assert.match(css, /\.EvIC1a_turnStatus[\s\S]*?--cl-chrys/);
+});
+
+check('motion vocabulary stays on the two-step scale', () => {
+  // D8: paint transitions converge on the host's 120ms step and micro-motion on
+  // 150ms. Layout (300ms) and reveal (180ms) steps are host-owned and out of
+  // scope — those are deliberately slower and must not be dragged down to 120.
+  const durations = [...css.matchAll(/transition:[^;]*/g)]
+    .flatMap((rule) => [...rule[0].matchAll(/(\d+)ms/g)].map((match) => match[1]));
+  const unique = [...new Set(durations)].sort((a, b) => Number(a) - Number(b));
+  assert.deepEqual(unique, ['120', '150'], `Ivory transitions must use only the 120ms paint / 150ms micro-motion steps, saw: ${unique.join(', ') || '(none)'}`);
 });
 
 check('dark mask and renderer hardening boundaries', () => {
