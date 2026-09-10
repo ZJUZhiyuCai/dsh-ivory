@@ -5,6 +5,23 @@ All notable changes to Ivory are documented here. The project follows
 
 ## [Unreleased]
 
+## [0.2.10] - 2026-09-10
+
+### Fixed
+
+- Re-ink the host's running-state spinner at the source. rc.1 builds it from
+  `svg._matrix_43g9j_4` with eight `rect._cell_43g9j_56` cells
+  (`fill: currentColor; opacity: .15`) and colours it through
+  `--dsh-state-ongoing: var(--dsw-static-deepseek-450)` — a **static** brand
+  blue, which is why the leak measured identically in light and dark.
+  The previous fix re-tinted `color` only, and only inside the Bash tool row;
+  the host now reuses the same component as the **sidebar session-row running
+  indicator**, which that scope never covered.
+
+  The rule now overrides the source custom property and the cell fill, so
+  every current and future placement is covered, and the dot-chase motion is
+  untouched.
+
 ## [0.2.9] - 2026-09-10
 
 ### Fixed

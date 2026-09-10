@@ -1924,13 +1924,24 @@ body.dsh-ivory:not(.dshcs-contract-mismatch) .CY-8Ka_bodyWrap [data-terminal] [c
   background: var(--cl-accent) !important;
   animation: dshcs-breathe 1.2s ease-in-out infinite !important;
 }
-/* rc.8 renders the running state as a matrix spinner (svg._matrix_ with
- * 8 rect cells) in DSH blue. Re-ink its cells with the theme accent and keep
- * the host's staggered opacity animation — same motion, no foreign color. */
-body.dsh-ivory:not(.dshcs-contract-mismatch) .CY-8Ka_bodyWrap [data-terminal] svg[class*="_matrix_"] {
+/* rc.1 renders the running state as a matrix spinner in DSH blue:
+ *   ._matrix_43g9j_4 { --dsh-state-ongoing: var(--dsw-static-deepseek-450) }
+ *   ._matrix_43g9j_4 { color: var(--dsh-state-ongoing) }
+ *   ._cell_43g9j_56  { fill: currentColor; opacity: .15; animation: dot-chase }
+ * R1.3 re-tinted only `color`, and only inside the bash tool row. Two leaks
+ * survived that: (a) the host now reuses the same component as the SIDEBAR
+ * session-row running indicator, which that scope never covered, and (b) the
+ * source token `--dsh-state-ongoing` was never overridden, so any placement
+ * outside the covered scope — and any degraded/token-only pass — paints the
+ * brand blue. Because `--dsw-static-deepseek-450` is a STATIC token, the leak
+ * is identical in light and dark, which is how it was measured.
+ * Fix the source, not the instance: override the custom property too, so every
+ * current and future placement is covered. Motion is untouched. */
+body.dsh-ivory:not(.dshcs-contract-mismatch) [class*="_matrix_"] {
+  --dsh-state-ongoing: var(--cl-accent-text) !important;
   color: var(--cl-accent-text) !important;
 }
-body.dsh-ivory:not(.dshcs-contract-mismatch) .CY-8Ka_bodyWrap [data-terminal] svg[class*="_matrix_"] rect[class*="_cell_"] {
+body.dsh-ivory:not(.dshcs-contract-mismatch) [class*="_matrix_"] rect[class*="_cell_"] {
   fill: var(--cl-accent-text) !important;
 }
 body.dsh-ivory:not(.dshcs-contract-mismatch) .CY-8Ka_bodyWrap [data-terminal] [class*="_cwd"] {
