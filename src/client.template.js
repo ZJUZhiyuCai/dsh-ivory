@@ -269,9 +269,20 @@ body[data-ds-dark-theme] .dshcs-knob{background:var(--cl-ink)}
     // CSS-module names are the structural styling seam. Verify both: accepting
     // only the slots would report "ok" after a hash-only release even though
     // every structural Ivory rule had stopped matching.
+    // DSH renamed the Conversation shell slot `conversation` ->
+    // `main.conversation` and re-homed it under the root-scoped `main` entry.
+    // Both spellings are accepted so a single build supports the whole
+    // supported host range. Requiring only the old name dropped every skin rule
+    // to token-only mode on 0.1.5-rc.x, where the bare slot no longer exists.
+    const CONVERSATION_SLOT_SELECTORS = [
+      '[data-slot="main.conversation"]',
+      '[data-slot="conversation"]',
+    ];
+    const CONVERSATION_SLOT_SELECTOR = CONVERSATION_SLOT_SELECTORS.join(', ');
+
     const REQUIRED_SLOT_SELECTORS = [
       '[data-slot="root"]',
-      '[data-slot="conversation"]',
+      CONVERSATION_SLOT_SELECTOR,
     ];
     const DRIFT_FAMILIES = {
       layout: ['.pI_x6G_frame'],
@@ -804,7 +815,7 @@ body[data-ds-dark-theme] .dshcs-knob{background:var(--cl-ink)}
         if (compat !== 'ok'
           && !degraded
           && document.querySelector('[data-slot="root"]')
-          && document.querySelector('[data-slot="conversation"]')) {
+          && document.querySelector(CONVERSATION_SLOT_SELECTOR)) {
           contractAttempts = 0;
           validateHostContract();
         }

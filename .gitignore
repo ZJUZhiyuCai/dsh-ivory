@@ -15,6 +15,7 @@ ADVERSARIAL-*.md
 # Local tool output dirs (vision toolkit evidence, workbuddy notes).
 .dsh-vision-toolkit/
 .workbuddy/
+.workbuddy-ai/
 
 # Keep the reproducible release surface; ignore one-off local research probes.
 scripts/*
@@ -24,6 +25,8 @@ scripts/*
 !scripts/qa-r2-fixes.mjs
 !scripts/qa-verify-activity.mjs
 !scripts/qa-micro-components.mjs
+!scripts/qa-contract-health.mjs
+!scripts/qa-host-contract.mjs
 !scripts/release-check.mjs
 !scripts/verify-pack.mjs
 !scripts/test-markdown.mjs

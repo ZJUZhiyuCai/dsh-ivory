@@ -22,8 +22,9 @@ const contrastRatio = (a, b) => {
   return (lighter + 0.05) / (darker + 0.05);
 };
 
-const [packageText, patch, host, template, markdown, css, whale, built, readme, readmeZh, changelog, notices, publishWorkflow] = await Promise.all([
+const [packageText, lockText, patch, host, template, markdown, css, whale, built, readme, readmeZh, changelog, contributing, notices, publishWorkflow] = await Promise.all([
   read('package.json'),
+  read('package-lock.json'),
   read('cordis.patch.yml'),
   read('lib/index.js'),
   read('src/client.template.js'),
@@ -34,6 +35,7 @@ const [packageText, patch, host, template, markdown, css, whale, built, readme, 
   read('README.md'),
   read('README_zh-CN.md'),
   read('CHANGELOG.md'),
+  read('CONTRIBUTING.md'),
   read('THIRD_PARTY_NOTICES.md'),
   read('.github/workflows/publish-npm.yml'),
 ]);
@@ -41,7 +43,7 @@ const pkg = JSON.parse(packageText);
 
 check('package metadata', () => {
   assert.equal(pkg.name, 'dsh-ivory');
-  assert.equal(pkg.version, '0.2.11');
+  assert.equal(pkg.version, '0.2.12');
   assert.equal(pkg.private, undefined);
   assert.equal(pkg.license, 'MIT');
   assert.equal(pkg.publishConfig?.access, 'public');
@@ -52,6 +54,15 @@ check('package metadata', () => {
   assert.match(pkg.repository?.url ?? '', /ZJUZhiyuCai\/dsh-ivory/);
   assert.equal(pkg.peerDependencies?.react, '^18.2.0');
   assert.equal(pkg.peerDependenciesMeta?.react?.optional, true);
+});
+
+// `npm ci` installs from the lockfile, so a lockfile still advertising 0.2.8 is
+// a release that ships under the wrong version. It drifted for four releases.
+check('package-lock tracks the manifest version', () => {
+  const lock = JSON.parse(lockText);
+  assert.equal(lock.version, pkg.version, `package-lock.json says ${lock.version}, package.json says ${pkg.version}`);
+  assert.equal(lock.packages?.['']?.version, pkg.version, `package-lock.json packages[""] says ${lock.packages?.['']?.version}`);
+  assert.equal(lock.name, pkg.name);
 });
 
 check('minimal publish allowlist', () => {
@@ -144,6 +155,45 @@ check('documentation contract', () => {
     assert.match(doc, /zero telemetry|无遥测/i);
   }
   assert.match(changelog, new RegExp(`^## \\[${pkg.version.replaceAll('.', '\\.')}\\] - \\d{4}-\\d{2}-\\d{2}$`, 'm'));
+  // docs/AESTHETICS.md is a maintainer-local overlay excluded from the
+  // repository, so any published pointer to it is a dead link.
+  for (const [label, doc] of [['README.md', readme], ['README_zh-CN.md', readmeZh], ['CONTRIBUTING.md', contributing]]) {
+    assert.doesNotMatch(doc, /\[[^\]\n]*\]\([^)\n]*AESTHETICS\.md\)/, `${label} links the unpublished design ledger`);
+  }
+});
+
+// The compatibility note is the first thing a user reads before installing, and
+// it silently rotted to "Ivory 0.2.8" for four releases. Pin it to the manifest.
+check('README compatibility note tracks the current version', () => {
+  for (const [label, doc] of [['README.md', readme], ['README_zh-CN.md', readmeZh]]) {
+    const claimed = doc.match(/Ivory (\d+\.\d+\.\d+) (?:is verified|已针对)/);
+    assert.ok(claimed, `${label} compatibility note is missing or reworded past this check`);
+    assert.equal(claimed[1], pkg.version, `${label} claims Ivory ${claimed[1]}, package.json says ${pkg.version}`);
+  }
+});
+
+check('changelog links cover every released version', () => {
+  const released = [...changelog.matchAll(/^## \[(\d+\.\d+\.\d+)\] - \d{4}-\d{2}-\d{2}$/gm)].map((match) => match[1]);
+  assert.equal(released[0], pkg.version, `newest CHANGELOG entry is ${released[0]}, package.json says ${pkg.version}`);
+  for (const version of released) {
+    assert.match(changelog, new RegExp(`^\\[${version.replaceAll('.', '\\.')}\\]: https://github\\.com/ZJUZhiyuCai/dsh-ivory/`, 'm'),
+      `CHANGELOG has no link definition for ${version}`);
+  }
+  const unreleased = changelog.match(/^\[Unreleased\]: https:\/\/github\.com\/ZJUZhiyuCai\/dsh-ivory\/compare\/v(\d+\.\d+\.\d+)\.\.\.HEAD$/m);
+  assert.ok(unreleased, 'CHANGELOG is missing the [Unreleased] compare link');
+  assert.equal(unreleased[1], released[0], `[Unreleased] compares from v${unreleased[1]}, newest release is v${released[0]}`);
+});
+
+// Browser QA is the only safety net for host-contract regressions, so an
+// undocumented entry point is an entry point nobody runs.
+check('README documents every QA entry point', () => {
+  const entryPoints = Object.keys(pkg.scripts).filter((name) => name.startsWith('qa:'));
+  assert.ok(entryPoints.length >= 6, `expected the six qa:* entry points, found ${entryPoints.join(', ')}`);
+  for (const [label, doc] of [['README.md', readme], ['README_zh-CN.md', readmeZh]]) {
+    for (const name of entryPoints) {
+      assert.ok(doc.includes(`npm run ${name}`), `${label} does not document npm run ${name}`);
+    }
+  }
 });
 
 check('tokenless npm publishing', () => {
@@ -187,6 +237,29 @@ check('DSH rc.1 selector, width, and degradation contract', () => {
   for (const stale of ['CUGzGG', 'FK8dIa', 'hYB0Yq', 'KAPaMa', 'Pio91W', 'qk2Vjq', 'EIRQwq', '_6t6-Wa', '_11c_Vq']) {
     assert.ok(!css.includes(stale) && !template.includes(stale), `stale DSH alpha.1 selector ${stale}`);
   }
+});
+
+// DSH 0.1.5-rc.x renamed the Conversation shell slot `conversation` ->
+// `main.conversation`. The runtime contract must accept BOTH spellings and must
+// exercise that alias in the mutation-observer guard too: pinning the old name
+// dropped every structural rule to token-only mode, because the bare slot no
+// longer exists and the guard never re-validated.
+check('conversation slot rename tolerated on both host generations', () => {
+  assert.match(template, /\[data-slot="main\.conversation"\]/, 'runtime contract does not know the renamed slot');
+  assert.match(template, /\[data-slot="conversation"\]/, 'runtime contract dropped the legacy slot alias');
+  assert.match(template, /const CONVERSATION_SLOT_SELECTOR = CONVERSATION_SLOT_SELECTORS\.join\(', '\)/,
+    'conversation slot alias is not composed from both spellings');
+  assert.match(template, /const REQUIRED_SLOT_SELECTORS = \[\s*\n\s*'\[data-slot="root"\]',\s*\n\s*CONVERSATION_SLOT_SELECTOR,/,
+    'required-slot list does not use the dual-spelling conversation selector');
+  const hardcoded = template.match(/document\.querySelector\('\[data-slot="conversation"\]'\)/g) ?? [];
+  assert.equal(hardcoded.length, 0, `${hardcoded.length} hardcoded legacy conversation-slot guard(s) remain`);
+  // Both consuming sites must go through the alias: the required-slot list and
+  // the mutation guard. A bare reference is enough at the list site.
+  const usedAtList = /const REQUIRED_SLOT_SELECTORS = \[\s*\n\s*'\[data-slot="root"\]',\s*\n\s*CONVERSATION_SLOT_SELECTOR,\s*\n\s*\];/
+    .test(template);
+  const usedAtGuard = /document\.querySelector\(CONVERSATION_SLOT_SELECTOR\)/.test(template);
+  assert.ok(usedAtList, 'required-slot list does not reference the alias');
+  assert.ok(usedAtGuard, 'mutation guard does not reference the alias');
 });
 
 check('light theme text contrast meets WCAG AA', () => {

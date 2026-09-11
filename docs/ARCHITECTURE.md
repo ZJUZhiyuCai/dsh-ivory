@@ -35,7 +35,10 @@ settings section stores only the enabled and focus preferences. When enabled:
 2. a small selector contract checks both the stable 0.1.2 `data-slot` seams and
    the 0.1.2-rc.1 generated shell sentinels, then conditionally verifies chat,
    assistant, reasoning, Bash, and generic-tool families when those surfaces
-   mount;
+   mount. The Conversation slot is matched under **both** of its spellings —
+   `[data-slot="conversation"]` (0.1.2) and `[data-slot="main.conversation"]`
+   (0.1.5, re-homed under the root-scoped `main` entry) — so one build covers
+   the whole supported host range;
 3. narrow observers enhance new Markdown blocks, per-block copy controls,
    completed assistant turns, and safe source notes;
 4. cleanup disconnects every observer and removes every injected node when the
