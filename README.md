@@ -47,7 +47,7 @@ focus mode stays off until you choose it.
 Install the exact GitHub release without using npm.
 
 ```sh
-dsh plugin --profile web add github:ZJUZhiyuCai/dsh-ivory#v0.2.11
+dsh plugin --profile web add github:ZJUZhiyuCai/dsh-ivory#v0.2.12
 ```
 
 Remove Ivory and return to the native DSH interface.
@@ -103,8 +103,8 @@ and [third-party notices](https://github.com/ZJUZhiyuCai/dsh-ivory/blob/main/THI
 
 > [!NOTE]
 > DeepSeek Harness is in developer preview and may make breaking UI changes.
-> Ivory 0.2.8 is verified against DSH 0.1.2-rc.1 and its current web client
-> modules. When Ivory cannot prove the current structural contract,
+> Ivory 0.2.12 is verified against DSH 0.1.2-rc.1 through 0.1.5 and its current
+> web client modules. When Ivory cannot prove the current structural contract,
 > it keeps token-level theming and releases the host layout back to DSH.
 
 <details>
@@ -112,12 +112,17 @@ and [third-party notices](https://github.com/ZJUZhiyuCai/dsh-ivory/blob/main/THI
 
 ```sh
 npm ci
-npm test          # renderer unit tests, then 15 static, build, publint, and package checks
+npm test          # renderer unit tests, then the static release gates, build, publint, and package checks
 npm run qa:r2     # 74 browser regressions; DSH must run at 127.0.0.1:3080
-npm run qa:adversarial  # 30 stress checks: reconciliation safety, toggle/resize storms, degraded mode
+npm run qa:adversarial  # 33 stress checks: reconciliation safety, toggle/resize storms, degraded mode
 npm run qa:activity     # 26 checks for thinking/tool-call rows, icons, and terminal polish
 npm run qa:micro        # 28 Vision Toolkit/Ivory micro-component checks; set DVT_CLIENT_JS if the toolkit is not installed in the DSH web profile
+npm run qa:host         # 10 checks against the live host: contract health, sidebar/composer/settings surfaces, both themes
+npm run qa:contract     # diagnostic probe (no pass/fail): self-diagnosis channel plus a live selector inventory
 ```
+
+The last two need `DSH_QA_TOKEN` from the `dsh web` URL. Every QA entry point in
+`package.json` is documented here, and a release check fails if one goes missing.
 
 The browser suite covers responsive layout, composer focus, dark mode,
 Markdown injection attempts, streaming state, lifecycle cleanup, block-copy

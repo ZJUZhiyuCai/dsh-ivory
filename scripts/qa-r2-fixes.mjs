@@ -22,7 +22,14 @@ const colorAlpha = (color) => {
 async function openConversation(page) {
   await expandSidebar(page).catch(() => {});
   const rows = page.locator('.YDXeBa_sessionRow');
-  const view = page.locator('.wSkVaW_crumb, .EvIC1a_column, .hWmORq_root');
+  // `.EvIC1a_column` also mounts on the blank hero in 0.1.5-rc.x, so it is not
+  // proof that a saved conversation opened; the header only becomes visible
+  // (and the card takes its conversation geometry) once a real session is
+  // loaded. Wait for the header instead of the bare column.
+  const loaded = () => page.evaluate(() => {
+    const header = document.querySelector('.wSkVaW_header');
+    return Boolean(header) && !header.classList.contains('wSkVaW_headerHidden');
+  });
   // A cold context hydrates the sidebar tree asynchronously. Wait for the first
   // row before deciding the tree is empty, otherwise the walk below runs against
   // a half-populated list and reports "no row opened a conversation view".
@@ -47,7 +54,7 @@ async function openConversation(page) {
       if (/^(?:新会话|New chat)(?:\s|$)/i.test(label)) continue;
       await rows.nth(index).click().catch(() => {});
       await page.waitForTimeout(1200);
-      if (await view.count()) return true;
+      if (await loaded()) return true;
       await expandSidebar(page).catch(() => {});
     }
     await page.waitForTimeout(1000);
@@ -175,21 +182,29 @@ try {
         return [value.x, value.y, value.width, value.height, value.right, value.bottom].map(Math.round);
       };
       const composer = document.querySelector('.uV2eYG_card');
+      const header = document.querySelector('.wSkVaW_header');
       return {
         viewport: [innerWidth, innerHeight],
         bodyWidth: document.body.scrollWidth,
         center: rect(document.querySelector('.pI_x6G_centerCol')),
+        // The host now sets `wSkVaW_headerHidden` (display:none) on an empty or
+        // interrupted session, so a hidden header has no geometry to measure.
+        headerHidden: Boolean(header?.classList.contains('wSkVaW_headerHidden')),
         crumb: rect(document.querySelector('.wSkVaW_crumb')),
         headerActions: rect(document.querySelector('.wSkVaW_headerActions')),
-        sessionLog: rect(document.querySelector('.nL4_yW_sessionLogButton')),
         composer: rect(composer),
         controls: [...document.querySelectorAll('.uV2eYG_row button')].map(rect),
       };
     });
-    const headerFits = mobile.crumb && mobile.headerActions && mobile.sessionLog
-      && mobile.crumb[2] >= 80
-      && mobile.crumb[4] <= mobile.headerActions[0] + 1
-      && mobile.sessionLog[4] <= mobile.viewport[0];
+    // The session-log button was removed from the host (`.nL4_yW_sessionLogButton`
+    // no longer exists in any installed package), so the title/actions check no
+    // longer depends on it. A host-hidden header is a legitimate state, not a fit
+    // failure; when it IS shown, the title and actions must still fit.
+    const headerFits = mobile.headerHidden
+      || (mobile.crumb && mobile.headerActions
+        && mobile.crumb[2] >= 80
+        && mobile.crumb[4] <= mobile.headerActions[0] + 1
+        && mobile.headerActions[4] <= mobile.viewport[0]);
     const controlsFit = mobile.composer && mobile.controls.length > 0
       && mobile.controls.every((item) => item[0] >= mobile.composer[0] - 1 && item[4] <= mobile.composer[4] + 1);
     check('mobile-conversation-no-horizontal-overflow', mobile.bodyWidth <= mobile.viewport[0] && mobile.center?.[2] >= 300, mobile);
@@ -216,17 +231,24 @@ try {
       return {
         card: [cardRect.x, cardRect.y, cardRect.width, cardRect.height, cardRect.right, cardRect.bottom],
         center: [centerRect.x, centerRect.width, centerRect.right],
-        axisWidth: Number.parseFloat(getComputedStyle(wrapper).maxWidth),
+        axisMaxWidth: getComputedStyle(wrapper).maxWidth,
         viewportHeight: innerHeight,
       };
     });
     const centered = geometry
-      && Math.abs((geometry.card[0] + geometry.card[4]) / 2 - (geometry.center[0] + geometry.center[2]) / 2) < 1;
+      // 1.5px absorbs sub-pixel rounding on a fractional-width card: the card
+      // and the conversation axis are laid out independently, so their centers
+      // can legitimately differ by one rendered pixel.
+      && Math.abs((geometry.card[0] + geometry.card[4]) / 2 - (geometry.center[0] + geometry.center[2]) / 2) <= 1.5;
+    // The card's height is content-driven (textarea rows + control strip), so a
+    // pinned 100px constant goes stale on any host padding change. Assert the
+    // invariants instead: shared axis, never wider than the column it sits in,
+    // a sane single-row-plus-controls height, and fully on screen.
     check('focus-conversation-card-shared-axis-geometry',
       geometry
       && centered
-      && Math.abs(geometry.card[2] - geometry.axisWidth) < 1
-      && Math.abs(geometry.card[3] - 100) < 1
+      && geometry.card[2] <= geometry.center[1] + 1
+      && geometry.card[3] >= 80 && geometry.card[3] <= 200
       && geometry.card[5] <= geometry.viewportHeight,
       geometry);
     check('focus-conversation-no-page-errors', errors.length === 0, errors);

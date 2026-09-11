@@ -44,7 +44,7 @@ dsh web
 绕过 npm，安装确切的 GitHub 标签版本。
 
 ```sh
-dsh plugin --profile web add github:ZJUZhiyuCai/dsh-ivory#v0.2.11
+dsh plugin --profile web add github:ZJUZhiyuCai/dsh-ivory#v0.2.12
 ```
 
 移除 Ivory，恢复 DSH 原生界面。
@@ -99,7 +99,7 @@ npm 包固定为八个白名单文件，每次 CI 都会检查。完整边界可
 
 > [!NOTE]
 > DeepSeek Harness 仍处于开发者预览阶段，UI 可能发生破坏性变化。
-> Ivory 0.2.8 已针对 DSH 0.1.2-rc.1 及其当前 Web 客户端模块完成验证。
+> Ivory 0.2.12 已针对 DSH 0.1.2-rc.1 至 0.1.5 及其当前 Web 客户端模块完成验证。
 > 无法确认当前结构契约时，Ivory 会保留 token 级主题，并把布局控制权交还给 DSH。
 
 <details>
@@ -107,12 +107,17 @@ npm 包固定为八个白名单文件，每次 CI 都会检查。完整边界可
 
 ```sh
 npm ci
-npm test          # 渲染器单元测试，随后 15 项静态、构建、publint 与包检查
+npm test          # 渲染器单元测试，随后是静态发布门禁、构建、publint 与包检查
 npm run qa:r2     # 74 项浏览器回归，要求 DSH 运行于 127.0.0.1:3080
-npm run qa:adversarial  # 30 项压测：宿主协调安全、开关/resize 风暴、降级模式
+npm run qa:adversarial  # 33 项压测：宿主协调安全、开关/resize 风暴、降级模式
 npm run qa:activity     # 26 项思考/工具调用行、图标与终端打磨检查
 npm run qa:micro        # 28 项 Vision Toolkit/Ivory 微组件检查；若工具箱未安装在 DSH Web profile，请设置 DVT_CLIENT_JS
+npm run qa:host         # 10 项实例宿主检查：契约健康、侧栏/输入框/设置面、明暗双主题
+npm run qa:contract     # 诊断探针（不判定成败）：自诊断通道 + 实时选择器清单
 ```
+
+后两项需要 `dsh web` URL 里的 `DSH_QA_TOKEN`。`package.json` 中的每个 QA 入口
+都必须在此登记，缺失会在发布门禁里失败。
 
 浏览器套件覆盖响应式布局、输入框焦点、深色模式、Markdown 注入尝试、
 流式状态、生命周期清理、复制内容精度、插件共存、长表格、reduced-motion

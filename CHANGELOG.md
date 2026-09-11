@@ -3,7 +3,69 @@
 All notable changes to Ivory are documented here. The project follows
 [Semantic Versioning](https://semver.org/).
 
-## [Unreleased]
+## [0.2.12] - 2026-09-11
+
+### Fixed
+
+- **DSH 0.1.5 renamed the Conversation shell slot** `conversation` →
+  `main.conversation` (re-homed under the root-scoped `main` entry). Ivory's
+  runtime contract still required the bare `[data-slot="conversation"]`, which
+  no longer exists, so `validateHostContract()` never succeeded and the skin
+  fell back to **token-only mode** on every 0.1.5 client — colours and fonts
+  applied while every structural rule (sidebar, composer, panels, chat flow,
+  settings surfaces) stopped matching.
+
+  The contract now accepts **both** spellings, and the same alias is used by the
+  mutation-observer guard that previously could never re-validate. One build
+  therefore supports the whole supported host range instead of degrading on
+  whichever generation it is not pinned to. A new release check pins the
+  dual-spelling contract and fails if a hardcoded legacy guard reappears.
+
+  Diagnosis used the plugin's own self-diagnosis channel: the live client
+  reported `body[data-dshcs-compat="pending"]`, then `token-only`, with 29
+  `data-slot` values present and `conversation` absent.
+
+### Changed
+
+- Browser QA is now host-version-honest. `qa:r2`'s conversation helper treated a
+  bare `.EvIC1a_column` as proof that a saved conversation had opened, but that
+  column also mounts on the blank hero in 0.1.5 — so header/focus assertions
+  measured an empty draft. It now waits for the conversation header to become
+  visible, and the two assertions that had gone stale were corrected: the
+  removed `.nL4_yW_sessionLogButton` (no longer present in any installed
+  package) is no longer required, and the focus card's 100px height constant is
+  replaced by the real invariants (shared axis, never wider than its column,
+  content-driven height, fully on screen).
+
+- **Documentation and package metadata now match the code.** Four claims had
+  drifted: the `CHANGELOG` link block stopped at 0.2.8 and `[Unreleased]`
+  compared from `v0.2.8` even though 0.2.9–0.2.12 were released; both READMEs
+  still said "Ivory 0.2.8 is verified against DSH 0.1.2-rc.1" and counted "15
+  static checks" (the gate now runs 21) and "30" adversarial checks (33); and
+  `qa:contract` / `qa:host` existed in `package.json` without ever being
+  documented. `package-lock.json` still advertised `0.2.8` while
+  `package.json` said `0.2.12`, four releases out of step.
+
+  Four new release checks now fail the build on this class of drift: the README
+  compatibility note must match the manifest version, every released
+  `CHANGELOG` heading must have a link definition with `[Unreleased]` based on
+  the newest release, every `qa:*` script must appear in both READMEs, and
+  `package-lock.json` must track the manifest version. A fifth rejects links to
+  `docs/AESTHETICS.md`, which is a maintainer-local file that is never
+  published.
+
+  The two new browser entry points are documented with their scope:
+  `qa:host` runs 10 pass/fail checks against the live host, and `qa:contract`
+  is a diagnostic probe (no pass/fail) that prints the plugin's own
+  self-diagnosis channel plus a live selector inventory — useful first step
+  when the theme silently falls back to token-only mode.
+
+- **Contributor documentation covers the current workflow.** `CONTRIBUTING.md`
+  omitted `src/markdown.js` from the edit step, listed only DSH 0.1.2-rc.1 as
+  the supported host, and did not mention the design ledger; `ARCHITECTURE.md`
+  did not record the dual-spelling Conversation slot. Both are corrected, and
+  the source files `src/markdown.js`, `scripts/test-markdown.mjs`, and
+  `docs/AESTHETICS.md` no longer carry owner-only `600` permissions.
 
 ## [0.2.11] - 2026-09-10
 
@@ -330,7 +392,11 @@ All notable changes to Ivory are documented here. The project follows
 - Explicit npm file allowlist, MIT license, third-party notices, and bilingual
   documentation.
 
-[Unreleased]: https://github.com/ZJUZhiyuCai/dsh-ivory/compare/v0.2.8...HEAD
+[Unreleased]: https://github.com/ZJUZhiyuCai/dsh-ivory/compare/v0.2.12...HEAD
+[0.2.12]: https://github.com/ZJUZhiyuCai/dsh-ivory/compare/v0.2.11...v0.2.12
+[0.2.11]: https://github.com/ZJUZhiyuCai/dsh-ivory/compare/v0.2.10...v0.2.11
+[0.2.10]: https://github.com/ZJUZhiyuCai/dsh-ivory/compare/v0.2.9...v0.2.10
+[0.2.9]: https://github.com/ZJUZhiyuCai/dsh-ivory/compare/v0.2.8...v0.2.9
 [0.2.8]: https://github.com/ZJUZhiyuCai/dsh-ivory/compare/v0.2.7...v0.2.8
 [0.2.7]: https://github.com/ZJUZhiyuCai/dsh-ivory/compare/v0.2.6...v0.2.7
 [0.2.6]: https://github.com/ZJUZhiyuCai/dsh-ivory/compare/v0.2.5...v0.2.6

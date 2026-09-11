@@ -1,6 +1,6 @@
 {
   "name": "dsh-ivory",
-  "version": "0.2.11",
+  "version": "0.2.12",
   "description": "An unofficial Claude-inspired light/dark theme for DeepSeek Harness with responsive layout, safe Markdown preview, and zero telemetry.",
   "keywords": [
     "dsh-plugin",
@@ -53,6 +53,8 @@
     "qa:adversarial": "node scripts/qa-adversarial.mjs",
     "qa:activity": "node scripts/qa-verify-activity.mjs",
     "qa:micro": "node scripts/qa-micro-components.mjs",
+    "qa:contract": "node scripts/qa-contract-health.mjs",
+    "qa:host": "node scripts/qa-host-contract.mjs",
     "prepack": "npm run build && npm run check"
   },
   "devDependencies": {
