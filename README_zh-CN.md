@@ -102,6 +102,10 @@ npm 包固定为八个白名单文件，每次 CI 都会检查。完整边界可
 > Ivory 0.2.12 已针对 DSH 0.1.2-rc.1 至 0.1.5 及其当前 Web 客户端模块完成验证。
 > 无法确认当前结构契约时，Ivory 会保留 token 级主题，并把布局控制权交还给 DSH。
 
+未发布更新另行适配官方 macOS 桌面版 0.1.7-rc.2。
+执行 `npm run build && npm run test:desktop`，使用已安装应用的样式进行隔离回归；
+不访问账户、不调用模型。其他系统可用 `DSH_DESKTOP_CLIENT_DIR` 指向提取出的客户端包目录。
+
 <details>
 <summary><strong>质量与发布门禁</strong></summary>
 

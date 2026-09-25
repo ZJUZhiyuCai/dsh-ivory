@@ -279,19 +279,22 @@ body[data-ds-dark-theme] .dshcs-knob{background:var(--cl-ink)}
       '[data-slot="conversation"]',
     ];
     const CONVERSATION_SLOT_SELECTOR = CONVERSATION_SLOT_SELECTORS.join(', ');
+    // Global panels replace the conversation in the main seat (plugins, task
+    // board, etc.). Their absence of a composer is not host selector drift.
+    const MAIN_SLOT_SELECTOR = CONVERSATION_SLOT_SELECTOR + ', [data-slot="main"]';
 
     const REQUIRED_SLOT_SELECTORS = [
       '[data-slot="root"]',
-      CONVERSATION_SLOT_SELECTOR,
+      MAIN_SLOT_SELECTOR,
     ];
     const DRIFT_FAMILIES = {
       layout: ['.pI_x6G_frame'],
       sidebar: ['.hHd-Xa_root'],
-      conversation: ['.wSkVaW_root'],
       workspace: ['.bhn1Oq_root'],
-      composer: ['.uV2eYG_root'],
     };
     const CONDITIONAL_DRIFT_FAMILIES = {
+      conversation: { when: CONVERSATION_SLOT_SELECTOR, selectors: ['.wSkVaW_root'] },
+      composer: { when: CONVERSATION_SLOT_SELECTOR, selectors: ['.uV2eYG_root'] },
       chat: { when: '[data-chat-flow]', selectors: ['.EvIC1a_column'] },
       assistant: {
         when: '[data-slot="conversation.chat.assistant-actions"]',
@@ -815,7 +818,7 @@ body[data-ds-dark-theme] .dshcs-knob{background:var(--cl-ink)}
         if (compat !== 'ok'
           && !degraded
           && document.querySelector('[data-slot="root"]')
-          && document.querySelector(CONVERSATION_SLOT_SELECTOR)) {
+          && document.querySelector(MAIN_SLOT_SELECTOR)) {
           contractAttempts = 0;
           validateHostContract();
         }

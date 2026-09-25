@@ -20,6 +20,8 @@ ADVERSARIAL-*.md
 # Keep the reproducible release surface; ignore one-off local research probes.
 scripts/*
 !scripts/build.mjs
+!scripts/host-selectors.mjs
+!scripts/test-desktop.mjs
 !scripts/qa-lib.mjs
 !scripts/qa-adversarial.mjs
 !scripts/qa-r2-fixes.mjs

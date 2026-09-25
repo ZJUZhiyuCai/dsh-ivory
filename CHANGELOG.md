@@ -3,6 +3,24 @@
 All notable changes to Ivory are documented here. The project follows
 [Semantic Versioning](https://semver.org/).
 
+## [Unreleased]
+
+### Fixed
+
+- Accept the verified CSS-module classes shipped by the official DSH desktop
+  0.1.7-rc.2 alongside the existing web classes, in both styles and DOM probes.
+- Keep theme styling active when a global panel replaces the conversation.
+- Preserve macOS title-bar clearance and hidden-sidebar behavior, size New Chat
+  to the actual sidebar width, and style the current hero title element.
+- Align native Plugins and injected navigation with New Chat: shared 20px icons,
+  32px rows, 8px outer gutters, and consistent selected states at any sidebar width.
+
+### Changed
+
+- Give the macOS sidebar its own neutral surface and soften the composer shadow
+  using the existing light/dark palette. Keyboard focus and native window
+  controls remain visible.
+
 ## [0.2.12] - 2026-09-11
 
 ### Fixed

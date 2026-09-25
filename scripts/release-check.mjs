@@ -2,6 +2,7 @@ import assert from 'node:assert/strict';
 import { readFile } from 'node:fs/promises';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { expandHostSelectors } from './host-selectors.mjs';
 
 const root = join(dirname(fileURLToPath(import.meta.url)), '..');
 const read = (path) => readFile(join(root, path), 'utf8');
@@ -136,10 +137,10 @@ check('brand-safe assets and fonts', () => {
 });
 
 check('generated bundle is reproducible', () => {
-  const expected = template
+  const expected = expandHostSelectors(template
     .replace('/*__MARKDOWN_JS__*/', markdown.trimEnd())
     .replace('/*__SKIN_CSS__*/', JSON.stringify(css))
-    .replace('/*__WHALE_SVG__*/', JSON.stringify(whale.trim()));
+    .replace('/*__WHALE_SVG__*/', JSON.stringify(whale.trim())));
   assert.equal(built, expected);
 });
 
@@ -244,22 +245,18 @@ check('DSH rc.1 selector, width, and degradation contract', () => {
 // exercise that alias in the mutation-observer guard too: pinning the old name
 // dropped every structural rule to token-only mode, because the bare slot no
 // longer exists and the guard never re-validated.
-check('conversation slot rename tolerated on both host generations', () => {
-  assert.match(template, /\[data-slot="main\.conversation"\]/, 'runtime contract does not know the renamed slot');
-  assert.match(template, /\[data-slot="conversation"\]/, 'runtime contract dropped the legacy slot alias');
-  assert.match(template, /const CONVERSATION_SLOT_SELECTOR = CONVERSATION_SLOT_SELECTORS\.join\(', '\)/,
-    'conversation slot alias is not composed from both spellings');
-  assert.match(template, /const REQUIRED_SLOT_SELECTORS = \[\s*\n\s*'\[data-slot="root"\]',\s*\n\s*CONVERSATION_SLOT_SELECTOR,/,
-    'required-slot list does not use the dual-spelling conversation selector');
-  const hardcoded = template.match(/document\.querySelector\('\[data-slot="conversation"\]'\)/g) ?? [];
-  assert.equal(hardcoded.length, 0, `${hardcoded.length} hardcoded legacy conversation-slot guard(s) remain`);
-  // Both consuming sites must go through the alias: the required-slot list and
-  // the mutation guard. A bare reference is enough at the list site.
-  const usedAtList = /const REQUIRED_SLOT_SELECTORS = \[\s*\n\s*'\[data-slot="root"\]',\s*\n\s*CONVERSATION_SLOT_SELECTOR,\s*\n\s*\];/
-    .test(template);
-  const usedAtGuard = /document\.querySelector\(CONVERSATION_SLOT_SELECTOR\)/.test(template);
-  assert.ok(usedAtList, 'required-slot list does not reference the alias');
-  assert.ok(usedAtGuard, 'mutation guard does not reference the alias');
+check('conversation aliases and global-panel contract', () => {
+  assert.ok(template.includes('[data-slot="main.conversation"]'));
+  assert.ok(template.includes('[data-slot="conversation"]'));
+  assert.ok(template.includes('[data-slot="main"]'));
+  assert.match(template, /const REQUIRED_SLOT_SELECTORS = \[\s*'\[data-slot="root"\]',\s*MAIN_SLOT_SELECTOR,/);
+  assert.ok(template.includes('document.querySelector(MAIN_SLOT_SELECTOR)'));
+  for (const family of ['conversation', 'composer']) {
+    assert.ok(template.includes(`${family}: { when: CONVERSATION_SLOT_SELECTOR`));
+  }
+  for (const selector of ['pI_x6G_frame', 'uV2eYG_card', 'hWmORq_body']) {
+    assert.ok(expandHostSelectors(`.${selector}`).startsWith(':is('));
+  }
 });
 
 check('light theme text contrast meets WCAG AA', () => {

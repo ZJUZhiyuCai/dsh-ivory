@@ -33,12 +33,14 @@ settings section stores only the enabled and focus preferences. When enabled:
 
 1. stable DSH design tokens receive the warm neutral theme;
 2. a small selector contract checks both the stable 0.1.2 `data-slot` seams and
-   the 0.1.2-rc.1 generated shell sentinels, then conditionally verifies chat,
+   the verified web/desktop shell sentinels, then conditionally verifies chat,
    assistant, reasoning, Bash, and generic-tool families when those surfaces
    mount. The Conversation slot is matched under **both** of its spellings —
    `[data-slot="conversation"]` (0.1.2) and `[data-slot="main.conversation"]`
    (0.1.5, re-homed under the root-scoped `main` entry) — so one build covers
-   the whole supported host range;
+   the whole supported host range. Global panels keep the `[data-slot="main"]`
+   wrapper while replacing its conversation child, so only mounted
+   conversations require their composer;
 3. narrow observers enhance new Markdown blocks, per-block copy controls,
    completed assistant turns, and safe source notes;
 4. cleanup disconnects every observer and removes every injected node when the
@@ -96,3 +98,21 @@ CI releases automatically.
 Any future feature that needs a network request, host service, secret, new
 persistent field, runtime dependency, or third-party asset changes this trust
 boundary and should receive explicit security and documentation review.
+
+## Desktop compatibility
+
+`src/host-selectors.json` records class aliases verified against matching CSS
+modules in DSH web 0.1.5 and official desktop 0.1.7-rc.2. The build expands exact
+class selectors to `:is(legacy, desktop)` in both the stylesheet and DOM probes,
+retaining specificity without adding classes to host nodes. Unknown classes
+are not guessed. Global main panels do not require a conversation or composer;
+when the conversation is mounted its structural contract remains mandatory.
+macOS rules preserve the host's title grid, traffic-light clearance, and fully
+hidden sidebar.
+
+Native sidebar panels and injected task-board entries share the expanded
+navigation geometry (20px icon, 12px gap, 32px row, 8px outer gutter). Native
+panel rules exclude the collapsed rail. The macOS chrome uses the existing
+surface palette and a lighter composer shadow; it does not change host layout
+animations, window controls, or plugin navigation behavior. `test:desktop`
+checks alignment at multiple sidebar widths and both selected-state palettes.

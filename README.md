@@ -107,6 +107,11 @@ and [third-party notices](https://github.com/ZJUZhiyuCai/dsh-ivory/blob/main/THI
 > web client modules. When Ivory cannot prove the current structural contract,
 > it keeps token-level theming and releases the host layout back to DSH.
 
+The unreleased changes also adapt the official macOS desktop
+0.1.7-rc.2. Run `npm run build && npm run test:desktop` for isolated regressions
+using styles read from the installed app (no account or model calls).
+`DSH_DESKTOP_CLIENT_DIR` can point to extracted client bundles on other systems.
+
 <details>
 <summary><strong>Quality and release checks</strong></summary>
 
