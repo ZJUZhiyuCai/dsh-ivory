@@ -151,6 +151,26 @@ try {
       updated.views === 1 && updated.toggles === 1 && updated.text?.includes('更新后的内容') && !updated.text?.includes('标题甲'), updated);
     check('md-preview-reenhances-after-node-swap',
       replaced.views === 1 && replaced.toggles === 1 && replaced.text?.includes('替换后的内容'), replaced);
+    await page.evaluate(() => {
+      const pre = document.querySelector('.shiki-md-stale-fixture');
+      const wrapper = document.createElement('div');
+      wrapper.className = 'highlighted-source-fixture';
+      const highlighted = document.createElement('pre');
+      highlighted.className = pre.className;
+      highlighted.textContent = pre.textContent;
+      wrapper.appendChild(highlighted);
+      pre.replaceWith(wrapper);
+    });
+    await page.waitForTimeout(400);
+    const highlighted = await page.evaluate(() => ({
+      views: document.querySelectorAll('.md-stale-fixture .dshcs-md').length,
+      toggles: document.querySelectorAll('.md-stale-fixture .dshcs-md-toggle').length,
+      seats: document.querySelectorAll('.md-stale-fixture [data-dshcs-seat]').length,
+      parent: document.querySelector('.shiki-md-stale-fixture').parentElement.className,
+    }));
+    check('md-preview-follows-highlighted-source-without-duplicates',
+      highlighted.views === 1 && highlighted.toggles === 1 && highlighted.seats === 1
+      && highlighted.parent.includes('highlighted-source-fixture'), highlighted);
     check('md-stale-no-page-errors', errors.length === 0, errors);
     await page.close();
   }

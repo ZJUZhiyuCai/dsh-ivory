@@ -3,9 +3,12 @@ import { readFile } from 'node:fs/promises';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { expandHostSelectors } from './host-selectors.mjs';
+import { assertNoRetiredSelectors, assertPeerSupport, assertSelectorTable } from './host-contract.mjs';
 
 const root = join(dirname(fileURLToPath(import.meta.url)), '..');
 const read = (path) => readFile(join(root, path), 'utf8');
+
+const REACT_PEER_RANGE = '>=18.2.0';
 const checks = [];
 const check = (name, fn) => {
   fn();
@@ -23,7 +26,7 @@ const contrastRatio = (a, b) => {
   return (lighter + 0.05) / (darker + 0.05);
 };
 
-const [packageText, lockText, patch, host, template, markdown, css, whale, built, readme, readmeZh, changelog, contributing, notices, publishWorkflow] = await Promise.all([
+const [packageText, lockText, patch, host, template, markdown, css, whale, built, readme, readmeZh, changelog, contributing, notices, publishWorkflow, hostSelectorsText] = await Promise.all([
   read('package.json'),
   read('package-lock.json'),
   read('cordis.patch.yml'),
@@ -39,12 +42,14 @@ const [packageText, lockText, patch, host, template, markdown, css, whale, built
   read('CONTRIBUTING.md'),
   read('THIRD_PARTY_NOTICES.md'),
   read('.github/workflows/publish-npm.yml'),
+  read('src/host-selectors.json'),
 ]);
 const pkg = JSON.parse(packageText);
+const hostSelectors = JSON.parse(hostSelectorsText);
 
 check('package metadata', () => {
   assert.equal(pkg.name, 'dsh-ivory');
-  assert.equal(pkg.version, '0.2.12');
+  assert.equal(pkg.version, '0.2.13');
   assert.equal(pkg.private, undefined);
   assert.equal(pkg.license, 'MIT');
   assert.equal(pkg.publishConfig?.access, 'public');
@@ -53,7 +58,7 @@ check('package metadata', () => {
   assert.deepEqual(pkg.dependencies, undefined);
   assert.ok(pkg.keywords.includes('dsh-plugin'));
   assert.match(pkg.repository?.url ?? '', /ZJUZhiyuCai\/dsh-ivory/);
-  assert.equal(pkg.peerDependencies?.react, '^18.2.0');
+  assert.equal(pkg.peerDependencies?.react, REACT_PEER_RANGE);
   assert.equal(pkg.peerDependenciesMeta?.react?.optional, true);
 });
 
@@ -86,11 +91,24 @@ check('bundle contract', () => {
     '@deepseek-ai/dsh-client-ui-settings',
   ]);
   for (const dependency of pkg.dsh.client.inject) {
-    assert.equal(pkg.peerDependencies?.[dependency], '>=0.1.2-rc.1 <0.2.0');
+    assert.equal(typeof pkg.peerDependencies?.[dependency], 'string');
     assert.equal(pkg.peerDependenciesMeta?.[dependency]?.optional, true);
   }
   assert.ok(!pkg.dsh.client.inject.includes('@deepseek-ai/dsh-client-runtime'));
   assert.ok(!pkg.dsh.client.inject.includes('@deepseek-ai/dsh-client-ui-slots'));
+});
+
+// npm excludes prereleases unless the range explicitly opts into their core
+// version. Use its real semantics, including patch and prerelease ordering.
+check('supported host version is inside the peer range', () => {
+  assertPeerSupport(pkg, ['0.1.2-rc.1', ...Object.values(hostSelectors.hosts)]);
+  assert.equal(pkg.peerDependencies?.react, REACT_PEER_RANGE);
+});
+
+check('host selector table tracks the supported desktop build', () => {
+  assert.equal(hostSelectors.hosts.web, '0.1.5-rc.1');
+  assert.equal(hostSelectors.hosts.desktop, '0.2.0-rc.2');
+  assertSelectorTable(hostSelectors);
 });
 
 check('inert host boundary', () => {
@@ -235,9 +253,12 @@ check('DSH rc.1 selector, width, and degradation contract', () => {
   }
   assert.match(css, /\.CY-8Ka_root[^{]*,[\s\S]*?font-size:\s*var\(--dsh-content-font-size-secondary/);
   assert.doesNotMatch(css, /body\.dsh-ivory:not\(\.dshcs-contract-mismatch\)\s*\{\s*--dsh-scrollbar-width:\s*0px/);
-  for (const stale of ['CUGzGG', 'FK8dIa', 'hYB0Yq', 'KAPaMa', 'Pio91W', 'qk2Vjq', 'EIRQwq', '_6t6-Wa', '_11c_Vq']) {
-    assert.ok(!css.includes(stale) && !template.includes(stale), `stale DSH alpha.1 selector ${stale}`);
-  }
+  assertNoRetiredSelectors({
+    'src/skin.css': css,
+    'src/client.template.js': template,
+    'src/host-selectors.json': hostSelectorsText,
+    'lib/client.js': built,
+  });
 });
 
 // DSH 0.1.5-rc.x renamed the Conversation shell slot `conversation` ->

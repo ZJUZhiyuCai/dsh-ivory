@@ -337,7 +337,9 @@ body[data-ds-dark-theme] .dshcs-knob{background:var(--cl-ink)}
       // The running-state spinner is the exact shape this probe exists for: the
       // class survives host upgrades while the CONTAINER changes, so a
       // scope-scoped rule keeps matching nothing and the brand blue returns.
-      { name: 'state.spinner', when: '.hHd-Xa_root, .EvIC1a_column', selectors: ['[class*="_matrix_"]', '[class*="_cell_"]'] },
+      // 0.2.0 replaced the rect-grid spinner with the StateDot primitive, which
+      // is identified by `data-state="ongoing"` rather than a hashed class.
+      { name: 'state.spinner', when: '.hHd-Xa_root, .EvIC1a_column', selectors: ['[data-state="ongoing"]'] },
     ];
     const driftSeenProbes = new Set();
     const CONTRACT_CANDIDATE_SELECTORS = [
@@ -665,6 +667,13 @@ body[data-ds-dark-theme] .dshcs-knob{background:var(--cl-ink)}
 
     function enhanceMarkdown(root = document) {
       if (!isEnabled()) return;
+      // Syntax highlighting can replace a plain <pre> with a new wrapper and
+      // <pre>. Retire the old seat before enhancing that new source, otherwise
+      // both previews survive until the theme is toggled off.
+      for (const seat of collectNear(root, '[data-dshcs-seat]')) {
+        const state = mdSeats.get(seat);
+        if (state && (!state.pre.isConnected || state.pre.parentElement !== seat)) resetMdSeat(seat, state);
+      }
       // R1.1: also collect plain (non-shiki) source pres inside code blocks;
       // isMarkdownSource gates everything, so this stays safe for terminals
       // and real code fences.

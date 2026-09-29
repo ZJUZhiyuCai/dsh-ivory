@@ -47,7 +47,7 @@ focus mode stays off until you choose it.
 Install the exact GitHub release without using npm.
 
 ```sh
-dsh plugin --profile web add github:ZJUZhiyuCai/dsh-ivory#v0.2.12
+dsh plugin --profile web add github:ZJUZhiyuCai/dsh-ivory#v0.2.13
 ```
 
 Remove Ivory and return to the native DSH interface.
@@ -103,31 +103,42 @@ and [third-party notices](https://github.com/ZJUZhiyuCai/dsh-ivory/blob/main/THI
 
 > [!NOTE]
 > DeepSeek Harness is in developer preview and may make breaking UI changes.
-> Ivory 0.2.12 is verified against DSH 0.1.2-rc.1 through 0.1.5 and its current
-> web client modules. When Ivory cannot prove the current structural contract,
-> it keeps token-level theming and releases the host layout back to DSH.
+> Ivory 0.2.13 is verified against DSH Web 0.1.5-rc.1 and desktop
+> 0.2.0-rc.2. Other host builds may use token-level fallback. When Ivory cannot prove the current structural
+> contract, it keeps token-level theming and releases the host layout back to DSH.
 
-The unreleased changes also adapt the official macOS desktop
-0.1.7-rc.2. Run `npm run build && npm run test:desktop` for isolated regressions
+The desktop 0.2.0-rc.2 port re-derived every aliased CSS-module class; see
+`src/host-selectors.json` for the verified map. Run
+`npm run build && npm run test:desktop` for isolated regressions
 using styles read from the installed app (no account or model calls).
-`DSH_DESKTOP_CLIENT_DIR` can point to extracted client bundles on other systems.
+`DSH_DESKTOP_CLIENT_DIR` can point to extracted client bundles plus the frontend
+`index-*.css` on other systems. `DSH_WEB_PACKAGE_DIR` selects the installed
+`@deepseek-ai/dsh` package used for the separate Web stylesheet tests.
 
 <details>
 <summary><strong>Quality and release checks</strong></summary>
 
 ```sh
 npm ci
-npm test          # renderer unit tests, then the static release gates, build, publint, and package checks
+npm test          # renderer/host-contract unit tests, build, release gates, publint, and package checks
+npm run test:desktop  # 94 checks with installed desktop and Web styles
 npm run qa:r2     # 74 browser regressions; DSH must run at 127.0.0.1:3080
-npm run qa:adversarial  # 33 stress checks: reconciliation safety, toggle/resize storms, degraded mode
+npm run qa:adversarial  # 34 stress checks: reconciliation safety, toggle/resize storms, degraded mode
 npm run qa:activity     # 26 checks for thinking/tool-call rows, icons, and terminal polish
 npm run qa:micro        # 28 Vision Toolkit/Ivory micro-component checks; set DVT_CLIENT_JS if the toolkit is not installed in the DSH web profile
-npm run qa:host         # 10 checks against the live host: contract health, sidebar/composer/settings surfaces, both themes
+npm run qa:host         # 13 checks against the live host: contract health, sidebar/composer/settings surfaces, both themes
 npm run qa:contract     # diagnostic probe (no pass/fail): self-diagnosis channel plus a live selector inventory
+npm run derive:host     # re-derive the desktop CSS-module alias table from the installed DSH; run after every host upgrade
 ```
 
-The last two need `DSH_QA_TOKEN` from the `dsh web` URL. Every QA entry point in
-`package.json` is documented here, and a release check fails if one goes missing.
+`derive:host` previews a mapping resolved by package, CSS module and member name.
+Use `npm run derive:host -- --check` to fail on drift, or
+`npm run derive:host -- --write` to save a complete result. Missing or ambiguous
+modules fail without writing a partial table. Update the recorded host versions,
+peer range and any desktop-only selectors when adapting a new host release.
+
+The live browser entries require `DSH_QA_TOKEN` from the `dsh web` URL.
+Every `qa:*` entry point is documented here and checked by the release gate.
 
 The browser suite covers responsive layout, composer focus, dark mode,
 Markdown injection attempts, streaming state, lifecycle cleanup, block-copy

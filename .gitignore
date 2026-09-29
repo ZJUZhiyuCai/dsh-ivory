@@ -21,6 +21,11 @@ ADVERSARIAL-*.md
 scripts/*
 !scripts/build.mjs
 !scripts/host-selectors.mjs
+!scripts/host-bundles.mjs
+!scripts/host-contract.mjs
+!scripts/test-host-contract.mjs
+!scripts/test-disclosure.mjs
+!scripts/derive-host-selectors.mjs
 !scripts/test-desktop.mjs
 !scripts/qa-lib.mjs
 !scripts/qa-adversarial.mjs

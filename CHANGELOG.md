@@ -5,11 +5,28 @@ All notable changes to Ivory are documented here. The project follows
 
 ## [Unreleased]
 
+## [0.2.13] - 2026-09-29
+
 ### Fixed
 
-- Accept the verified CSS-module classes shipped by the official DSH desktop
-  0.1.7-rc.2 alongside the existing web classes, in both styles and DOM probes.
+- Adapt the 21 named CSS modules used by Ivory to DSH desktop 0.2.0-rc.2,
+  while retaining the Web 0.1.5-rc.1 selectors. Verify all 97 aliases by package,
+  CSS module and member, including the AgentPresetLabel that was incorrectly
+  mapped to an unrelated ReferenceChip label.
+- Explicitly include the supported Web and desktop RC versions in the DSH
+  peer ranges. Standard npm semver checks now cover prerelease and patch
+  boundaries. The React peer accepts versions from 18.2.0 onward.
+- Keep both collapsed hover chevrons and expanded up-arrows visible in
+  reasoning/tool rows. Hide only the replaced decoration, and remove its
+  pseudo-element when the real expanded control occupies that space.
+- Re-tint both the Web matrix spinner and desktop StateDot through their shared
+  `data-state="ongoing"` attribute.
+- Remove the old Markdown preview when host syntax highlighting replaces its
+  source with a nested wrapper. This prevents duplicate previews and copy
+  controls that disappeared only after toggling the theme.
 - Keep theme styling active when a global panel replaces the conversation.
+- Route the current hero title through the shared alias table so both Web and
+  desktop use the intended wide and narrow typography.
 - Preserve macOS title-bar clearance and hidden-sidebar behavior, size New Chat
   to the actual sidebar width, and style the current hero title element.
 - Align native Plugins and injected navigation with New Chat: shared 20px icons,
@@ -20,6 +37,13 @@ All notable changes to Ivory are documented here. The project follows
 - Give the macOS sidebar its own neutral surface and soften the composer shadow
   using the existing light/dark palette. Keyboard focus and native window
   controls remain visible.
+- `derive:host` resolves exact package-qualified module names. It previews changes
+  by default, supports `--check`, and writes only a complete mapping with `--write`.
+- Release checks scan source selectors, the alias table and the generated bundle
+  for retired hashes. Six host-contract regression tests cover wrong-component
+  mappings, ambiguous/missing modules, RC range boundaries and stale aliases.
+- Installed-host regressions use separate desktop and Web styles, including the
+  shared primitive styles, with 94 checks covering disclosure states and inputs.
 
 ## [0.2.12] - 2026-09-11
 
@@ -410,7 +434,8 @@ All notable changes to Ivory are documented here. The project follows
 - Explicit npm file allowlist, MIT license, third-party notices, and bilingual
   documentation.
 
-[Unreleased]: https://github.com/ZJUZhiyuCai/dsh-ivory/compare/v0.2.12...HEAD
+[Unreleased]: https://github.com/ZJUZhiyuCai/dsh-ivory/compare/v0.2.13...HEAD
+[0.2.13]: https://github.com/ZJUZhiyuCai/dsh-ivory/compare/v0.2.12...v0.2.13
 [0.2.12]: https://github.com/ZJUZhiyuCai/dsh-ivory/compare/v0.2.11...v0.2.12
 [0.2.11]: https://github.com/ZJUZhiyuCai/dsh-ivory/compare/v0.2.10...v0.2.11
 [0.2.10]: https://github.com/ZJUZhiyuCai/dsh-ivory/compare/v0.2.9...v0.2.10

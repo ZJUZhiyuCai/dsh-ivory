@@ -1,6 +1,6 @@
 {
   "name": "dsh-ivory",
-  "version": "0.2.12",
+  "version": "0.2.13",
   "description": "An unofficial Claude-inspired light/dark theme for DeepSeek Harness with responsive layout, safe Markdown preview, and zero telemetry.",
   "keywords": [
     "dsh-plugin",
@@ -47,20 +47,23 @@
     "check": "node scripts/release-check.mjs",
     "check:pack": "npm pack --dry-run --json --ignore-scripts | node scripts/verify-pack.mjs",
     "check:publint": "publint --level error",
-    "test": "npm run test:markdown && npm run build && npm run check && npm run check:publint && npm run check:pack",
+    "test": "npm run test:markdown && npm run test:selectors && npm run build && npm run check && npm run check:publint && npm run check:pack",
     "test:markdown": "node --test scripts/test-markdown.mjs",
     "test:desktop": "node scripts/test-desktop.mjs",
+    "derive:host": "node scripts/derive-host-selectors.mjs",
     "qa:r2": "node scripts/qa-r2-fixes.mjs",
     "qa:adversarial": "node scripts/qa-adversarial.mjs",
     "qa:activity": "node scripts/qa-verify-activity.mjs",
     "qa:micro": "node scripts/qa-micro-components.mjs",
     "qa:contract": "node scripts/qa-contract-health.mjs",
     "qa:host": "node scripts/qa-host-contract.mjs",
-    "prepack": "npm run build && npm run check"
+    "prepack": "npm run build && npm run check",
+    "test:selectors": "node --test scripts/test-host-contract.mjs"
   },
   "devDependencies": {
     "playwright-core": "^1.62.1",
-    "publint": "^0.3.15"
+    "publint": "^0.3.15",
+    "semver": "^7.8.5"
   },
   "engines": {
     "node": "^22.19.0 || >=24.0.0"
@@ -79,10 +82,10 @@
     "access": "public"
   },
   "peerDependencies": {
-    "@deepseek-ai/dsh-client-locale": ">=0.1.2-rc.1 <0.2.0",
-    "@deepseek-ai/dsh-client-ui-renderer": ">=0.1.2-rc.1 <0.2.0",
-    "@deepseek-ai/dsh-client-ui-settings": ">=0.1.2-rc.1 <0.2.0",
-    "react": "^18.2.0"
+    "@deepseek-ai/dsh-client-locale": ">=0.1.2-rc.1 <0.3.0 || ^0.1.5-rc.1 || ^0.2.0-rc.2",
+    "@deepseek-ai/dsh-client-ui-renderer": ">=0.1.2-rc.1 <0.3.0 || ^0.1.5-rc.1 || ^0.2.0-rc.2",
+    "@deepseek-ai/dsh-client-ui-settings": ">=0.1.2-rc.1 <0.3.0 || ^0.1.5-rc.1 || ^0.2.0-rc.2",
+    "react": ">=18.2.0"
   },
   "peerDependenciesMeta": {
     "@deepseek-ai/dsh-client-locale": {

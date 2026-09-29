@@ -1,7 +1,7 @@
 // Verifies Ivory against the CURRENT host: contract health, surfaces the user
 // reported as wrong (sidebar / composer / settings), plus both themes.
 import fs from 'node:fs';
-import { launch, HOME, selectWorkspace, expandSidebar, setTheme } from './qa-lib.mjs';
+import { launch, openPage, expandSidebar, setTheme } from './qa-lib.mjs';
 
 const OUT = 'output/qa-host-contract';
 fs.mkdirSync(OUT, { recursive: true });
@@ -12,14 +12,9 @@ const check = (name, pass, detail = null) => {
 };
 
 const browser = await launch();
-const page = await browser.newPage({ viewport: { width: 1440, height: 900 } });
-const errs = [];
-page.on('pageerror', (e) => errs.push(e.message));
+const { page, errors: errs } = await openPage(browser);
 page.on('console', (m) => { if (m.type() === 'error') errs.push(m.text()); });
-
-await page.goto(HOME, { waitUntil: 'domcontentloaded' });
-await page.waitForTimeout(6000);
-await selectWorkspace(page).catch(() => {});
+await setTheme(page, '浅色');
 
 // --- 1. contract health
 const st = await page.evaluate(() => ({
@@ -46,6 +41,13 @@ check('Ivory design tokens resolved on body', themed.ivoryVars.every(([, v]) => 
 // --- 3. sidebar (user-reported)
 await expandSidebar(page).catch(() => {});
 await page.waitForTimeout(800);
+if (!(await page.locator('.YDXeBa_sessionRow').count())) {
+  const projects = page.locator('.YDXeBa_projectRow');
+  for (const project of await projects.all()) {
+    if (await project.getAttribute('aria-expanded') !== 'true') await project.click();
+  }
+  await page.waitForTimeout(500);
+}
 const sidebar = await page.evaluate(() => {
   const g = (s) => {
     const e = document.querySelector(s);
@@ -93,13 +95,20 @@ const small = await page.evaluate(() => {
 check('no sub-24px composer target', small.length === 0, small.slice(0, 5));
 
 await page.screenshot({ path: `${OUT}/conversation-light.png` });
+check('light theme uses the Ivory page surface', await page.evaluate(() =>
+  !document.body.hasAttribute('data-ds-dark-theme') && getComputedStyle(document.body).backgroundColor === 'rgb(252, 252, 251)'));
+
+await setTheme(page, '深色');
+check('dark theme keeps the structural contract and surface', await page.evaluate(() =>
+  document.body.hasAttribute('data-ds-dark-theme') && document.body.dataset.dshcsCompat === 'ok'
+  && getComputedStyle(document.body).backgroundColor === 'rgb(21, 21, 21)'));
+await page.screenshot({ path: `${OUT}/conversation-dark.png` });
+await setTheme(page, '浅色');
 
 // --- 6. settings section (user-reported)
-await page.goto(HOME, { waitUntil: 'domcontentloaded' });
-await page.waitForTimeout(4000);
 let settingsOk = false, settingsDetail = null;
 try {
-  const trigger = page.locator('[data-slot="settings.trigger"]').first();
+  const trigger = page.locator('.VOzbGW_trigger').last();
   await trigger.click({ timeout: 5000 });
   await page.waitForTimeout(1500);
   settingsDetail = await page.evaluate(() => {
@@ -111,6 +120,7 @@ try {
   await page.screenshot({ path: `${OUT}/settings.png` });
 } catch (e) { settingsDetail = String(e).slice(0, 200); }
 check('settings panel opens', settingsOk, settingsDetail);
+check('no browser errors', errs.length === 0, errs);
 
 console.log('\npage errors:', errs.length);
 for (const e of errs.slice(0, 10)) console.log('  ! ' + e.slice(0, 200));
