@@ -12,6 +12,10 @@ const check = (name, pass, detail = null) => {
   results.push(item);
   console.log(`${item.pass ? 'PASS' : 'FAIL'} ${name}`, detail === null ? '' : JSON.stringify(detail).slice(0, 600));
 };
+const skip = (name, reason) => {
+  results.push({ name, pass: null, skipped: true, detail: reason });
+  console.log(`SKIP ${name}: ${reason}`);
+};
 const colorAlpha = (color) => {
   const match = color.match(/^rgba?\(([^)]+)\)$/);
   if (!match) return 1;
@@ -739,8 +743,10 @@ try {
     });
     const rowsFit = workbench.rowData.every((item) => item.boxSizing === 'border-box' && item.row[2] <= item.parent[2] + 1);
     const targetsFit = workbench.targetData.every((item) => item.rect[2] >= 24 && item.rect[3] >= 24);
-    check('workbench-file-rows-contained', rowsFit, workbench.rowData.slice(0, 8));
-    check('workbench-targets-at-least-24', targetsFit, workbench.targetData);
+    if (workbench.rowData.length) check('workbench-file-rows-contained', rowsFit, workbench.rowData.slice(0, 8));
+    else skip('workbench-file-rows-contained', 'No optional workbench file rows mounted; geometry is not covered.');
+    if (workbench.targetData.length) check('workbench-targets-at-least-24', targetsFit, workbench.targetData);
+    else skip('workbench-targets-at-least-24', 'No optional workbench controls mounted; target sizes are not covered.');
     check('workbench-tables-local-scroll', workbench.tables.length > 0 && workbench.tables.every((item) => item.rect[2] <= 432 && item.overflow === 'auto'), workbench.tables);
     check('workbench-raw-html-safe-note', workbench.safeNotes === 1, workbench.safeNotes);
     check('workbench-no-page-errors', errors.length === 0, errors);
@@ -940,10 +946,11 @@ try {
 }
 
 const summary = {
-  passed: results.filter((item) => item.pass).length,
-  failed: results.filter((item) => !item.pass).length,
+  passed: results.filter((item) => item.pass === true).length,
+  failed: results.filter((item) => item.pass === false).length,
+  skipped: results.filter((item) => item.skipped).length,
   results,
 };
 fs.writeFileSync(`${OUT}/report.json`, JSON.stringify(summary, null, 2));
-console.log(JSON.stringify({ passed: summary.passed, failed: summary.failed, report: `${OUT}/report.json` }));
+console.log(JSON.stringify({ passed: summary.passed, failed: summary.failed, skipped: summary.skipped, report: `${OUT}/report.json` }));
 if (summary.failed) process.exitCode = 1;

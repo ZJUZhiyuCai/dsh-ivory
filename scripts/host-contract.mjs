@@ -72,10 +72,23 @@ export function deriveAliases(table, modules) {
 }
 
 export function assertHostAliases(table, sources, side = 'desktop') {
-  const { aliases, errors } = deriveAliases(table, indexHostModules(sources));
+  assertModuleAliases(table, indexHostModules(sources), side);
+}
+
+function assertModuleAliases(table, modules, side) {
+  const { aliases, errors } = deriveAliases(table, modules);
   assert.deepEqual(errors, [], `${side} module identities no longer resolve`);
   for (const [web, actual] of Object.entries(aliases)) {
     const expected = side === 'web' ? web : table.aliases[web];
     assert.equal(actual, expected, `${web}: ${side} alias targets the wrong component`);
+  }
+}
+
+export function assertHostContractSnapshot(table, snapshot) {
+  assert.equal(snapshot.schema, 1, 'unknown host contract snapshot schema');
+  for (const [side, version] of Object.entries(table.hosts)) {
+    const host = snapshot.hosts[side];
+    assert.equal(host?.version, version, `${side} snapshot must describe the declared host version`);
+    assertModuleAliases(table, new Map(Object.entries(host.modules)), side);
   }
 }

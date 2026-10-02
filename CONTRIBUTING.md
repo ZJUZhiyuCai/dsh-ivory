@@ -20,6 +20,7 @@ Ivory follows the same Node.js baseline as DeepSeek Harness.
 git clone https://github.com/ZJUZhiyuCai/dsh-ivory.git
 cd dsh-ivory
 npm ci
+npx --no-install playwright-core install chromium
 npm test
 ```
 
@@ -67,13 +68,16 @@ when adopting a new build; matching a common member name alone is not sufficient
 
 Then check, in this order:
 
+- `npm run snapshot:host -- --write` — extract verified module exports for both
+  declared host versions. Commit the snapshot with the alias table; future CI
+  checks the actual table against it without needing a locally installed DSH.
 - `npm run build && npm run test:desktop` — 94 checks using the installed
   desktop and Web styles separately, including shared primitives and both themes.
   All aliases must resolve to the recorded package and module identity.
   `DSH_WEB_PACKAGE_DIR` selects the installed CLI package; extracted desktop
   client bundles and frontend `index-*.css` may use `DSH_DESKTOP_CLIENT_DIR`.
-- `npm test` — the release gates, including the retired-hash ban list and the
-  check that the supported host version sits inside `peerDependencies`.
+- `npm test` — isolated browser regressions and release gates, including actual
+  alias identities, the retired-hash ban and supported host peer versions.
 - If the host also renames a member, do not add a second hash. Prefer the seam
   the host publishes (a `data-slot` or a semantic `data-*` attribute) and let
   the release gate's retired list cover the old spelling.

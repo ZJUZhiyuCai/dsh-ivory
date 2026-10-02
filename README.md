@@ -47,7 +47,7 @@ focus mode stays off until you choose it.
 Install the exact GitHub release without using npm.
 
 ```sh
-dsh plugin --profile web add github:ZJUZhiyuCai/dsh-ivory#v0.2.13
+dsh plugin --profile web add github:ZJUZhiyuCai/dsh-ivory#v0.2.14
 ```
 
 Remove Ivory and return to the native DSH interface.
@@ -103,7 +103,7 @@ and [third-party notices](https://github.com/ZJUZhiyuCai/dsh-ivory/blob/main/THI
 
 > [!NOTE]
 > DeepSeek Harness is in developer preview and may make breaking UI changes.
-> Ivory 0.2.13 is verified against DSH Web 0.1.5-rc.1 and desktop
+> Ivory 0.2.14 is verified against DSH Web 0.1.5-rc.1 and desktop
 > 0.2.0-rc.2. Other host builds may use token-level fallback. When Ivory cannot prove the current structural
 > contract, it keeps token-level theming and releases the host layout back to DSH.
 
@@ -122,13 +122,15 @@ using styles read from the installed app (no account or model calls).
 npm ci
 npm test          # renderer/host-contract unit tests, build, release gates, publint, and package checks
 npm run test:desktop  # 94 checks with installed desktop and Web styles
-npm run qa:r2     # 74 browser regressions; DSH must run at 127.0.0.1:3080
+npm run qa:r2     # browser regressions; missing optional-plugin targets report skips
 npm run qa:adversarial  # 34 stress checks: reconciliation safety, toggle/resize storms, degraded mode
 npm run qa:activity     # 26 checks for thinking/tool-call rows, icons, and terminal polish
 npm run qa:micro        # 28 Vision Toolkit/Ivory micro-component checks; set DVT_CLIENT_JS if the toolkit is not installed in the DSH web profile
 npm run qa:host         # 13 checks against the live host: contract health, sidebar/composer/settings surfaces, both themes
 npm run qa:contract     # diagnostic probe (no pass/fail): self-diagnosis channel plus a live selector inventory
 npm run derive:host     # re-derive the desktop CSS-module alias table from the installed DSH; run after every host upgrade
+npm run snapshot:host   # compare committed module snapshots with both installed hosts
+npm run test:runtime    # isolated browser regressions; no DSH server or token required
 ```
 
 `derive:host` previews a mapping resolved by package, CSS module and member name.
@@ -136,6 +138,16 @@ Use `npm run derive:host -- --check` to fail on drift, or
 `npm run derive:host -- --write` to save a complete result. Missing or ambiguous
 modules fail without writing a partial table. Update the recorded host versions,
 peer range and any desktop-only selectors when adapting a new host release.
+Then run `npm run snapshot:host -- --write` to extract matching module exports
+from both installed hosts. The default tests and release gates compare the actual
+alias table with these versioned snapshots, including component identity.
+
+`npm test` includes isolated browser checks for content replacement, bounded
+Markdown rendering, copy-button ownership, storage failures and drift diagnostics.
+Install its browser once with `npx --no-install playwright-core install chromium`,
+or set `DSH_QA_CHROMIUM` to an existing browser. CI installs Chromium automatically.
+Complex Markdown retains the complete source when its render budget is exceeded.
+Preference changes work for the current session even when storage is unavailable.
 
 The live browser entries require `DSH_QA_TOKEN` from the `dsh web` URL.
 Every `qa:*` entry point is documented here and checked by the release gate.

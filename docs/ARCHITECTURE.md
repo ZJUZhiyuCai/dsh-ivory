@@ -58,6 +58,11 @@ small presentation subset using `createElement`, `createTextNode`, and explicit
 attributes. Raw HTML remains text. Link parsing accepts only absolute HTTP(S)
 URLs and rejects control characters and attribute delimiters. Source view is
 always reachable, and inputs above 250,000 characters are not previewed.
+Inline delimiter searches advance monotonically. All blocks share a 4,000-node,
+1,000,000-character-work and 24ms construction budget; exhausting any budget
+discards the fragment and leaves the complete source visible. Exact content
+comparison invalidates both successful and rejected previews. Rebuilds preserve
+the source/preview choice, and preview-created code is never enhanced recursively.
 
 ## Clipboard behavior
 
@@ -69,6 +74,15 @@ network request. Assistant controls are not inserted while the host marks a
 message as streaming, which avoids modifying React-owned Markdown during an
 update. Copy controls, wrappers, live-status nodes, and pending visual feedback
 timers are removed when the theme is disabled.
+Code controls have explicit source-node ownership. Removing or replacing a source
+retires its button; a detached source cannot be copied even before observer cleanup.
+Native controls that mount later suppress the plugin control as well.
+
+The settings panel and body classes share one external preference store.
+Persistence is best effort: failed reads/writes do not undo a choice made during
+the current session. Cross-tab storage events update the same subscribed store.
+Advisory selector checks remember persistent children per mounted container;
+transient messages and ongoing indicators are not historical drift sentinels.
 
 ## Localization
 
@@ -123,6 +137,13 @@ Release checks use standard npm semver and scan source, aliases and generated
 output for retired selectors. Host integration checks compare all aliases with
 actual module identities and load each host's own styles. Desktop-only selectors
 still require review when the host changes.
+Versioned module-export snapshots in `test/fixtures/host-contracts.json` are
+extracted from installed hosts, independently of alias values. `snapshot:host`
+checks them; `--write` replaces them only after complete resolution and version
+verification. Default tests and release checks validate the real alias table
+against both snapshots. `test:runtime` exercises the generated bundle in an
+isolated browser with controlled module-loader, React-hook and clipboard boundaries;
+it complements installed-host CSS tests and live-host QA, not their replacement.
 
 Native sidebar panels and injected task-board entries share the expanded
 navigation geometry (20px icon, 12px gap, 32px row, 8px outer gutter). Native

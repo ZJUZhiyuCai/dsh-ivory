@@ -28,7 +28,7 @@ Ivory deliberately keeps a narrow boundary:
 - The only persistence is two local preference flags in `localStorage`.
 - Markdown preview uses DOM construction and text nodes, rejects non-HTTP(S)
   links, adds `noopener noreferrer`, and falls back to source for oversized
-  documents.
+  documents or exhausted work, node and construction-time budgets.
 - Disabling the theme removes its observers and injected nodes.
 - `npm test` verifies source/bundle reproducibility, forbidden browser and host
   capabilities, package metadata, and an explicit tarball file allowlist.

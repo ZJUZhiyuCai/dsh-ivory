@@ -1,9 +1,30 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
-import { assertHostAliases, assertNoRetiredSelectors, assertPeerSupport, deriveAliases, indexHostModules } from './host-contract.mjs';
+import { assertHostAliases, assertHostContractSnapshot, assertNoRetiredSelectors, assertPeerSupport, deriveAliases, indexHostModules } from './host-contract.mjs';
 
 const pkg = JSON.parse(readFileSync(new URL('../package.json', import.meta.url), 'utf8'));
+const projectTable = JSON.parse(readFileSync(new URL('../src/host-selectors.json', import.meta.url), 'utf8'));
+const snapshot = JSON.parse(readFileSync(new URL('../test/fixtures/host-contracts.json', import.meta.url), 'utf8'));
+
+test('the real project alias table matches independently extracted host snapshots', () => {
+  assertHostContractSnapshot(projectTable, snapshot);
+});
+
+test('a wrong component in the real table fails the default release path', () => {
+  const broken = structuredClone(projectTable);
+  broken.aliases.SVAs4q_label = 'pO-u3q_label';
+  assert.throws(() => assertHostContractSnapshot(broken, snapshot), /wrong component/);
+});
+
+test('a renamed module identity or stale host version cannot reuse the snapshot', () => {
+  const broken = structuredClone(projectTable);
+  broken.modules.SVAs4q.module = 'ReferenceChip.module.css';
+  assert.throws(() => assertHostContractSnapshot(broken, snapshot), /no longer resolve/);
+  broken.modules.SVAs4q = projectTable.modules.SVAs4q;
+  broken.hosts.desktop = '0.2.1';
+  assert.throws(() => assertHostContractSnapshot(broken, snapshot), /declared host version/);
+});
 const table = {
   modules: { SVAs4q: { package: '@deepseek-ai/dsh-client-ui-agent-preset', module: 'AgentPresetLabel.module.css' } },
   aliases: { SVAs4q_label: 'pO-u3q_label' },

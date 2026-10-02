@@ -7,6 +7,7 @@ import path from 'node:path';
 function findChromium() {
   const candidates = [];
   if (process.env.DSH_QA_CHROMIUM) candidates.push(process.env.DSH_QA_CHROMIUM);
+  candidates.push(chromium.executablePath());
   const cacheRoot = path.join(os.homedir(), 'Library', 'Caches', 'ms-playwright');
   try {
     const installs = fs.readdirSync(cacheRoot).filter((name) => /^chromium-\d+$/.test(name)).sort().reverse();

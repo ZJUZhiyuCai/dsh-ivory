@@ -5,6 +5,31 @@ All notable changes to Ivory are documented here. The project follows
 
 ## [Unreleased]
 
+## [0.2.14] - 2026-10-03
+
+### Fixed
+
+- Parse inline Markdown with monotonic delimiter searches and a shared work,
+  node and time budget. Large or complex previews fall back atomically to source
+  instead of blocking the interface or hiding a partially rendered document.
+- Refresh previews after equal-length edits and after oversized content becomes
+  small enough. Preserve source-view preference during edits, restore host
+  titles on cleanup, and keep preview-generated code out of Markdown detection.
+- Retire copy buttons with their source nodes. Detached code cannot be copied,
+  and native copy controls that mount later replace Ivory's duplicate control.
+- Keep settings and theme state consistent when storage reads or writes fail.
+  In-memory preferences remain usable, and cross-tab updates refresh settings.
+- Limit advisory drift checks to persistent children of the same mounted
+  container. Normal task completion and conversation changes no longer warn.
+
+### Changed
+
+- Verify the actual selector table against committed, independently extracted
+  Web/desktop module snapshots in default tests and release checks. Use
+  `snapshot:host` to compare them with installed hosts after an upgrade.
+- Run isolated browser regressions in `npm test`, CI and the publishing workflow.
+  Optional workbench QA with no mounted targets reports skips, not successes.
+
 ## [0.2.13] - 2026-09-29
 
 ### Fixed
@@ -434,7 +459,7 @@ All notable changes to Ivory are documented here. The project follows
 - Explicit npm file allowlist, MIT license, third-party notices, and bilingual
   documentation.
 
-[Unreleased]: https://github.com/ZJUZhiyuCai/dsh-ivory/compare/v0.2.13...HEAD
+[Unreleased]: https://github.com/ZJUZhiyuCai/dsh-ivory/compare/v0.2.14...HEAD
 [0.2.13]: https://github.com/ZJUZhiyuCai/dsh-ivory/compare/v0.2.12...v0.2.13
 [0.2.12]: https://github.com/ZJUZhiyuCai/dsh-ivory/compare/v0.2.11...v0.2.12
 [0.2.11]: https://github.com/ZJUZhiyuCai/dsh-ivory/compare/v0.2.10...v0.2.11
@@ -452,3 +477,5 @@ All notable changes to Ivory are documented here. The project follows
 [0.1.2]: https://github.com/ZJUZhiyuCai/dsh-ivory/compare/v0.1.1...v0.1.2
 [0.1.1]: https://github.com/ZJUZhiyuCai/dsh-ivory/compare/v0.1.0...v0.1.1
 [0.1.0]: https://github.com/ZJUZhiyuCai/dsh-ivory/releases/tag/v0.1.0
+
+[0.2.14]: https://github.com/ZJUZhiyuCai/dsh-ivory/compare/v0.2.13...v0.2.14

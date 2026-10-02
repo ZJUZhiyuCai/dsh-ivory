@@ -3,7 +3,7 @@ import { readFile } from 'node:fs/promises';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { expandHostSelectors } from './host-selectors.mjs';
-import { assertNoRetiredSelectors, assertPeerSupport, assertSelectorTable } from './host-contract.mjs';
+import { assertHostContractSnapshot, assertNoRetiredSelectors, assertPeerSupport, assertSelectorTable } from './host-contract.mjs';
 
 const root = join(dirname(fileURLToPath(import.meta.url)), '..');
 const read = (path) => readFile(join(root, path), 'utf8');
@@ -26,7 +26,7 @@ const contrastRatio = (a, b) => {
   return (lighter + 0.05) / (darker + 0.05);
 };
 
-const [packageText, lockText, patch, host, template, markdown, css, whale, built, readme, readmeZh, changelog, contributing, notices, publishWorkflow, hostSelectorsText] = await Promise.all([
+const [packageText, lockText, patch, host, template, markdown, css, whale, built, readme, readmeZh, changelog, contributing, notices, publishWorkflow, hostSelectorsText, hostSnapshotText] = await Promise.all([
   read('package.json'),
   read('package-lock.json'),
   read('cordis.patch.yml'),
@@ -43,13 +43,14 @@ const [packageText, lockText, patch, host, template, markdown, css, whale, built
   read('THIRD_PARTY_NOTICES.md'),
   read('.github/workflows/publish-npm.yml'),
   read('src/host-selectors.json'),
+  read('test/fixtures/host-contracts.json'),
 ]);
 const pkg = JSON.parse(packageText);
 const hostSelectors = JSON.parse(hostSelectorsText);
 
 check('package metadata', () => {
   assert.equal(pkg.name, 'dsh-ivory');
-  assert.equal(pkg.version, '0.2.13');
+  assert.equal(pkg.version, '0.2.14');
   assert.equal(pkg.private, undefined);
   assert.equal(pkg.license, 'MIT');
   assert.equal(pkg.publishConfig?.access, 'public');
@@ -111,6 +112,10 @@ check('host selector table tracks the supported desktop build', () => {
   assertSelectorTable(hostSelectors);
 });
 
+check('real host module snapshots validate every shipped alias', () => {
+  assertHostContractSnapshot(hostSelectors, JSON.parse(hostSnapshotText));
+});
+
 check('inert host boundary', () => {
   assert.match(host, /export const name = 'dsh-ivory'/);
   assert.match(host, /export function apply\(\) \{\}/);
@@ -126,7 +131,7 @@ check('browser security boundary', () => {
   assert.match(markdown, /url\.protocol === 'http:' \|\| url\.protocol === 'https:'/);
   assert.match(markdown, /rel = 'noopener noreferrer'/);
   assert.match(markdown, /MAX_MARKDOWN_PREVIEW_CHARS = 250_000/);
-  assert.match(markdown, /kind: 'image'/);
+  assert.match(markdown, /token\.kind === 'image'/);
   assert.match(template, /navigator\.clipboard\?\.writeText/);
   assert.match(template, /document\.execCommand\('copy'\)/);
   assert.match(template, /isInsideStreamingMessage\(pre\)/);
@@ -329,10 +334,10 @@ check('dark mask and renderer hardening boundaries', () => {
   assert.match(css, /--cl-mask-drop: rgb\(255 255 255 \/ 70%\)/);
   assert.match(css, /--cl-mask-drop: rgb\(0 0 0 \/ 60%\)/);
   assert.match(css, /--dsw-alias-bg-mask-drop: var\(--cl-mask-drop\)/);
-  for (const cap of ['MAX_MARKDOWN_DEPTH = 32', 'MAX_MARKDOWN_LIST_ITEMS = 500', 'MAX_MARKDOWN_TABLE_ROWS = 256', 'MAX_MARKDOWN_TABLE_COLS = 64', 'MAX_MARKDOWN_PARAGRAPH_LINES = 200', 'MAX_INLINE_DEPTH = 24']) {
+  for (const cap of ['MAX_MARKDOWN_DEPTH = 32', 'MAX_MARKDOWN_LIST_ITEMS = 500', 'MAX_MARKDOWN_TABLE_ROWS = 256', 'MAX_MARKDOWN_TABLE_COLS = 64', 'MAX_MARKDOWN_PARAGRAPH_LINES = 200', 'MAX_INLINE_DEPTH = 24', 'MAX_MARKDOWN_NODES = 4_000', 'MAX_MARKDOWN_WORK = 1_000_000', 'MAX_MARKDOWN_RENDER_MS = 24']) {
     assert.ok(markdown.includes(cap), `missing renderer cap ${cap}`);
   }
-  assert.match(markdown, /renderMarkdown\(buf\.join\('\\n'\), depth \+ 1\)/);
+  assert.match(markdown, /renderMarkdownBlocks\(buf\.join\('\\n'\), depth \+ 1, budget\)/);
   assert.match(markdown, /cell\.setAttribute\('scope', 'col'\)/);
 });
 

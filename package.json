@@ -1,6 +1,6 @@
 {
   "name": "dsh-ivory",
-  "version": "0.2.13",
+  "version": "0.2.14",
   "description": "An unofficial Claude-inspired light/dark theme for DeepSeek Harness with responsive layout, safe Markdown preview, and zero telemetry.",
   "keywords": [
     "dsh-plugin",
@@ -47,7 +47,7 @@
     "check": "node scripts/release-check.mjs",
     "check:pack": "npm pack --dry-run --json --ignore-scripts | node scripts/verify-pack.mjs",
     "check:publint": "publint --level error",
-    "test": "npm run test:markdown && npm run test:selectors && npm run build && npm run check && npm run check:publint && npm run check:pack",
+    "test": "npm run test:markdown && npm run test:selectors && npm run build && npm run test:runtime && npm run check && npm run check:publint && npm run check:pack",
     "test:markdown": "node --test scripts/test-markdown.mjs",
     "test:desktop": "node scripts/test-desktop.mjs",
     "derive:host": "node scripts/derive-host-selectors.mjs",
@@ -58,7 +58,9 @@
     "qa:contract": "node scripts/qa-contract-health.mjs",
     "qa:host": "node scripts/qa-host-contract.mjs",
     "prepack": "npm run build && npm run check",
-    "test:selectors": "node --test scripts/test-host-contract.mjs"
+    "test:selectors": "node --test scripts/test-host-contract.mjs",
+    "test:runtime": "node --test scripts/test-runtime.mjs",
+    "snapshot:host": "node scripts/snapshot-host-contracts.mjs"
   },
   "devDependencies": {
     "playwright-core": "^1.62.1",

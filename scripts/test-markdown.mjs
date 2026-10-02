@@ -214,3 +214,27 @@ test('safeLink accepts only absolute HTTP(S) URLs', () => {
   assert.equal(safeLink(''), null);
   assert.equal(safeLink(null), null);
 });
+
+test('dense valid inline markup and a large aggregate node count fall back atomically', () => {
+  assert.equal(render('*a* '.repeat(62475)), null);
+  assert.equal(render('paragraph\n\n'.repeat(3000)), null);
+  assert.equal(render('x'.repeat(250001)), null);
+});
+
+test('unclosed links scan in bounded time and never create link elements', () => {
+  const started = performance.now();
+  const fragment = render('['.repeat(64000));
+  assert.ok(performance.now() - started < 500, 'unclosed brackets repeatedly scanned the suffix');
+  if (fragment) {
+    assert.equal(fragment.textContent, '['.repeat(64000));
+    assert.equal(byTag(fragment, 'a').length, 0);
+  }
+});
+
+test('delimiter caches preserve later valid tokens after malformed ones', () => {
+  const fragment = render('![no close\n**broken* ok **bold** [bad](not a url) [yes](https://example.com) `code` ![alt](https://example.com/img)');
+  assert.equal(byTag(fragment, 'strong')[0].textContent, 'bold');
+  assert.equal(byTag(fragment, 'code')[0].textContent, 'code');
+  assert.ok(fragment.textContent.endsWith('alt'));
+  assert.equal(byTag(fragment, 'img').length, 0);
+});

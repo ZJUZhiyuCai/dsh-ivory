@@ -37,3 +37,6 @@ scripts/*
 !scripts/release-check.mjs
 !scripts/verify-pack.mjs
 !scripts/test-markdown.mjs
+!scripts/test-runtime.mjs
+!scripts/runtime-fixture.mjs
+!scripts/snapshot-host-contracts.mjs

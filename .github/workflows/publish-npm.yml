@@ -27,6 +27,7 @@ jobs:
           registry-url: https://registry.npmjs.org
           package-manager-cache: false
       - run: npm ci
+      - run: npx --no-install playwright-core install --with-deps chromium
       - run: npm test
       - name: Verify requested version
         run: test "$(node -p "require('./package.json').version")" = "${{ inputs.confirm_version }}"
