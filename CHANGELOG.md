@@ -3,6 +3,73 @@
 All notable changes to Ivory are documented here. The project follows
 [Semantic Versioning](https://semver.org/).
 
+## [Unreleased]
+
+## [0.2.14] - 2026-10-03
+
+### Fixed
+
+- Parse inline Markdown with monotonic delimiter searches and a shared work,
+  node and time budget. Large or complex previews fall back atomically to source
+  instead of blocking the interface or hiding a partially rendered document.
+- Refresh previews after equal-length edits and after oversized content becomes
+  small enough. Preserve source-view preference during edits, restore host
+  titles on cleanup, and keep preview-generated code out of Markdown detection.
+- Retire copy buttons with their source nodes. Detached code cannot be copied,
+  and native copy controls that mount later replace Ivory's duplicate control.
+- Keep settings and theme state consistent when storage reads or writes fail.
+  In-memory preferences remain usable, and cross-tab updates refresh settings.
+- Limit advisory drift checks to persistent children of the same mounted
+  container. Normal task completion and conversation changes no longer warn.
+
+### Changed
+
+- Verify the actual selector table against committed, independently extracted
+  Web/desktop module snapshots in default tests and release checks. Use
+  `snapshot:host` to compare them with installed hosts after an upgrade.
+- Run isolated browser regressions in `npm test`, CI and the publishing workflow.
+  Optional workbench QA with no mounted targets reports skips, not successes.
+
+## [0.2.13] - 2026-09-29
+
+### Fixed
+
+- Adapt the 21 named CSS modules used by Ivory to DSH desktop 0.2.0-rc.2,
+  while retaining the Web 0.1.5-rc.1 selectors. Verify all 97 aliases by package,
+  CSS module and member, including the AgentPresetLabel that was incorrectly
+  mapped to an unrelated ReferenceChip label.
+- Explicitly include the supported Web and desktop RC versions in the DSH
+  peer ranges. Standard npm semver checks now cover prerelease and patch
+  boundaries. The React peer accepts versions from 18.2.0 onward.
+- Keep both collapsed hover chevrons and expanded up-arrows visible in
+  reasoning/tool rows. Hide only the replaced decoration, and remove its
+  pseudo-element when the real expanded control occupies that space.
+- Re-tint both the Web matrix spinner and desktop StateDot through their shared
+  `data-state="ongoing"` attribute.
+- Remove the old Markdown preview when host syntax highlighting replaces its
+  source with a nested wrapper. This prevents duplicate previews and copy
+  controls that disappeared only after toggling the theme.
+- Keep theme styling active when a global panel replaces the conversation.
+- Route the current hero title through the shared alias table so both Web and
+  desktop use the intended wide and narrow typography.
+- Preserve macOS title-bar clearance and hidden-sidebar behavior, size New Chat
+  to the actual sidebar width, and style the current hero title element.
+- Align native Plugins and injected navigation with New Chat: shared 20px icons,
+  32px rows, 8px outer gutters, and consistent selected states at any sidebar width.
+
+### Changed
+
+- Give the macOS sidebar its own neutral surface and soften the composer shadow
+  using the existing light/dark palette. Keyboard focus and native window
+  controls remain visible.
+- `derive:host` resolves exact package-qualified module names. It previews changes
+  by default, supports `--check`, and writes only a complete mapping with `--write`.
+- Release checks scan source selectors, the alias table and the generated bundle
+  for retired hashes. Six host-contract regression tests cover wrong-component
+  mappings, ambiguous/missing modules, RC range boundaries and stale aliases.
+- Installed-host regressions use separate desktop and Web styles, including the
+  shared primitive styles, with 94 checks covering disclosure states and inputs.
+
 ## [0.2.12] - 2026-09-11
 
 ### Fixed
@@ -392,7 +459,8 @@ All notable changes to Ivory are documented here. The project follows
 - Explicit npm file allowlist, MIT license, third-party notices, and bilingual
   documentation.
 
-[Unreleased]: https://github.com/ZJUZhiyuCai/dsh-ivory/compare/v0.2.12...HEAD
+[Unreleased]: https://github.com/ZJUZhiyuCai/dsh-ivory/compare/v0.2.14...HEAD
+[0.2.13]: https://github.com/ZJUZhiyuCai/dsh-ivory/compare/v0.2.12...v0.2.13
 [0.2.12]: https://github.com/ZJUZhiyuCai/dsh-ivory/compare/v0.2.11...v0.2.12
 [0.2.11]: https://github.com/ZJUZhiyuCai/dsh-ivory/compare/v0.2.10...v0.2.11
 [0.2.10]: https://github.com/ZJUZhiyuCai/dsh-ivory/compare/v0.2.9...v0.2.10
@@ -409,3 +477,5 @@ All notable changes to Ivory are documented here. The project follows
 [0.1.2]: https://github.com/ZJUZhiyuCai/dsh-ivory/compare/v0.1.1...v0.1.2
 [0.1.1]: https://github.com/ZJUZhiyuCai/dsh-ivory/compare/v0.1.0...v0.1.1
 [0.1.0]: https://github.com/ZJUZhiyuCai/dsh-ivory/releases/tag/v0.1.0
+
+[0.2.14]: https://github.com/ZJUZhiyuCai/dsh-ivory/compare/v0.2.13...v0.2.14

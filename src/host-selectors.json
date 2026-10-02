@@ -1,0 +1,192 @@
+{
+  "description": "CSS-module aliases verified against DSH web 0.1.5-rc.1 and desktop 0.2.0-rc.2. Each web prefix records its package and CSS module identity; derivation resolves that exact module and local member on the desktop host.",
+  "hosts": {
+    "web": "0.1.5-rc.1",
+    "desktop": "0.2.0-rc.2"
+  },
+  "modules": {
+    "_7KE1Ra": {
+      "package": "@deepseek-ai/dsh-client-ui-model-selection",
+      "module": "ModelSelect.module.css"
+    },
+    "pXSMma": {
+      "package": "@deepseek-ai/dsh-client-ui-conversation",
+      "module": "HeroShell.module.css"
+    },
+    "wSkVaW": {
+      "package": "@deepseek-ai/dsh-client-ui-conversation",
+      "module": "ConversationRoot.module.css"
+    },
+    "uV2eYG": {
+      "package": "@deepseek-ai/dsh-client-ui-conversation",
+      "module": "InputBar.module.css"
+    },
+    "YDXeBa": {
+      "package": "@deepseek-ai/dsh-client-ui-workspace",
+      "module": "Rows.module.css"
+    },
+    "bhn1Oq": {
+      "package": "@deepseek-ai/dsh-client-ui-workspace",
+      "module": "WorkspaceBrowser.module.css"
+    },
+    "o3BgMG": {
+      "package": "@deepseek-ai/dsh-client-ui-tool",
+      "module": "ToolRow.module.css"
+    },
+    "ztWv_q": {
+      "package": "@deepseek-ai/dsh-client-ui-tool",
+      "module": "ToolCallTree.module.css"
+    },
+    "CY-8Ka": {
+      "package": "@deepseek-ai/dsh-client-ui-tool",
+      "module": "bash-sample.module.css"
+    },
+    "SVAs4q": {
+      "package": "@deepseek-ai/dsh-client-ui-agent-preset",
+      "module": "AgentPresetLabel.module.css"
+    },
+    "cubgiG": {
+      "package": "@deepseek-ai/dsh-client-ui-agent-preset",
+      "module": "AgentPresetSeat.module.css"
+    },
+    "pI_x6G": {
+      "package": "@deepseek-ai/dsh-client-ui-layout",
+      "module": "AppFrame.module.css"
+    },
+    "VOzbGW": {
+      "package": "@deepseek-ai/dsh-client-ui-settings-general",
+      "module": "SettingsRoot.module.css"
+    },
+    "hHd-Xa": {
+      "package": "@deepseek-ai/dsh-client-ui-sidebar",
+      "module": "SidebarRoot.module.css"
+    },
+    "Sixlwa": {
+      "package": "@deepseek-ai/dsh-client-ui-chat",
+      "module": "MessageItem.module.css"
+    },
+    "XrJvXW": {
+      "package": "@deepseek-ai/dsh-client-ui-chat",
+      "module": "ContextInjectionRow.module.css"
+    },
+    "xzv4MW": {
+      "package": "@deepseek-ai/dsh-client-ui-chat",
+      "module": "MessageIconActions.module.css"
+    },
+    "EvIC1a": {
+      "package": "@deepseek-ai/dsh-client-ui-chat",
+      "module": "ChatView.module.css"
+    },
+    "lcKema": {
+      "package": "@deepseek-ai/dsh-client-ui-chat",
+      "module": "ReasoningRow.module.css"
+    },
+    "hWmORq": {
+      "package": "@deepseek-ai/dsh-client-ui-chat",
+      "module": "AssistantMarkdown.module.css"
+    },
+    "TS9iAW": {
+      "package": "@deepseek-ai/dsh-client-ui-chat",
+      "module": "TurnTailNodeView.module.css"
+    }
+  },
+  "aliases": {
+    "_7KE1Ra_root": "cl2Rlq_root",
+    "_7KE1Ra_trigger": "cl2Rlq_trigger",
+    "_7KE1Ra_triggerLabel": "cl2Rlq_triggerLabel",
+    "pXSMma_headline": "bocITq_headline",
+    "pXSMma_previewBadge": "bocITq_previewBadge",
+    "pXSMma_root": "bocITq_root",
+    "pXSMma_stack": "bocITq_stack",
+    "pXSMma_titleGroup": "bocITq_titleGroup",
+    "pXSMma_workspace": "bocITq_workspace",
+    "pXSMma_workspaceLabel": "bocITq_workspaceLabel",
+    "wSkVaW_composerHero": "ST7X_W_composerHero",
+    "wSkVaW_composerSeat": "ST7X_W_composerSeat",
+    "wSkVaW_composerStack": "ST7X_W_composerStack",
+    "wSkVaW_crumb": "ST7X_W_crumb",
+    "wSkVaW_crumbSeg": "ST7X_W_crumbSeg",
+    "wSkVaW_crumbs": "ST7X_W_crumbs",
+    "wSkVaW_header": "ST7X_W_header",
+    "wSkVaW_headerActions": "ST7X_W_headerActions",
+    "wSkVaW_heroWorkspaceRow": "ST7X_W_heroWorkspaceRow",
+    "wSkVaW_root": "ST7X_W_root",
+    "wSkVaW_scrollBody": "ST7X_W_scrollBody",
+    "wSkVaW_tab": "ST7X_W_tab",
+    "wSkVaW_tabActive": "ST7X_W_tabActive",
+    "wSkVaW_titleCluster": "ST7X_W_titleCluster",
+    "wSkVaW_titleRow": "ST7X_W_titleRow",
+    "uV2eYG_add": "yhfFVG_add",
+    "uV2eYG_card": "yhfFVG_card",
+    "uV2eYG_cardWorkspaceTrigger": "yhfFVG_cardWorkspaceTrigger",
+    "uV2eYG_input": "yhfFVG_input",
+    "uV2eYG_modes": "yhfFVG_modes",
+    "uV2eYG_placeholder": "yhfFVG_placeholder",
+    "uV2eYG_primary": "yhfFVG_primary",
+    "uV2eYG_root": "yhfFVG_root",
+    "uV2eYG_row": "yhfFVG_row",
+    "uV2eYG_tools": "yhfFVG_tools",
+    "uV2eYG_trailing": "yhfFVG_trailing",
+    "YDXeBa_folder": "jJkEga_folder",
+    "YDXeBa_folderActive": "jJkEga_folderActive",
+    "YDXeBa_projectRow": "jJkEga_projectRow",
+    "YDXeBa_selected": "jJkEga_selected",
+    "YDXeBa_sessionRow": "jJkEga_sessionRow",
+    "YDXeBa_time": "jJkEga_time",
+    "bhn1Oq_groupSection": "_7514NG_groupSection",
+    "bhn1Oq_iconButton": "_7514NG_iconButton",
+    "bhn1Oq_list": "_7514NG_list",
+    "bhn1Oq_root": "_7514NG_root",
+    "bhn1Oq_searchButton": "_7514NG_searchButton",
+    "bhn1Oq_sectionHeader": "_7514NG_sectionHeader",
+    "bhn1Oq_sectionLabel": "_7514NG_sectionLabel",
+    "o3BgMG_leading": "Q2dzhW_leading",
+    "o3BgMG_root": "Q2dzhW_root",
+    "o3BgMG_row": "Q2dzhW_row",
+    "ztWv_q_callRow": "baXwkG_callRow",
+    "CY-8Ka_bodyWrap": "-gRAhq_bodyWrap",
+    "CY-8Ka_chevron": "-gRAhq_chevron",
+    "CY-8Ka_iconIdle": "-gRAhq_iconIdle",
+    "CY-8Ka_leading": "-gRAhq_leading",
+    "CY-8Ka_root": "-gRAhq_root",
+    "CY-8Ka_sep": "-gRAhq_sep",
+    "CY-8Ka_summary": "-gRAhq_summary",
+    "CY-8Ka_title": "-gRAhq_title",
+    "SVAs4q_label": "_3li69W_label",
+    "cubgiG_seat": "m0vb0q_seat",
+    "pI_x6G_centerCol": "_6Qf49G_centerCol",
+    "pI_x6G_frame": "_6Qf49G_frame",
+    "pI_x6G_sidebarCol": "_6Qf49G_sidebarCol",
+    "VOzbGW_trigger": "Dws9Sa_trigger",
+    "hHd-Xa_brand": "_3WPZCG_brand",
+    "hHd-Xa_footArea": "_3WPZCG_footArea",
+    "hHd-Xa_iconButton": "_3WPZCG_iconButton",
+    "hHd-Xa_logoRow": "_3WPZCG_logoRow",
+    "hHd-Xa_newSession": "_3WPZCG_newSession",
+    "hHd-Xa_newSessionLabel": "_3WPZCG_newSessionLabel",
+    "hHd-Xa_root": "_3WPZCG_root",
+    "Sixlwa_bubble": "IzP3Va_bubble",
+    "Sixlwa_userRow": "IzP3Va_userRow",
+    "Sixlwa_userStack": "IzP3Va_userStack",
+    "XrJvXW_root": "Bpi2Dq_root",
+    "xzv4MW_actions": "ppByMG_actions",
+    "xzv4MW_timeEnd": "ppByMG_timeEnd",
+    "EvIC1a_callRow": "icaHSq_callRow",
+    "EvIC1a_column": "icaHSq_column",
+    "EvIC1a_flowItem": "icaHSq_flowItem",
+    "lcKema_leading": "HiSsxa_leading",
+    "lcKema_root": "HiSsxa_root",
+    "lcKema_row": "HiSsxa_row",
+    "lcKema_thinkBody": "HiSsxa_thinkBody",
+    "lcKema_title": "HiSsxa_title",
+    "hWmORq_body": "gKv1-q_body",
+    "hWmORq_root": "gKv1-q_root",
+    "TS9iAW_actions": "d1vkyW_actions",
+    "TS9iAW_root": "d1vkyW_root",
+    "hHd-Xa_collapsed": "_3WPZCG_collapsed",
+    "hHd-Xa_panelRow": "_3WPZCG_panelRow",
+    "hHd-Xa_panelGlyph": "_3WPZCG_panelGlyph",
+    "hHd-Xa_panelTitle": "_3WPZCG_panelTitle",
+    "hHd-Xa_panelList": "_3WPZCG_panelList"
+  }
+}

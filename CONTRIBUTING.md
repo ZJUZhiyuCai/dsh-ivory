@@ -20,6 +20,7 @@ Ivory follows the same Node.js baseline as DeepSeek Harness.
 git clone https://github.com/ZJUZhiyuCai/dsh-ivory.git
 cd dsh-ivory
 npm ci
+npx --no-install playwright-core install chromium
 npm test
 ```
 
@@ -32,7 +33,7 @@ DSH_QA_TOKEN='<token from the dsh web URL>' npm run qa:r2
 DSH_QA_TOKEN='<token from the dsh web URL>' DSH_QA_FIXTURE_ONLY=1 npm run qa:activity
 ```
 
-The browser suite expects DSH 0.1.2-rc.1 through 0.1.5 at
+The live browser suite targets DSH Web 0.1.5-rc.1 at
 `http://127.0.0.1:3080`. Pass the per-run URL token through `DSH_QA_TOKEN`; set
 `DSH_QA_CHROMIUM` when Chrome or Chromium is not installed in a standard path.
 
@@ -40,7 +41,7 @@ Alongside `qa:r2`, three narrower suites cover changes that the main regression
 run does not isolate:
 
 ```sh
-DSH_QA_TOKEN='<token>' npm run qa:host      # 10 pass/fail checks against the live host
+DSH_QA_TOKEN='<token>' npm run qa:host      # 13 pass/fail checks against the live host
 DSH_QA_TOKEN='<token>' npm run qa:contract  # diagnostic probe: self-diagnosis + live selector inventory
 DSH_QA_TOKEN='<token>' npm run qa:micro     # micro-component checks
 ```
@@ -49,6 +50,37 @@ Run `qa:contract` first when the theme silently falls back to token-only mode:
 it prints the plugin's own `data-dshcs-compat` / drift channel and inventories
 every selector family Ivory depends on against the running client, which is
 usually enough to name the host change that broke the contract.
+
+## Host upgrades
+
+DSH rebuilds every CSS-module class name on each release, so a host upgrade
+invalidates the whole selector table at once. Start with:
+
+```sh
+npm run derive:host    # re-derive the desktop alias table from the installed host
+```
+
+It resolves each recorded package, CSS module and member by identity and previews
+changes. Use `npm run derive:host -- --check` to reject drift or add `--write` to
+save a complete mapping. Missing or duplicate identities fail without writing.
+Update the host versions in the table, the peer ranges and desktop-only selectors
+when adopting a new build; matching a common member name alone is not sufficient.
+
+Then check, in this order:
+
+- `npm run snapshot:host -- --write` — extract verified module exports for both
+  declared host versions. Commit the snapshot with the alias table; future CI
+  checks the actual table against it without needing a locally installed DSH.
+- `npm run build && npm run test:desktop` — 94 checks using the installed
+  desktop and Web styles separately, including shared primitives and both themes.
+  All aliases must resolve to the recorded package and module identity.
+  `DSH_WEB_PACKAGE_DIR` selects the installed CLI package; extracted desktop
+  client bundles and frontend `index-*.css` may use `DSH_DESKTOP_CLIENT_DIR`.
+- `npm test` — isolated browser regressions and release gates, including actual
+  alias identities, the retired-hash ban and supported host peer versions.
+- If the host also renames a member, do not add a second hash. Prefer the seam
+  the host publishes (a `data-slot` or a semantic `data-*` attribute) and let
+  the release gate's retired list cover the old spelling.
 
 ## Change workflow
 

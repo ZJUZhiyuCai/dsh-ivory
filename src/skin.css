@@ -260,9 +260,9 @@ body.dsh-ivory:not(.dshcs-contract-mismatch) .hHd-Xa_iconButton:hover {
   background: var(--cl-hover) !important;
 }
 
-/* New chat — Claude sidebar item: 272x32, radius 9, 14px/20px left-aligned */
+/* New chat — fluid 32px row, shared icon/text columns across sidebar entries. */
 body.dsh-ivory:not(.dshcs-contract-mismatch) .hHd-Xa_newSession {
-  width: 272px !important;
+  width: calc(100% - 16px) !important;
   height: 32px !important;
   margin: 8px !important;
   padding: 6px 16px !important;
@@ -290,10 +290,14 @@ body.dsh-ivory:not(.dshcs-contract-mismatch) .hHd-Xa_newSessionLabel {
   color: inherit !important;
 }
 
-/* plugin nav entries (task board / ssh) get the same row treatment */
+/* Native panels and injected plugin entries share the same expanded-row grid.
+ * Keep the host's icon-only collapsed rail outside these native-panel rules. */
+body.dsh-ivory:not(.dshcs-contract-mismatch) .hHd-Xa_root:not(.hHd-Xa_collapsed) .hHd-Xa_panelRow,
 body.dsh-ivory:not(.dshcs-contract-mismatch) ._7D6uKa_entry,
 body.dsh-ivory:not(.dshcs-contract-mismatch) .mL8Uca_entry {
+  box-sizing: border-box !important;
   height: 32px !important;
+  min-height: 32px !important;
   margin: 0 8px !important;
   padding: 6px 16px !important;
   border-radius: 9px !important;
@@ -304,14 +308,25 @@ body.dsh-ivory:not(.dshcs-contract-mismatch) .mL8Uca_entry {
   justify-content: flex-start !important;
   gap: 12px !important;
 }
+body.dsh-ivory:not(.dshcs-contract-mismatch) .hHd-Xa_panelRow:hover,
 body.dsh-ivory:not(.dshcs-contract-mismatch) ._7D6uKa_entry:hover,
 body.dsh-ivory:not(.dshcs-contract-mismatch) .mL8Uca_entry:hover {
   background: var(--cl-hover) !important;
 }
+body.dsh-ivory:not(.dshcs-contract-mismatch) .hHd-Xa_root:not(.hHd-Xa_collapsed) .hHd-Xa_panelGlyph,
+body.dsh-ivory:not(.dshcs-contract-mismatch) .hHd-Xa_root:not(.hHd-Xa_collapsed) .hHd-Xa_panelGlyph svg,
 body.dsh-ivory:not(.dshcs-contract-mismatch) ._7D6uKa_entryIcon,
 body.dsh-ivory:not(.dshcs-contract-mismatch) .mL8Uca_entryIcon {
   width: 20px !important;
   height: 20px !important;
+}
+
+/* Native aria-current and third-party data-active share one selected surface. */
+body.dsh-ivory:not(.dshcs-contract-mismatch) .hHd-Xa_root .hHd-Xa_panelRow[aria-current="page"],
+body.dsh-ivory:not(.dshcs-contract-mismatch) ._7D6uKa_entry[data-active],
+body.dsh-ivory:not(.dshcs-contract-mismatch) .mL8Uca_entry[data-active] {
+  background: var(--cl-active) !important;
+  color: var(--cl-ink) !important;
 }
 
 /* section headers — 12px/16px muted */
@@ -494,7 +509,8 @@ body.dsh-ivory:not(.dshcs-contract-mismatch) .pXSMma_headline {
   height: 48px !important;
   justify-content: center !important;
 }
-body.dsh-ivory:not(.dshcs-contract-mismatch) .pXSMma_headlineText {
+body.dsh-ivory:not(.dshcs-contract-mismatch) .pXSMma_headlineText,
+body.dsh-ivory:not(.dshcs-contract-mismatch) .pXSMma_titleGroup > span:first-child {
   font-family: var(--cl-serif) !important;
   font-size: 38px !important;
   font-weight: 330 !important;
@@ -1491,7 +1507,8 @@ body.dsh-ivory .uV2eYG_input:focus-visible {
     gap: 6px !important;
     flex-wrap: nowrap !important;
   }
-  body.dsh-ivory:not(.dshcs-contract-mismatch) .pXSMma_headlineText {
+  body.dsh-ivory:not(.dshcs-contract-mismatch) .pXSMma_headlineText,
+  body.dsh-ivory:not(.dshcs-contract-mismatch) .pXSMma_titleGroup > span:first-child {
     min-width: 0 !important;
     font-size: 30px !important;
     line-height: 38px !important;
@@ -1761,8 +1778,8 @@ body.dsh-ivory:not(.dshcs-contract-mismatch) .o3BgMG_root [class*="_iconIdle_"] 
   height: calc(16px + var(--dsh-content-font-delta, 0px)) !important;
 }
 body.dsh-ivory:not(.dshcs-contract-mismatch) .CY-8Ka_leading svg:not(.CY-8Ka_chevron),
-body.dsh-ivory:not(.dshcs-contract-mismatch) .lcKema_leading svg:not(.lcKema_chevron),
-body.dsh-ivory:not(.dshcs-contract-mismatch) .o3BgMG_leading svg:not(.o3BgMG_chevron) {
+body.dsh-ivory:not(.dshcs-contract-mismatch) .lcKema_row:not([aria-expanded="true"]) .lcKema_leading svg:not([class*="_chevronHover"]),
+body.dsh-ivory:not(.dshcs-contract-mismatch) .o3BgMG_row:not([aria-expanded="true"]) .o3BgMG_leading svg:not([class*="_chevronHover"]) {
   visibility: hidden !important;
 }
 /* think: an organic spark — seven uneven, slightly curved rays with an open
@@ -1789,8 +1806,8 @@ body.dsh-ivory:not(.dshcs-contract-mismatch) .o3BgMG_root[data-variant="search"]
   --dshcs-icon: url("data:image/svg+xml,%3Csvg%20xmlns%3D'http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg'%20viewBox%3D'0%200%2016%2016'%3E%3Cg%20fill%3D'none'%20stroke%3D'black'%20stroke-width%3D'1.1'%20stroke-linecap%3D'round'%20stroke-linejoin%3D'round'%3E%3Ccircle%20cx%3D'6.7'%20cy%3D'6.7'%20r%3D'4.2'%2F%3E%3Cpath%20d%3D'M10%2010%2013.5%2013.5'%2F%3E%3C%2Fg%3E%3C%2Fsvg%3E");
 }
 body.dsh-ivory:not(.dshcs-contract-mismatch) .CY-8Ka_root[data-sample="bash"] .CY-8Ka_leading:has(.CY-8Ka_chevron):not(:has(.CY-8Ka_iconIdle)),
-body.dsh-ivory:not(.dshcs-contract-mismatch) .lcKema_leading:has(.lcKema_chevron):not(:has([class*="_iconIdle_"])),
-body.dsh-ivory:not(.dshcs-contract-mismatch) .o3BgMG_leading:has(.o3BgMG_chevron):not(:has([class*="_iconIdle_"])) {
+body.dsh-ivory:not(.dshcs-contract-mismatch) .lcKema_leading:has([class*="_chevronHover"]):not(:has([class*="_iconIdle_"])),
+body.dsh-ivory:not(.dshcs-contract-mismatch) .o3BgMG_leading:has([class*="_chevronHover"]):not(:has([class*="_iconIdle_"])) {
   width: 34px !important;
   justify-content: flex-start !important;
 }
@@ -1811,8 +1828,8 @@ body.dsh-ivory:not(.dshcs-contract-mismatch) .o3BgMG_root [class*="_iconIdle_"]:
   mask: var(--dshcs-icon, none) center / contain no-repeat;
 }
 body.dsh-ivory:not(.dshcs-contract-mismatch) .CY-8Ka_root[data-sample="bash"] .CY-8Ka_leading:has(.CY-8Ka_chevron):not(:has(.CY-8Ka_iconIdle))::after,
-body.dsh-ivory:not(.dshcs-contract-mismatch) .lcKema_leading:has(.lcKema_chevron):not(:has([class*="_iconIdle_"]))::after,
-body.dsh-ivory:not(.dshcs-contract-mismatch) .o3BgMG_leading:has(.o3BgMG_chevron):not(:has([class*="_iconIdle_"]))::after {
+body.dsh-ivory:not(.dshcs-contract-mismatch) .lcKema_leading:has([class*="_chevronHover"]):not(:has([class*="_iconIdle_"]))::after,
+body.dsh-ivory:not(.dshcs-contract-mismatch) .o3BgMG_leading:has([class*="_chevronHover"]):not(:has([class*="_iconIdle_"]))::after {
   inset: 0 0 0 auto;
   margin: auto 0;
 }
@@ -1924,25 +1941,20 @@ body.dsh-ivory:not(.dshcs-contract-mismatch) .CY-8Ka_bodyWrap [data-terminal] [c
   background: var(--cl-accent) !important;
   animation: dshcs-breathe 1.2s ease-in-out infinite !important;
 }
-/* rc.1 renders the running state as a matrix spinner in DSH blue:
- *   ._matrix_43g9j_4 { --dsh-state-ongoing: var(--dsw-static-deepseek-450) }
- *   ._matrix_43g9j_4 { color: var(--dsh-state-ongoing) }
- *   ._cell_43g9j_56  { fill: currentColor; opacity: .15; animation: dot-chase }
- * R1.3 re-tinted only `color`, and only inside the bash tool row. Two leaks
- * survived that: (a) the host now reuses the same component as the SIDEBAR
- * session-row running indicator, which that scope never covered, and (b) the
- * source token `--dsh-state-ongoing` was never overridden, so any placement
- * outside the covered scope — and any degraded/token-only pass — paints the
- * brand blue. Because `--dsw-static-deepseek-450` is a STATIC token, the leak
- * is identical in light and dark, which is how it was measured.
- * Fix the source, not the instance: override the custom property too, so every
- * current and future placement is covered. Motion is untouched. */
-body.dsh-ivory:not(.dshcs-contract-mismatch) [class*="_matrix_"] {
+/* The running state used to be a rect-grid "matrix" spinner pinned to the
+ * DeepSeek blue static token (`--dsw-static-deepseek-450`); 0.2.0 replaced it
+ * with the shared StateDot primitive, an `<svg data-state="ongoing">` whose
+ * track and arc stroke `currentColor`. The old grid-spinner class substrings
+ * are gone, so the previous pair silently matched nothing and the brand blue
+ * came back. The re-tint now keys off the semantic `data-state` anchor instead
+ * of a build-specific class name, so it survives future renames the way the
+ * `data-slot` contract already does. Motion is untouched. */
+body.dsh-ivory:not(.dshcs-contract-mismatch) [data-state="ongoing"] {
   --dsh-state-ongoing: var(--cl-accent-text) !important;
   color: var(--cl-accent-text) !important;
 }
-body.dsh-ivory:not(.dshcs-contract-mismatch) [class*="_matrix_"] rect[class*="_cell_"] {
-  fill: var(--cl-accent-text) !important;
+body.dsh-ivory:not(.dshcs-contract-mismatch) [data-state="ongoing"] circle {
+  stroke: var(--cl-accent-text) !important;
 }
 body.dsh-ivory:not(.dshcs-contract-mismatch) .CY-8Ka_bodyWrap [data-terminal] [class*="_cwd"] {
   color: var(--cl-muted) !important;
@@ -1983,16 +1995,24 @@ body.dsh-ivory:not(.dshcs-contract-mismatch) .lcKema_root[data-state="running"] 
   -webkit-mask-image: linear-gradient(180deg, #000 calc(100% - 26px), transparent);
   mask-image: linear-gradient(180deg, #000 calc(100% - 26px), transparent);
 }
-/* the chevron turns instead of jumping */
+/* DisclosureRow uses iconIdle/chevronHover only while collapsed. Its expanded
+ * branch renders a separate, potentially classless up-arrow. Do not cover that
+ * control with the replacement decorative icon or hide it as an idle SVG. */
+body.dsh-ivory:not(.dshcs-contract-mismatch) .lcKema_row[aria-expanded="true"] .lcKema_leading::after,
+body.dsh-ivory:not(.dshcs-contract-mismatch) .o3BgMG_row[aria-expanded="true"] .o3BgMG_leading::after {
+  content: none !important;
+}
 body.dsh-ivory:not(.dshcs-contract-mismatch) .CY-8Ka_chevron,
-body.dsh-ivory:not(.dshcs-contract-mismatch) .lcKema_chevron,
-body.dsh-ivory:not(.dshcs-contract-mismatch) .o3BgMG_chevron {
+body.dsh-ivory:not(.dshcs-contract-mismatch) [class*="_chevronHover"],
+body.dsh-ivory:not(.dshcs-contract-mismatch) .lcKema_row[aria-expanded="true"] .lcKema_leading > svg,
+body.dsh-ivory:not(.dshcs-contract-mismatch) .o3BgMG_row[aria-expanded="true"] .o3BgMG_leading > svg {
   transition: transform 150ms ease !important;
   color: var(--cl-muted) !important;
 }
 body.dsh-ivory:not(.dshcs-contract-mismatch) [aria-expanded="true"] .CY-8Ka_chevron,
-body.dsh-ivory:not(.dshcs-contract-mismatch) [aria-expanded="true"] .lcKema_chevron,
-body.dsh-ivory:not(.dshcs-contract-mismatch) [aria-expanded="true"] .o3BgMG_chevron {
+body.dsh-ivory:not(.dshcs-contract-mismatch) [aria-expanded="true"] [class*="_chevronHover"],
+body.dsh-ivory:not(.dshcs-contract-mismatch) .lcKema_row[aria-expanded="true"] .lcKema_leading > svg,
+body.dsh-ivory:not(.dshcs-contract-mismatch) .o3BgMG_row[aria-expanded="true"] .o3BgMG_leading > svg {
   color: var(--cl-ink-strong) !important;
 }
 
@@ -2320,4 +2340,43 @@ body.dsh-ivory:not(.dshcs-contract-mismatch) .dvt-paste-chip button:hover {
 body.dsh-ivory:not(.dshcs-contract-mismatch) .dvt-paste-chip button:focus-visible {
   outline: 2px solid var(--cl-ink) !important;
   outline-offset: 1px !important;
+}
+
+/* Desktop 0.1.7 keeps window controls in its own 48px strip. Retain the
+ * host's title grid and leading clearance when the macOS sidebar is hidden;
+ * the web header's block layout/padding reset would cover the traffic lights. */
+html[data-platform="darwin"] body.dsh-ivory:not(.dshcs-contract-mismatch) .wSkVaW_header {
+  display: grid !important;
+  padding-inline: 20px 28px !important;
+}
+html[data-platform="darwin"] body.dsh-ivory:not(.dshcs-contract-mismatch) .wSkVaW_titleRow {
+  padding-inline-start: max(0px, calc(var(--dsh-frame-leading-clearance, 0px) - 20px)) !important;
+}
+html[data-platform="darwin"] body.dsh-ivory:not(.dshcs-contract-mismatch) ._3WPZCG_topStrip {
+  height: 48px;
+  margin: 0;
+  padding: 0 12px;
+}
+html[data-platform="darwin"] body.dsh-ivory:not(.dshcs-contract-mismatch) .pI_x6G_sidebarCol {
+  border-right: 0 !important;
+}
+/* Focus mode must use macOS's fully hidden sidebar, not the web's 56px rail. */
+html[data-platform="darwin"] body.dsh-ivory:not(.dshcs-contract-mismatch).dsh-ivory-focus .pI_x6G_frame[data-sidebar-collapsed="true"] {
+  grid-template-columns: 0px minmax(0, 1fr) 0px !important;
+}
+/* A quiet desktop chrome layer separates navigation from the conversation.
+ * Reuse Ivory's neutral surfaces in both themes; no imported brand assets. */
+html[data-platform="darwin"] body.dsh-ivory:not(.dshcs-contract-mismatch) .pI_x6G_sidebarCol,
+html[data-platform="darwin"] body.dsh-ivory:not(.dshcs-contract-mismatch) .hHd-Xa_root {
+  background: var(--cl-surface-0) !important;
+}
+html[data-platform="darwin"] body.dsh-ivory {
+  --cl-shadow-card: 0 2px 8px var(--cl-hover), inset 0 0 0 1px var(--cl-border-strong);
+}
+/* 0.1.7 wraps the New Chat label in a full-width shortcut mask. Align that
+ * inner row too, otherwise the outer button's left alignment has no effect. */
+html[data-platform="darwin"] body.dsh-ivory:not(.dshcs-contract-mismatch) ._3WPZCG_newSessionContent {
+  justify-content: flex-start;
+  width: 100%;
+  gap: 12px;
 }

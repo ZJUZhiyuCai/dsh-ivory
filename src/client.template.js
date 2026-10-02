@@ -59,7 +59,7 @@ window.__ModuleLoader__.load({
         'markdown.toggle.label': 'Switch between Markdown source and preview',
         'markdown.toggle.preview': 'Preview',
         'markdown.toggle.source': 'Source',
-        'markdown.oversize': 'This Markdown file is too large to preview safely. Showing source instead.',
+        'markdown.oversize': 'This Markdown file is too large or complex to preview safely. Showing source instead.',
         'markdown.safeSource': 'For safety, raw HTML in this document is shown as source.',
       },
       zh: {
@@ -89,7 +89,7 @@ window.__ModuleLoader__.load({
         'markdown.toggle.label': '切换 Markdown 源码和预览',
         'markdown.toggle.preview': '预览',
         'markdown.toggle.source': '源码',
-        'markdown.oversize': 'Markdown 文件过大，已保留安全源码视图。',
+        'markdown.oversize': 'Markdown 文件较大或格式复杂，已保留源码视图。',
         'markdown.safeSource': '为保证安全，文档中的原始 HTML 以源码显示。',
       },
     };
@@ -120,7 +120,7 @@ window.__ModuleLoader__.load({
 body[data-ds-dark-theme] .dshcs-knob{background:var(--cl-ink)}
 .dshcs-switch.dshcs-on .dshcs-knob{left:20px;background:var(--cl-page)}`;
 
-    function readFlag(key, fallback) {
+    function readFlag(key, fallback, unavailable = fallback) {
       try {
         const raw = localStorage.getItem(key);
         // Only the values writeFlag produces are valid; anything else is
@@ -128,10 +128,28 @@ body[data-ds-dark-theme] .dshcs-knob{background:var(--cl-ink)}
         if (raw === '1' || raw === 'true') return true;
         if (raw === '0' || raw === 'false') return false;
         return fallback;
-      } catch { return fallback; }
+      } catch { return unavailable; }
+    }
+
+    let preferences = null;
+    const preferenceListeners = new Set();
+    const getPreferences = () => preferences ??= {
+      enabled: readFlag(ENABLED_KEY, true), focus: readFlag(FOCUS_KEY, false),
+    };
+    const subscribePreferences = (listener) => {
+      preferenceListeners.add(listener);
+      return () => preferenceListeners.delete(listener);
+    };
+    function updatePreferences(next) {
+      const previous = getPreferences();
+      if (next.enabled === previous.enabled && next.focus === previous.focus) return;
+      preferences = next;
+      for (const listener of preferenceListeners) listener();
     }
 
     function writeFlag(key, value) {
+      // The current session must remain operable even if persistence is denied.
+      updatePreferences({ ...getPreferences(), [key === ENABLED_KEY ? 'enabled' : 'focus']: value });
       try { localStorage.setItem(key, value ? '1' : '0'); } catch { /* storage unavailable */ }
     }
 
@@ -151,8 +169,7 @@ body[data-ds-dark-theme] .dshcs-knob{background:var(--cl-ink)}
     }
 
     function applyState() {
-      const enabled = readFlag(ENABLED_KEY, true);
-      const focus = readFlag(FOCUS_KEY, false);
+      const { enabled, focus } = getPreferences();
       document.body.classList.toggle('dsh-ivory', enabled);
       document.body.classList.toggle('dsh-ivory-focus', enabled && focus);
       if (enabled) {
@@ -172,8 +189,7 @@ body[data-ds-dark-theme] .dshcs-knob{background:var(--cl-ink)}
         stateFrame = 0;
         const reprobeNow = stateWantsReprobe;
         stateWantsReprobe = false;
-        const enabled = readFlag(ENABLED_KEY, true);
-        const focus = readFlag(FOCUS_KEY, false);
+        const { enabled, focus } = getPreferences();
         const wantsFocus = enabled && focus;
         if (document.body.classList.contains('dsh-ivory') !== enabled
           || document.body.classList.contains('dsh-ivory-focus') !== wantsFocus) {
@@ -193,7 +209,13 @@ body[data-ds-dark-theme] .dshcs-knob{background:var(--cl-ink)}
     }
 
     function handleStateStorage(event) {
-      if (event.key === ENABLED_KEY || event.key === FOCUS_KEY) scheduleStateSync();
+      if (event.key !== null && event.key !== ENABLED_KEY && event.key !== FOCUS_KEY) return;
+      const current = getPreferences();
+      updatePreferences({
+        enabled: event.key === FOCUS_KEY ? current.enabled : readFlag(ENABLED_KEY, true, current.enabled),
+        focus: event.key === ENABLED_KEY ? current.focus : readFlag(FOCUS_KEY, false, current.focus),
+      });
+      scheduleStateSync();
     }
 
     function observeState() {
@@ -279,19 +301,22 @@ body[data-ds-dark-theme] .dshcs-knob{background:var(--cl-ink)}
       '[data-slot="conversation"]',
     ];
     const CONVERSATION_SLOT_SELECTOR = CONVERSATION_SLOT_SELECTORS.join(', ');
+    // Global panels replace the conversation in the main seat (plugins, task
+    // board, etc.). Their absence of a composer is not host selector drift.
+    const MAIN_SLOT_SELECTOR = CONVERSATION_SLOT_SELECTOR + ', [data-slot="main"]';
 
     const REQUIRED_SLOT_SELECTORS = [
       '[data-slot="root"]',
-      CONVERSATION_SLOT_SELECTOR,
+      MAIN_SLOT_SELECTOR,
     ];
     const DRIFT_FAMILIES = {
       layout: ['.pI_x6G_frame'],
       sidebar: ['.hHd-Xa_root'],
-      conversation: ['.wSkVaW_root'],
       workspace: ['.bhn1Oq_root'],
-      composer: ['.uV2eYG_root'],
     };
     const CONDITIONAL_DRIFT_FAMILIES = {
+      conversation: { when: CONVERSATION_SLOT_SELECTOR, selectors: ['.wSkVaW_root'] },
+      composer: { when: CONVERSATION_SLOT_SELECTOR, selectors: ['.uV2eYG_root'] },
       chat: { when: '[data-chat-flow]', selectors: ['.EvIC1a_column'] },
       assistant: {
         when: '[data-slot="conversation.chat.assistant-actions"]',
@@ -315,28 +340,18 @@ body[data-ds-dark-theme] .dshcs-knob{background:var(--cl-ink)}
     // rot while its parent survives — that is how .fThDlq_entryRow was lost in
     // R1, and how the rc.1 matrix-spinner scope changed unnoticed in R3.
     //
-    // A probe reports only when it was OBSERVED PRESENT earlier in this session
-    // and has since disappeared, so a surface that simply has not mounted yet
-    // (no tool row, no user bubble) never raises a false positive. These probes
-    // are advisory by design: they write their own attribute and never drive
-    // degradation, so a bad probe cannot drop the skin into token-only mode.
+    // Track persistent children only, and only for the same mounted container.
+    // Message rows, empty conversations and ongoing StateDots can legitimately
+    // disappear. Conditional families above validate rows while they exist;
+    // their historical absence is not evidence of an incompatible host.
     const DRIFT_PROBES = [
       { name: 'composer.input', when: '.uV2eYG_root', selectors: ['.uV2eYG_input', '.uV2eYG_placeholder'] },
       { name: 'composer.card', when: '.uV2eYG_root', selectors: ['.uV2eYG_card'] },
       { name: 'composer.row', when: '.uV2eYG_root', selectors: ['.uV2eYG_row'] },
       { name: 'sidebar.tree', when: '.hHd-Xa_root', selectors: ['.YDXeBa_sessionRow', '.bhn1Oq_list'] },
       { name: 'sidebar.footer', when: '.hHd-Xa_root', selectors: ['.hHd-Xa_footArea'] },
-      { name: 'conversation.column', when: '.wSkVaW_root', selectors: ['.EvIC1a_column'] },
-      { name: 'conversation.userBubble', when: '.EvIC1a_column', selectors: ['.Sixlwa_bubble'] },
-      { name: 'tool.row', when: '.EvIC1a_column', selectors: ['.o3BgMG_root'] },
-      { name: 'reasoning.row', when: '.EvIC1a_column', selectors: ['.lcKema_root'] },
-      { name: 'bash.row', when: '.EvIC1a_column', selectors: ['.CY-8Ka_root'] },
-      // The running-state spinner is the exact shape this probe exists for: the
-      // class survives host upgrades while the CONTAINER changes, so a
-      // scope-scoped rule keeps matching nothing and the brand blue returns.
-      { name: 'state.spinner', when: '.hHd-Xa_root, .EvIC1a_column', selectors: ['[class*="_matrix_"]', '[class*="_cell_"]'] },
     ];
-    const driftSeenProbes = new Set();
+    let driftSeenProbes = new WeakMap();
     const CONTRACT_CANDIDATE_SELECTORS = [
       ...REQUIRED_SLOT_SELECTORS,
       '.pI_x6G_frame', '.pI_x6G_centerCol',
@@ -349,7 +364,9 @@ body[data-ds-dark-theme] .dshcs-knob{background:var(--cl-ink)}
     let whaleNode = null;
     let copyStatusNode = null;
     const copyResetTimers = new Set();
+    const codeCopies = new Map();
     const mdSeats = new WeakMap();
+    let mdSourcePreferences = new WeakMap();
 
     const isEnabled = () => document.body.classList.contains('dsh-ivory');
 
@@ -565,8 +582,9 @@ body[data-ds-dark-theme] .dshcs-knob{background:var(--cl-ink)}
       return button;
     }
 
-    function hasNativeCopyControl(scope) {
+    function hasNativeCopyControl(scope, cache) {
       if (!scope) return false;
+      if (cache?.has(scope)) return cache.get(scope);
       const controls = scope.querySelectorAll('button, [role="button"]');
       for (const control of controls) {
         if (control.classList?.contains('dshcs-copy-button')) continue;
@@ -579,27 +597,34 @@ body[data-ds-dark-theme] .dshcs-knob{background:var(--cl-ink)}
         // match (e.g. "Copy project" in an unrelated panel) used to remove
         // the per-block copy button by mistake.
         if (/^(?:复制|复制代码|复制文本|copy|copy code|copied|copied code|已复制|复制成功)$/i.test(label)
-          || /(?:复制代码|copy code|copied code)/i.test(label)) return true;
+          || /(?:复制代码|copy code|copied code)/i.test(label)) {
+          cache?.set(scope, true);
+          return true;
+        }
       }
+      cache?.set(scope, false);
       return false;
     }
 
     function enhanceCopyControls(root = document) {
       if (!isEnabled()) return;
       ensureCopyStatus();
+      const nativeScopes = new Map();
       for (const pre of collectNear(root, CODE_COPY_SELECTOR)) {
-        if (pre.dataset.dshcsCopyCode || isInsideStreamingMessage(pre)) continue;
+        if (codeCopies.get(pre)?.button.isConnected || isInsideStreamingMessage(pre)) continue;
         const parent = pre.parentNode;
         if (!parent || parent.nodeType !== Node.ELEMENT_NODE) continue;
         const nativeCodeBlock = pre.closest('[class*="code-block"]');
-        if (nativeCodeBlock && hasNativeCopyControl(nativeCodeBlock)) continue;
+        if (nativeCodeBlock && hasNativeCopyControl(nativeCodeBlock, nativeScopes)) continue;
         // Never reparent the host-owned <pre>: React reconciles against its own
         // fiber tree, so moving the node into a plugin wrapper would make the
         // host's next commit throw NotFoundError. Mark the parent and insert
         // the button as a sibling instead.
         pre.dataset.dshcsCopyCode = '1';
         parent.classList.add('dshcs-code-copy-host');
-        parent.insertBefore(makeCopyButton('code', () => textForCopy(pre, true)), pre.nextSibling);
+        const button = makeCopyButton('code', () => pre.isConnected && pre.parentNode === parent ? textForCopy(pre, true) : '');
+        parent.insertBefore(button, pre.nextSibling);
+        codeCopies.set(pre, { button, parent });
       }
       for (const target of collectNear(root, TEXT_COPY_SELECTOR)) {
         if (isInsideStreamingMessage(target)) continue;
@@ -608,6 +633,21 @@ body[data-ds-dark-theme] .dshcs-knob{background:var(--cl-ink)}
         target.dataset.dshcsCopyText = '1';
         target.classList.add('dshcs-copy-text-target');
         target.appendChild(makeCopyButton('text', () => textForCopy(target)));
+      }
+    }
+
+    function pruneCodeCopies() {
+      const nativeScopes = new Map();
+      for (const [pre, { button, parent }] of codeCopies) {
+        const native = pre.closest('[class*="code-block"]');
+        if (pre.isConnected && pre.parentNode === parent && button.parentNode === parent
+          && !(native && hasNativeCopyControl(native, nativeScopes))) continue;
+        clearTimeout(button._dshcsCopyTimer);
+        copyResetTimers.delete(button._dshcsCopyTimer);
+        button.remove();
+        delete pre.dataset.dshcsCopyCode;
+        codeCopies.delete(pre);
+        if (!parent.querySelector(':scope > .dshcs-copy-code')) parent.classList.remove('dshcs-code-copy-host');
       }
     }
 
@@ -652,9 +692,13 @@ body[data-ds-dark-theme] .dshcs-knob{background:var(--cl-ink)}
       state?.toggle?.remove();
       const pre = state?.pre;
       if (pre) {
-        pre.style.display = pre.dataset.dshcsOriginalDisplay || '';
+        if (pre.dataset.dshcsOriginalDisplay !== undefined) pre.style.display = pre.dataset.dshcsOriginalDisplay;
+        if (pre.dataset.dshcsOriginalTitlePresent === '1') pre.setAttribute('title', pre.dataset.dshcsOriginalTitle ?? '');
+        else if (pre.dataset.dshcsOriginalTitlePresent === '0') pre.removeAttribute('title');
         delete pre.dataset.dshcs;
         delete pre.dataset.dshcsOriginalDisplay;
+        delete pre.dataset.dshcsOriginalTitle;
+        delete pre.dataset.dshcsOriginalTitlePresent;
       }
       delete seat.dataset.dshcsSeat;
       mdSeats.delete(seat);
@@ -662,57 +706,65 @@ body[data-ds-dark-theme] .dshcs-knob{background:var(--cl-ink)}
 
     function enhanceMarkdown(root = document) {
       if (!isEnabled()) return;
+      // Syntax highlighting can replace a plain <pre> with a new wrapper and
+      // <pre>. Retire the old seat before enhancing that new source, otherwise
+      // both previews survive until the theme is toggled off.
+      for (const seat of collectNear(root, '[data-dshcs-seat]')) {
+        const state = mdSeats.get(seat);
+        if (state && (!state.pre.isConnected || state.pre.parentElement !== seat)) resetMdSeat(seat, state);
+      }
       // R1.1: also collect plain (non-shiki) source pres inside code blocks;
       // isMarkdownSource gates everything, so this stays safe for terminals
       // and real code fences.
       for (const pre of collectNear(root, 'pre[class*=shiki], [class*="code-block"] pre')) {
-        if (pre.closest('[data-terminal]')) continue;
-        if (isInsideStreamingMessage(pre)) continue;
+        if (pre.closest('[data-terminal], .dshcs-md')) continue;
         const seat = pre.parentElement;
         if (!seat) continue;
+        const preferenceSeat = pre.closest('[class*="code-block"]') || seat;
         const existing = mdSeats.get(seat);
+        const source = pre.textContent || '';
+        if (isInsideStreamingMessage(pre)) {
+          if (existing) resetMdSeat(seat, existing);
+          continue;
+        }
         if (existing) {
-          if (existing.pre !== pre) {
-            // The host swapped the source block: drop the stale preview and
-            // re-enhance the new one below.
-            resetMdSeat(seat, existing);
-          } else if ((pre.textContent || '').length !== existing.sourceLength) {
-            // Source changed in place: rebuild against the new content.
-            resetMdSeat(seat, existing);
-          } else continue;
+          if (existing.pre === pre && existing.source === source
+            && (!existing.view || (existing.view.isConnected && existing.toggle.isConnected))) continue;
+          resetMdSeat(seat, existing);
         }
         if (pre.dataset.dshcs || !isMarkdownSource(pre)) continue;
-        const source = pre.textContent || '';
-        if (source.length > MAX_MARKDOWN_PREVIEW_CHARS) {
+        if (seat.dataset.dshcsSeat) continue;
+        const rendered = renderMarkdown(source);
+        seat.dataset.dshcsSeat = '1';
+        if (rendered === null) {
           pre.dataset.dshcs = 'oversize';
           pre.dataset.dshcsOriginalTitle = pre.getAttribute('title') ?? '';
           pre.dataset.dshcsOriginalTitlePresent = pre.hasAttribute('title') ? '1' : '0';
           pre.title = translate('markdown.oversize');
+          mdSeats.set(seat, { pre, source });
           continue;
         }
-        if (seat.dataset.dshcsSeat) continue;
         pre.dataset.dshcs = 'md';
         pre.dataset.dshcsOriginalDisplay = pre.style.display || '';
-        seat.dataset.dshcsSeat = '1';
         const view = document.createElement('div');
         view.className = 'dshcs-md';
-        view.appendChild(renderMarkdown(source));
+        view.appendChild(rendered);
         const toggle = document.createElement('button');
         toggle.className = 'dshcs-md-toggle';
         toggle.type = 'button';
         toggle.setAttribute('aria-label', translate('markdown.toggle.label'));
-        let showSrc = false;
+        let showSrc = mdSourcePreferences.get(preferenceSeat) ?? false;
         const apply2 = () => {
-          pre.style.display = showSrc ? '' : 'none';
+          pre.style.display = showSrc ? pre.dataset.dshcsOriginalDisplay : 'none';
           view.style.display = showSrc ? 'none' : '';
           toggle.dataset.dshcsShowSource = showSrc ? '1' : '0';
           toggle.textContent = translate(showSrc ? 'markdown.toggle.preview' : 'markdown.toggle.source');
         };
-        toggle.addEventListener('click', () => { showSrc = !showSrc; apply2(); });
+        toggle.addEventListener('click', () => { showSrc = !showSrc; mdSourcePreferences.set(preferenceSeat, showSrc); apply2(); });
         seat.insertBefore(toggle, pre);
         seat.insertBefore(view, pre);
         apply2();
-        mdSeats.set(seat, { pre, view, toggle, sourceLength: source.length });
+        mdSeats.set(seat, { pre, view, toggle, source });
         enhanceCopyControls(seat);
       }
     }
@@ -777,6 +829,7 @@ body[data-ds-dark-theme] .dshcs-knob{background:var(--cl-ink)}
       if (!isEnabled()) { pendingRoots.clear(); return; }
       const roots = [...pendingRoots];
       pendingRoots.clear();
+      pruneCodeCopies();
       for (const root of roots) {
         enhanceCopyControls(root);
         enhanceMarkdown(root);
@@ -815,7 +868,7 @@ body[data-ds-dark-theme] .dshcs-knob{background:var(--cl-ink)}
         if (compat !== 'ok'
           && !degraded
           && document.querySelector('[data-slot="root"]')
-          && document.querySelector(CONVERSATION_SLOT_SELECTOR)) {
+          && document.querySelector(MAIN_SLOT_SELECTOR)) {
           contractAttempts = 0;
           validateHostContract();
         }
@@ -893,24 +946,24 @@ body[data-ds-dark-theme] .dshcs-knob{background:var(--cl-ink)}
       }
     }
 
-    // Advisory sub-selector probe pass. A probe that has been seen present and
-    // then disappears is real drift even though its family still resolves.
+    // Advisory checks are scoped to a particular mounted container, so a new
+    // page cannot inherit expectations from the previous page's children.
     function reportDriftProbes() {
       if (!isEnabled()) return;
-      const vanished = [];
+      const vanished = new Set();
       for (const { name, when, selectors } of DRIFT_PROBES) {
-        if (when && !document.querySelector(when)) continue;
-        if (selectors.some((selector) => document.querySelector(selector))) {
-          driftSeenProbes.add(name);
-          continue;
+        for (const surface of document.querySelectorAll(when)) {
+          let seen = driftSeenProbes.get(surface);
+          if (!seen) { seen = new Set(); driftSeenProbes.set(surface, seen); }
+          if (selectors.some((selector) => surface.querySelector(selector))) seen.add(name);
+          else if (seen.has(name)) vanished.add(name);
         }
-        if (driftSeenProbes.has(name)) vanished.push(name);
       }
-      if (!vanished.length) {
+      if (!vanished.size) {
         delete document.body.dataset.dshcsDriftProbe;
         return;
       }
-      const next = vanished.join(',');
+      const next = [...vanished].join(',');
       if (document.body.dataset.dshcsDriftProbe !== next) {
         console.warn('[dsh-ivory] Sub-selector drift; a styled element disappeared while its surface survived:', next);
       }
@@ -953,8 +1006,7 @@ body[data-ds-dark-theme] .dshcs-knob{background:var(--cl-ink)}
         const scrollTop = seat.scrollTop;
         const state = mdSeats.get(seat);
         if (state) {
-          state.view?.remove();
-          state.toggle?.remove();
+          resetMdSeat(seat, state);
         } else {
           seat.querySelectorAll(':scope > .dshcs-md, :scope > .dshcs-md-toggle').forEach((node) => node.remove());
         }
@@ -968,6 +1020,7 @@ body[data-ds-dark-theme] .dshcs-knob{background:var(--cl-ink)}
         mdSeats.delete(seat);
         seat.scrollTop = scrollTop;
       }
+      mdSourcePreferences = new WeakMap();
       for (const pre of document.querySelectorAll('pre[data-dshcs="oversize"]')) {
         delete pre.dataset.dshcs;
         if (pre.dataset.dshcsOriginalTitlePresent === '1') pre.setAttribute('title', pre.dataset.dshcsOriginalTitle ?? '');
@@ -980,6 +1033,7 @@ body[data-ds-dark-theme] .dshcs-knob{background:var(--cl-ink)}
     function cleanupCopyControls() {
       for (const timer of copyResetTimers) clearTimeout(timer);
       copyResetTimers.clear();
+      codeCopies.clear();
       document.querySelectorAll('[data-dshcs-copy-text]').forEach((target) => {
         delete target.dataset.dshcsCopyText;
         target.classList.remove('dshcs-copy-text-target');
@@ -995,6 +1049,7 @@ body[data-ds-dark-theme] .dshcs-knob{background:var(--cl-ink)}
       if (!isEnabled()) return;
       contractAttempts = 0;
       validateHostContract();
+      pruneCodeCopies();
       enhanceCopyControls(document);
       enhanceMarkdown(document);
       enhanceCopyControls(document);
@@ -1018,23 +1073,20 @@ body[data-ds-dark-theme] .dshcs-knob{background:var(--cl-ink)}
       document.body.classList.remove('dshcs-contract-mismatch');
       delete document.body.dataset.dshcsCompat;
       delete document.body.dataset.dshcsDrift;
+      delete document.body.dataset.dshcsDriftProbe;
+      driftSeenProbes = new WeakMap();
     }
 
     function IvorySettings() {
       React.useSyncExternalStore(subscribeLocale, localeRevision, localeRevision);
-      const [enabled, setEnabled] = React.useState(() => readFlag(ENABLED_KEY, true));
-      const [focus, setFocus] = React.useState(() => readFlag(FOCUS_KEY, false));
+      const { enabled, focus } = React.useSyncExternalStore(subscribePreferences, getPreferences, getPreferences);
 
       const toggleEnabled = () => {
-        const next = !enabled;
-        setEnabled(next);
-        writeFlag(ENABLED_KEY, next);
+        writeFlag(ENABLED_KEY, !getPreferences().enabled);
         applyState();
       };
       const toggleFocus = () => {
-        const next = !focus;
-        setFocus(next);
-        writeFlag(FOCUS_KEY, next);
+        writeFlag(FOCUS_KEY, !getPreferences().focus);
         applyState();
       };
 

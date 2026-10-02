@@ -13,6 +13,33 @@ const MAX_MARKDOWN_TABLE_ROWS = 256;
 const MAX_MARKDOWN_TABLE_COLS = 64;
 const MAX_MARKDOWN_PARAGRAPH_LINES = 200;
 const MAX_INLINE_DEPTH = 24;
+const MAX_MARKDOWN_NODES = 4_000;
+const MAX_MARKDOWN_WORK = 1_000_000;
+const MAX_MARKDOWN_RENDER_MS = 24;
+const MARKDOWN_BUDGET_EXCEEDED = Symbol('Markdown preview budget exceeded');
+
+function createMarkdownBudget() {
+  return { nodes: 0, work: MAX_MARKDOWN_WORK, deadline: performance.now() + MAX_MARKDOWN_RENDER_MS };
+}
+
+function checkMarkdownBudget(budget, work = 0) {
+  budget.work -= work;
+  if (budget.work < 0 || budget.nodes > MAX_MARKDOWN_NODES || performance.now() > budget.deadline) {
+    throw MARKDOWN_BUDGET_EXCEEDED;
+  }
+}
+
+function markdownElement(tag, budget) {
+  budget.nodes++;
+  checkMarkdownBudget(budget);
+  return document.createElement(tag);
+}
+
+function markdownText(text, budget) {
+  budget.nodes++;
+  checkMarkdownBudget(budget);
+  return document.createTextNode(text);
+}
 
 function safeLink(raw) {
   if (!raw || /["'<>\`\u0000-\u001f]/.test(raw)) return null;
@@ -22,78 +49,122 @@ function safeLink(raw) {
   } catch { return null; }
 }
 
-function appendInline(parent, source, depth = 0) {
-  let rest = String(source ?? '');
+function appendInline(parent, input, depth = 0, budget = createMarkdownBudget()) {
+  const source = String(input ?? '');
+  checkMarkdownBudget(budget, source.length);
   if (depth > MAX_INLINE_DEPTH) {
-    parent.appendChild(document.createTextNode(rest));
+    parent.appendChild(markdownText(source, budget));
     return;
   }
-  const patterns = [
-    // Image syntax renders as its alt text: the preview never loads media,
-    // and matching images before links keeps the leading ! from leaking.
-    { kind: 'image', re: /!\[([^\]\n]+)\]\(([^)\s]+)\)/ },
-    { kind: 'code', re: /`([^`\n]+)`/ },
-    { kind: 'link', re: /\[([^\]\n]+)\]\(([^)\s]+)\)/ },
-    { kind: 'strong', re: /\*\*([^*\n]+)\*\*/ },
-    { kind: 'em', re: /\*([^*\n]+)\*/ },
-  ];
-  while (rest) {
+  // Each delimiter search advances monotonically. Failed searches are cached,
+  // so an unmatched '[' or a long run of valid '*a*' tokens cannot repeatedly
+  // scan the remaining suffix. Recursion shares the document's work/node budget.
+  const positions = new Map();
+  const whitespace = /\s/g;
+  const next = (marker, start) => {
+    const cached = positions.get(marker);
+    if (cached === -1 || cached >= start) return cached;
+    let at;
+    if (marker === 'whitespace') {
+      whitespace.lastIndex = start;
+      at = whitespace.exec(source)?.index ?? -1;
+    } else at = source.indexOf(marker, start);
+    positions.set(marker, at);
+    return at;
+  };
+  const sameLine = (start, end) => {
+    const newline = next('\n', start);
+    return newline === -1 || newline > end;
+  };
+  let cursor = 0, textStart = 0;
+  while (cursor < source.length) {
+    if ((cursor & 255) === 0) checkMarkdownBudget(budget);
     let token = null;
-    for (const pattern of patterns) {
-      const match = pattern.re.exec(rest);
-      if (match && (!token || match.index < token.match.index)) token = { ...pattern, match };
+    const ch = source[cursor];
+    if (ch === '[' || (ch === '!' && source[cursor + 1] === '[')) {
+      const image = ch === '!';
+      const start = cursor + (image ? 2 : 1);
+      const close = next(']', start);
+      if (close > start && sameLine(start, close) && source[close + 1] === '(') {
+        const end = next(')', close + 2);
+        const space = next('whitespace', close + 2);
+        if (end > close + 2 && (space === -1 || space > end)) {
+          token = { kind: image ? 'image' : 'link', text: source.slice(start, close), url: source.slice(close + 2, end), end: end + 1 };
+        }
+      }
+    } else if (ch === '`') {
+      const end = next('`', cursor + 1);
+      if (end > cursor + 1 && sameLine(cursor + 1, end)) token = { kind: 'code', text: source.slice(cursor + 1, end), end: end + 1 };
+    } else if (ch === '*') {
+      const strong = source[cursor + 1] === '*';
+      const start = cursor + (strong ? 2 : 1);
+      const end = next('*', start);
+      if (end > start && sameLine(start, end) && (!strong || source[end + 1] === '*')) {
+        token = { kind: strong ? 'strong' : 'em', text: source.slice(start, end), end: end + (strong ? 2 : 1) };
+      }
     }
-    if (!token) {
-      parent.appendChild(document.createTextNode(rest));
-      break;
-    }
-    if (token.match.index) parent.appendChild(document.createTextNode(rest.slice(0, token.match.index)));
-    const whole = token.match[0];
+    if (!token) { cursor++; continue; }
+    if (cursor > textStart) parent.appendChild(markdownText(source.slice(textStart, cursor), budget));
     if (token.kind === 'image') {
-      parent.appendChild(document.createTextNode(token.match[1]));
+      // Images stay inert alt text, with no media or network access.
+      parent.appendChild(markdownText(token.text, budget));
     } else if (token.kind === 'link') {
-      const href = safeLink(token.match[2]);
+      const href = safeLink(token.url);
       if (href) {
-        const link = document.createElement('a');
+        const link = markdownElement('a', budget);
         link.href = href;
         link.target = '_blank';
         link.rel = 'noopener noreferrer';
-        link.textContent = token.match[1];
+        link.appendChild(markdownText(token.text, budget));
         parent.appendChild(link);
       } else {
-        parent.appendChild(document.createTextNode(whole));
+        parent.appendChild(markdownText(source.slice(cursor, token.end), budget));
       }
     } else {
       const tag = token.kind === 'code' ? 'code' : token.kind === 'strong' ? 'strong' : 'em';
-      const node = document.createElement(tag);
-      if (token.kind === 'code') node.textContent = token.match[1];
-      else appendInline(node, token.match[1], depth + 1);
+      const node = markdownElement(tag, budget);
+      if (token.kind === 'code') node.appendChild(markdownText(token.text, budget));
+      else appendInline(node, token.text, depth + 1, budget);
       parent.appendChild(node);
     }
-    rest = rest.slice(token.match.index + whole.length);
+    cursor = token.end;
+    textStart = cursor;
+  }
+  if (textStart < source.length) parent.appendChild(markdownText(source.slice(textStart), budget));
+}
+
+function renderMarkdown(src) {
+  const source = String(src ?? '');
+  if (source.length > MAX_MARKDOWN_PREVIEW_CHARS) return null;
+  try { return renderMarkdownBlocks(source, 0, createMarkdownBudget()); }
+  catch (error) {
+    if (error === MARKDOWN_BUDGET_EXCEEDED) return null;
+    throw error;
   }
 }
 
-function renderMarkdown(src, depth = 0) {
+function renderMarkdownBlocks(src, depth, budget) {
+  checkMarkdownBudget(budget, src.length);
   const lines = String(src ?? '').replace(/\r\n?/g, '\n').split('\n');
   const out = document.createDocumentFragment();
   if (depth > MAX_MARKDOWN_DEPTH) {
-    const fallback = document.createElement('p');
-    fallback.textContent = lines.join(' ').slice(0, 4_000);
+    const fallback = markdownElement('p', budget);
+    fallback.appendChild(markdownText(lines.join(' ').slice(0, 4_000), budget));
     out.appendChild(fallback);
     return out;
   }
   let i = 0;
   while (i < lines.length) {
+    if ((i & 255) === 0) checkMarkdownBudget(budget);
     const l = lines[i];
     if (/^```/.test(l)) {
       const buf = [];
       i++;
       while (i < lines.length && !/^```/.test(lines[i])) buf.push(lines[i++]);
       if (i < lines.length) i++;
-      const pre = document.createElement('pre');
-      const code = document.createElement('code');
-      code.textContent = buf.join('\n');
+      const pre = markdownElement('pre', budget);
+      const code = markdownElement('code', budget);
+      code.appendChild(markdownText(buf.join('\n'), budget));
       pre.appendChild(code);
       out.appendChild(pre);
       continue;
@@ -101,18 +172,18 @@ function renderMarkdown(src, depth = 0) {
     const h = l.match(/^(#{1,6})\s+(.*)$/);
     if (h) {
       const n = Math.min(6, h[1].length);
-      const heading = document.createElement('h' + n);
-      appendInline(heading, h[2]);
+      const heading = markdownElement('h' + n, budget);
+      appendInline(heading, h[2], 0, budget);
       out.appendChild(heading);
       i++;
       continue;
     }
-    if (/^\s*([-*_])(?:\s*\1){2,}\s*$/.test(l)) { out.appendChild(document.createElement('hr')); i++; continue; }
+    if (/^\s*([-*_])(?:\s*\1){2,}\s*$/.test(l)) { out.appendChild(markdownElement('hr', budget)); i++; continue; }
     if (/^>\s?/.test(l)) {
       const buf = [];
       while (i < lines.length && /^>\s?/.test(lines[i])) buf.push(lines[i++].replace(/^>\s?/, ''));
-      const quote = document.createElement('blockquote');
-      quote.appendChild(renderMarkdown(buf.join('\n'), depth + 1));
+      const quote = markdownElement('blockquote', budget);
+      quote.appendChild(renderMarkdownBlocks(buf.join('\n'), depth + 1, budget));
       out.appendChild(quote);
       continue;
     }
@@ -126,23 +197,23 @@ function renderMarkdown(src, depth = 0) {
         while (i < lines.length && /^\s*\|.*\|\s*$/.test(lines[i])) i++;
         rows.push(['…']);
       }
-      const table = document.createElement('table');
-      const thead = document.createElement('thead');
-      const headRow = document.createElement('tr');
+      const table = markdownElement('table', budget);
+      const thead = markdownElement('thead', budget);
+      const headRow = markdownElement('tr', budget);
       for (const value of head) {
-        const cell = document.createElement('th');
+        const cell = markdownElement('th', budget);
         cell.setAttribute('scope', 'col');
-        appendInline(cell, value);
+        appendInline(cell, value, 0, budget);
         headRow.appendChild(cell);
       }
       thead.appendChild(headRow);
       table.appendChild(thead);
-      const tbody = document.createElement('tbody');
+      const tbody = markdownElement('tbody', budget);
       for (const values of rows) {
-        const row = document.createElement('tr');
+        const row = markdownElement('tr', budget);
         for (const value of values) {
-          const cell = document.createElement('td');
-          appendInline(cell, value);
+          const cell = markdownElement('td', budget);
+          appendInline(cell, value, 0, budget);
           row.appendChild(cell);
         }
         tbody.appendChild(row);
@@ -158,10 +229,10 @@ function renderMarkdown(src, depth = 0) {
         while (i < lines.length && /^\s*[-*+]\s+/.test(lines[i])) i++;
         buf.push('…');
       }
-      const list = document.createElement('ul');
+      const list = markdownElement('ul', budget);
       for (const value of buf) {
-        const item = document.createElement('li');
-        appendInline(item, value);
+        const item = markdownElement('li', budget);
+        appendInline(item, value, 0, budget);
         list.appendChild(item);
       }
       out.appendChild(list);
@@ -176,14 +247,14 @@ function renderMarkdown(src, depth = 0) {
         while (i < lines.length && /^\s*\d+[.)]\s+/.test(lines[i])) i++;
         buf.push('…');
       }
-      const list = document.createElement('ol');
+      const list = markdownElement('ol', budget);
       for (let index = 0; index < buf.length; index++) {
-        const item = document.createElement('li');
+        const item = markdownElement('li', budget);
         // GFM normalizes markers: the first item's number sets the start and
         // the rest increment. Explicit li.value keeps the rendered numbering
         // sane even when the source repeats "1." for every item.
         item.value = start + index;
-        appendInline(item, buf[index]);
+        appendInline(item, buf[index], 0, budget);
         list.appendChild(item);
       }
       out.appendChild(list);
@@ -200,10 +271,10 @@ function renderMarkdown(src, depth = 0) {
       i++;
     }
     if (truncated) buf.push('…');
-    const paragraph = document.createElement('p');
+    const paragraph = markdownElement('p', budget);
     buf.forEach((value, index) => {
-      if (index) paragraph.appendChild(document.createElement('br'));
-      appendInline(paragraph, value);
+      if (index) paragraph.appendChild(markdownElement('br', budget));
+      appendInline(paragraph, value, 0, budget);
     });
     out.appendChild(paragraph);
   }

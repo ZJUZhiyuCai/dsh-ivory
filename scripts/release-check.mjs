@@ -2,9 +2,13 @@ import assert from 'node:assert/strict';
 import { readFile } from 'node:fs/promises';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { expandHostSelectors } from './host-selectors.mjs';
+import { assertHostContractSnapshot, assertNoRetiredSelectors, assertPeerSupport, assertSelectorTable } from './host-contract.mjs';
 
 const root = join(dirname(fileURLToPath(import.meta.url)), '..');
 const read = (path) => readFile(join(root, path), 'utf8');
+
+const REACT_PEER_RANGE = '>=18.2.0';
 const checks = [];
 const check = (name, fn) => {
   fn();
@@ -22,7 +26,7 @@ const contrastRatio = (a, b) => {
   return (lighter + 0.05) / (darker + 0.05);
 };
 
-const [packageText, lockText, patch, host, template, markdown, css, whale, built, readme, readmeZh, changelog, contributing, notices, publishWorkflow] = await Promise.all([
+const [packageText, lockText, patch, host, template, markdown, css, whale, built, readme, readmeZh, changelog, contributing, notices, publishWorkflow, hostSelectorsText, hostSnapshotText] = await Promise.all([
   read('package.json'),
   read('package-lock.json'),
   read('cordis.patch.yml'),
@@ -38,12 +42,15 @@ const [packageText, lockText, patch, host, template, markdown, css, whale, built
   read('CONTRIBUTING.md'),
   read('THIRD_PARTY_NOTICES.md'),
   read('.github/workflows/publish-npm.yml'),
+  read('src/host-selectors.json'),
+  read('test/fixtures/host-contracts.json'),
 ]);
 const pkg = JSON.parse(packageText);
+const hostSelectors = JSON.parse(hostSelectorsText);
 
 check('package metadata', () => {
   assert.equal(pkg.name, 'dsh-ivory');
-  assert.equal(pkg.version, '0.2.12');
+  assert.equal(pkg.version, '0.2.14');
   assert.equal(pkg.private, undefined);
   assert.equal(pkg.license, 'MIT');
   assert.equal(pkg.publishConfig?.access, 'public');
@@ -52,7 +59,7 @@ check('package metadata', () => {
   assert.deepEqual(pkg.dependencies, undefined);
   assert.ok(pkg.keywords.includes('dsh-plugin'));
   assert.match(pkg.repository?.url ?? '', /ZJUZhiyuCai\/dsh-ivory/);
-  assert.equal(pkg.peerDependencies?.react, '^18.2.0');
+  assert.equal(pkg.peerDependencies?.react, REACT_PEER_RANGE);
   assert.equal(pkg.peerDependenciesMeta?.react?.optional, true);
 });
 
@@ -85,11 +92,28 @@ check('bundle contract', () => {
     '@deepseek-ai/dsh-client-ui-settings',
   ]);
   for (const dependency of pkg.dsh.client.inject) {
-    assert.equal(pkg.peerDependencies?.[dependency], '>=0.1.2-rc.1 <0.2.0');
+    assert.equal(typeof pkg.peerDependencies?.[dependency], 'string');
     assert.equal(pkg.peerDependenciesMeta?.[dependency]?.optional, true);
   }
   assert.ok(!pkg.dsh.client.inject.includes('@deepseek-ai/dsh-client-runtime'));
   assert.ok(!pkg.dsh.client.inject.includes('@deepseek-ai/dsh-client-ui-slots'));
+});
+
+// npm excludes prereleases unless the range explicitly opts into their core
+// version. Use its real semantics, including patch and prerelease ordering.
+check('supported host version is inside the peer range', () => {
+  assertPeerSupport(pkg, ['0.1.2-rc.1', ...Object.values(hostSelectors.hosts)]);
+  assert.equal(pkg.peerDependencies?.react, REACT_PEER_RANGE);
+});
+
+check('host selector table tracks the supported desktop build', () => {
+  assert.equal(hostSelectors.hosts.web, '0.1.5-rc.1');
+  assert.equal(hostSelectors.hosts.desktop, '0.2.0-rc.2');
+  assertSelectorTable(hostSelectors);
+});
+
+check('real host module snapshots validate every shipped alias', () => {
+  assertHostContractSnapshot(hostSelectors, JSON.parse(hostSnapshotText));
 });
 
 check('inert host boundary', () => {
@@ -107,7 +131,7 @@ check('browser security boundary', () => {
   assert.match(markdown, /url\.protocol === 'http:' \|\| url\.protocol === 'https:'/);
   assert.match(markdown, /rel = 'noopener noreferrer'/);
   assert.match(markdown, /MAX_MARKDOWN_PREVIEW_CHARS = 250_000/);
-  assert.match(markdown, /kind: 'image'/);
+  assert.match(markdown, /token\.kind === 'image'/);
   assert.match(template, /navigator\.clipboard\?\.writeText/);
   assert.match(template, /document\.execCommand\('copy'\)/);
   assert.match(template, /isInsideStreamingMessage\(pre\)/);
@@ -136,10 +160,10 @@ check('brand-safe assets and fonts', () => {
 });
 
 check('generated bundle is reproducible', () => {
-  const expected = template
+  const expected = expandHostSelectors(template
     .replace('/*__MARKDOWN_JS__*/', markdown.trimEnd())
     .replace('/*__SKIN_CSS__*/', JSON.stringify(css))
-    .replace('/*__WHALE_SVG__*/', JSON.stringify(whale.trim()));
+    .replace('/*__WHALE_SVG__*/', JSON.stringify(whale.trim())));
   assert.equal(built, expected);
 });
 
@@ -234,9 +258,12 @@ check('DSH rc.1 selector, width, and degradation contract', () => {
   }
   assert.match(css, /\.CY-8Ka_root[^{]*,[\s\S]*?font-size:\s*var\(--dsh-content-font-size-secondary/);
   assert.doesNotMatch(css, /body\.dsh-ivory:not\(\.dshcs-contract-mismatch\)\s*\{\s*--dsh-scrollbar-width:\s*0px/);
-  for (const stale of ['CUGzGG', 'FK8dIa', 'hYB0Yq', 'KAPaMa', 'Pio91W', 'qk2Vjq', 'EIRQwq', '_6t6-Wa', '_11c_Vq']) {
-    assert.ok(!css.includes(stale) && !template.includes(stale), `stale DSH alpha.1 selector ${stale}`);
-  }
+  assertNoRetiredSelectors({
+    'src/skin.css': css,
+    'src/client.template.js': template,
+    'src/host-selectors.json': hostSelectorsText,
+    'lib/client.js': built,
+  });
 });
 
 // DSH 0.1.5-rc.x renamed the Conversation shell slot `conversation` ->
@@ -244,22 +271,18 @@ check('DSH rc.1 selector, width, and degradation contract', () => {
 // exercise that alias in the mutation-observer guard too: pinning the old name
 // dropped every structural rule to token-only mode, because the bare slot no
 // longer exists and the guard never re-validated.
-check('conversation slot rename tolerated on both host generations', () => {
-  assert.match(template, /\[data-slot="main\.conversation"\]/, 'runtime contract does not know the renamed slot');
-  assert.match(template, /\[data-slot="conversation"\]/, 'runtime contract dropped the legacy slot alias');
-  assert.match(template, /const CONVERSATION_SLOT_SELECTOR = CONVERSATION_SLOT_SELECTORS\.join\(', '\)/,
-    'conversation slot alias is not composed from both spellings');
-  assert.match(template, /const REQUIRED_SLOT_SELECTORS = \[\s*\n\s*'\[data-slot="root"\]',\s*\n\s*CONVERSATION_SLOT_SELECTOR,/,
-    'required-slot list does not use the dual-spelling conversation selector');
-  const hardcoded = template.match(/document\.querySelector\('\[data-slot="conversation"\]'\)/g) ?? [];
-  assert.equal(hardcoded.length, 0, `${hardcoded.length} hardcoded legacy conversation-slot guard(s) remain`);
-  // Both consuming sites must go through the alias: the required-slot list and
-  // the mutation guard. A bare reference is enough at the list site.
-  const usedAtList = /const REQUIRED_SLOT_SELECTORS = \[\s*\n\s*'\[data-slot="root"\]',\s*\n\s*CONVERSATION_SLOT_SELECTOR,\s*\n\s*\];/
-    .test(template);
-  const usedAtGuard = /document\.querySelector\(CONVERSATION_SLOT_SELECTOR\)/.test(template);
-  assert.ok(usedAtList, 'required-slot list does not reference the alias');
-  assert.ok(usedAtGuard, 'mutation guard does not reference the alias');
+check('conversation aliases and global-panel contract', () => {
+  assert.ok(template.includes('[data-slot="main.conversation"]'));
+  assert.ok(template.includes('[data-slot="conversation"]'));
+  assert.ok(template.includes('[data-slot="main"]'));
+  assert.match(template, /const REQUIRED_SLOT_SELECTORS = \[\s*'\[data-slot="root"\]',\s*MAIN_SLOT_SELECTOR,/);
+  assert.ok(template.includes('document.querySelector(MAIN_SLOT_SELECTOR)'));
+  for (const family of ['conversation', 'composer']) {
+    assert.ok(template.includes(`${family}: { when: CONVERSATION_SLOT_SELECTOR`));
+  }
+  for (const selector of ['pI_x6G_frame', 'uV2eYG_card', 'hWmORq_body']) {
+    assert.ok(expandHostSelectors(`.${selector}`).startsWith(':is('));
+  }
 });
 
 check('light theme text contrast meets WCAG AA', () => {
@@ -311,10 +334,10 @@ check('dark mask and renderer hardening boundaries', () => {
   assert.match(css, /--cl-mask-drop: rgb\(255 255 255 \/ 70%\)/);
   assert.match(css, /--cl-mask-drop: rgb\(0 0 0 \/ 60%\)/);
   assert.match(css, /--dsw-alias-bg-mask-drop: var\(--cl-mask-drop\)/);
-  for (const cap of ['MAX_MARKDOWN_DEPTH = 32', 'MAX_MARKDOWN_LIST_ITEMS = 500', 'MAX_MARKDOWN_TABLE_ROWS = 256', 'MAX_MARKDOWN_TABLE_COLS = 64', 'MAX_MARKDOWN_PARAGRAPH_LINES = 200', 'MAX_INLINE_DEPTH = 24']) {
+  for (const cap of ['MAX_MARKDOWN_DEPTH = 32', 'MAX_MARKDOWN_LIST_ITEMS = 500', 'MAX_MARKDOWN_TABLE_ROWS = 256', 'MAX_MARKDOWN_TABLE_COLS = 64', 'MAX_MARKDOWN_PARAGRAPH_LINES = 200', 'MAX_INLINE_DEPTH = 24', 'MAX_MARKDOWN_NODES = 4_000', 'MAX_MARKDOWN_WORK = 1_000_000', 'MAX_MARKDOWN_RENDER_MS = 24']) {
     assert.ok(markdown.includes(cap), `missing renderer cap ${cap}`);
   }
-  assert.match(markdown, /renderMarkdown\(buf\.join\('\\n'\), depth \+ 1\)/);
+  assert.match(markdown, /renderMarkdownBlocks\(buf\.join\('\\n'\), depth \+ 1, budget\)/);
   assert.match(markdown, /cell\.setAttribute\('scope', 'col'\)/);
 });
 

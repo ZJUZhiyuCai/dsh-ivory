@@ -20,6 +20,13 @@ ADVERSARIAL-*.md
 # Keep the reproducible release surface; ignore one-off local research probes.
 scripts/*
 !scripts/build.mjs
+!scripts/host-selectors.mjs
+!scripts/host-bundles.mjs
+!scripts/host-contract.mjs
+!scripts/test-host-contract.mjs
+!scripts/test-disclosure.mjs
+!scripts/derive-host-selectors.mjs
+!scripts/test-desktop.mjs
 !scripts/qa-lib.mjs
 !scripts/qa-adversarial.mjs
 !scripts/qa-r2-fixes.mjs
@@ -30,3 +37,6 @@ scripts/*
 !scripts/release-check.mjs
 !scripts/verify-pack.mjs
 !scripts/test-markdown.mjs
+!scripts/test-runtime.mjs
+!scripts/runtime-fixture.mjs
+!scripts/snapshot-host-contracts.mjs
