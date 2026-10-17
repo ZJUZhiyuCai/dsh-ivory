@@ -116,18 +116,27 @@ boundary and should receive explicit security and documentation review.
 ## Desktop compatibility
 
 `src/host-selectors.json` records class aliases verified against matching CSS
-modules in DSH web 0.1.5 and official desktop 0.2.0-rc.2. The build expands exact
-class selectors to `:is(legacy, desktop)` in both the stylesheet and DOM probes,
-retaining specificity without adding classes to host nodes. Unknown classes
-are not guessed. Global main panels do not require a conversation or composer;
-when the conversation is mounted its structural contract remains mandatory.
-macOS rules preserve the host's title grid, traffic-light clearance, and fully
-hidden sidebar.
+modules in DSH web 0.2.1-rc.1 and official desktop 0.2.1-rc.2. The build expands
+exact class selectors to `:is(web, desktop)` in both the stylesheet and DOM
+probes, retaining specificity without adding classes to host nodes. Unknown
+classes are not guessed. Global main panels do not require a conversation or
+composer; when the conversation is mounted its structural contract remains
+mandatory. macOS rules preserve the host's title grid, traffic-light clearance,
+and fully hidden sidebar.
 
 The selector table records package-qualified CSS module identities for each Web
 prefix. Desktop aliases are resolved by that identity and member, never by the
 existence of a similarly named `root` or `label`. `derive:host` previews changes;
 `--check` rejects drift and `--write` saves only a complete resolution.
+
+DSH 0.2.1 keeps the same 21 CSS-module hashes but changes members and adds new
+surfaces. Three seams were added for it: the account-menu trigger
+(`AccountMenu.module.css`) that now owns the footer settings entry, the
+`ChatView` running-state text that replaced `turnStatus`, and the sidebar
+`topStrip`/`newSessionContent` members the macOS rules already expected. The
+running indicator's `--dsw-alias-label-deep-diving*` tokens are remapped onto
+the chrysanthemum palette, so 0.2.1's TextShimmer inherits Ivory's warm pulse
+instead of the host's DeepSeek blue.
 
 The shared `data-state="ongoing"` anchor covers the old matrix and new ring
 spinner. Disclosure rows require two branches: collapsed iconIdle/chevronHover

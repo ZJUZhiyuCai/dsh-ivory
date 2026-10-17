@@ -5,6 +5,40 @@ All notable changes to Ivory are documented here. The project follows
 
 ## [Unreleased]
 
+## [0.2.15] - 2026-10-17
+
+### Fixed
+
+- Adapt to DSH Web 0.2.1-rc.1 and desktop 0.2.1-rc.2. The running indicator is now a
+  `TextShimmer` row; Ivory remaps the host's `--dsw-alias-label-deep-diving*`
+  alias pair onto the chrysanthemum palette and keeps the clay glow, so "Deep
+  diving…" no longer falls back to host blue. The 0.1.x `.EvIC1a_turnStatus`
+  gradient stays for older Web hosts, so one build covers the supported range.
+- Follow the 0.2.1 settings entry. The footer moves from a direct
+  `SettingsRoot` trigger to the account-menu trigger (`AccountMenu.module.css`);
+  both are styled, and the retired `.fThDlq_entryRow` / `.pXSMma_headlineText`
+  selectors are gone.
+- Route the macOS sidebar top strip and New Chat content through the alias
+  table instead of a hardcoded desktop hash. Desktop renames now fail
+  `derive:host` with the rest of the table instead of silently dropping the
+  rules.
+- Include the home workspace row's inline padding in its width, removing the
+  horizontal scrollbar at narrow viewport sizes in both themes.
+- Dismiss the initial "Get started" credential dialog through its explicit
+  close button so fresh-profile browser QA can reach the settings menu.
+
+### Changed
+
+- Re-verify all 101 aliases and 22 CSS-module identities against Web
+  0.2.1-rc.1 and desktop 0.2.1-rc.2, including the new account-menu trigger,
+  `ChatView` running-state text, and `SidebarRoot` members, and refresh the
+  versioned host snapshots.
+- Accept `^0.2.1-rc.1` in the DSH peer ranges (rc.1 and rc.2) and track Web
+  0.2.1-rc.1 and desktop 0.2.1-rc.2 in the host-version tests and documentation.
+- Browser QA opens settings through the account menu on 0.2.x, keeps the legacy
+  footer trigger path for older hosts, and switches appearance through
+  "通用设置" before picking a theme cube.
+
 ## [0.2.14] - 2026-10-03
 
 ### Fixed
@@ -459,7 +493,8 @@ All notable changes to Ivory are documented here. The project follows
 - Explicit npm file allowlist, MIT license, third-party notices, and bilingual
   documentation.
 
-[Unreleased]: https://github.com/ZJUZhiyuCai/dsh-ivory/compare/v0.2.14...HEAD
+[Unreleased]: https://github.com/ZJUZhiyuCai/dsh-ivory/compare/v0.2.15...HEAD
+[0.2.15]: https://github.com/ZJUZhiyuCai/dsh-ivory/compare/v0.2.14...v0.2.15
 [0.2.13]: https://github.com/ZJUZhiyuCai/dsh-ivory/compare/v0.2.12...v0.2.13
 [0.2.12]: https://github.com/ZJUZhiyuCai/dsh-ivory/compare/v0.2.11...v0.2.12
 [0.2.11]: https://github.com/ZJUZhiyuCai/dsh-ivory/compare/v0.2.10...v0.2.11

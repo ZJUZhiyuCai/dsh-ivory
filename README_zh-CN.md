@@ -44,7 +44,7 @@ dsh web
 绕过 npm，安装确切的 GitHub 标签版本。
 
 ```sh
-dsh plugin --profile web add github:ZJUZhiyuCai/dsh-ivory#v0.2.14
+dsh plugin --profile web add github:ZJUZhiyuCai/dsh-ivory#v0.2.15
 ```
 
 移除 Ivory，恢复 DSH 原生界面。
@@ -99,11 +99,12 @@ npm 包固定为八个白名单文件，每次 CI 都会检查。完整边界可
 
 > [!NOTE]
 > DeepSeek Harness 仍处于开发者预览阶段，UI 可能发生破坏性变化。
-> Ivory 0.2.14 已针对 DSH Web 0.1.5-rc.1 和桌面版 0.2.0-rc.2 完成验证；
+> Ivory 0.2.15 已针对 DSH Web 0.2.1-rc.1 和桌面版 0.2.1-rc.2 完成验证；
 > 其他宿主版本可能仅保留 token 级主题。
 > 无法确认当前结构契约时，Ivory 会保留 token 级主题，并把布局控制权交还给 DSH。
 
-桌面版 0.2.0-rc.2 适配重新推导了全部 CSS-module 别名类，映射表见
+0.2.1 适配重新校验了全部 CSS-module 别名类，新增账号菜单设置入口与运行态文本接缝，
+并把宿主新增的 deep-diving 别名 token 重染为菊花色；映射表见
 `src/host-selectors.json`。执行 `npm run build && npm run test:desktop`，
 使用已安装应用的样式进行隔离回归；不访问账户、不调用模型。
 其他系统可用 `DSH_DESKTOP_CLIENT_DIR` 指向包含客户端包和前端 `index-*.css`

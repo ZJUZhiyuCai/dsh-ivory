@@ -57,14 +57,14 @@ test('duplicate package-qualified module identities are rejected', () => {
 });
 
 test('actual peer ranges accept both supported RC hosts with default npm semantics', () => {
-  assertPeerSupport(pkg, ['0.1.2-rc.1', '0.1.5-rc.1', '0.2.0-rc.2']);
+  assertPeerSupport(pkg, ['0.1.2-rc.1', '0.1.5-rc.1', '0.2.0-rc.2', '0.2.1-rc.1', '0.2.1-rc.2']);
   const broken = structuredClone(pkg);
   for (const name of broken.dsh.client.inject) broken.peerDependencies[name] = '>=0.1.2-rc.1 <0.3.0';
   assert.throws(() => assertPeerSupport(broken, ['0.2.0-rc.2']), /excluded/);
 });
 
 test('peer checks reject unsupported floor, ceiling and prerelease versions', () => {
-  for (const version of ['0.1.1', '0.1.2-rc.0', '0.2.1-rc.1', '0.3.0', '1.0.0']) {
+  for (const version of ['0.1.1', '0.1.2-rc.0', '0.2.1-rc.0', '0.2.2-rc.1', '0.3.0', '1.0.0']) {
     assert.throws(() => assertPeerSupport(pkg, [version]), /excluded/, version);
   }
 });

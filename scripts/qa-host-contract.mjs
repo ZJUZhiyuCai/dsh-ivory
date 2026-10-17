@@ -1,7 +1,7 @@
 // Verifies Ivory against the CURRENT host: contract health, surfaces the user
 // reported as wrong (sidebar / composer / settings), plus both themes.
 import fs from 'node:fs';
-import { launch, openPage, expandSidebar, setTheme } from './qa-lib.mjs';
+import { launch, openPage, expandSidebar, setTheme, openSettings } from './qa-lib.mjs';
 
 const OUT = 'output/qa-host-contract';
 fs.mkdirSync(OUT, { recursive: true });
@@ -108,9 +108,7 @@ await setTheme(page, '浅色');
 // --- 6. settings section (user-reported)
 let settingsOk = false, settingsDetail = null;
 try {
-  const trigger = page.locator('.VOzbGW_trigger').last();
-  await trigger.click({ timeout: 5000 });
-  await page.waitForTimeout(1500);
+  await openSettings(page);
   settingsDetail = await page.evaluate(() => {
     const navs = [...document.querySelectorAll('nav a, nav button, [role="tab"], [class*="nav"] button')].map((n) => (n.innerText || '').trim()).filter(Boolean).slice(0, 40);
     const secs = [...document.querySelectorAll('[data-slot^="settings"]')].map((n) => n.getAttribute('data-slot'));

@@ -1,7 +1,7 @@
 // Regression suite for the R2 adversarial review fixes.
 // Requires a running DSH instance at http://127.0.0.1:3080.
 import fs from 'node:fs';
-import { launch, openPage, expandSidebar, setTheme } from './qa-lib.mjs';
+import { launch, openPage, expandSidebar, setTheme, openSettings } from './qa-lib.mjs';
 
 const OUT = 'output/playwright/r2-fixes-20260816';
 fs.mkdirSync(OUT, { recursive: true });
@@ -681,8 +681,7 @@ try {
       marks: document.querySelectorAll('.dshcs-turn-mark').length,
       copyControls: document.querySelectorAll('.dshcs-copy-button').length,
     }));
-    await page.locator('.VOzbGW_trigger').last().click();
-    await page.waitForTimeout(300);
+    await openSettings(page);
     await page.getByRole('button', { name: 'Ivory 主题', exact: true }).click();
     const enabledSwitch = page.getByRole('switch', { name: '启用 Ivory 主题', exact: true });
     await enabledSwitch.click();
@@ -791,7 +790,7 @@ try {
     const tag = theme === '浅色' ? 'light' : 'dark';
     const { page, errors } = await openPage(browser, { w: 1440, h: 900, focus: false });
     await setTheme(page, theme);
-    await page.locator('.VOzbGW_trigger').last().click();
+    await openSettings(page);
     const visualTab = page.getByRole('button', { name: '视觉工具' });
     const visualSource = await visualTab.count() ? 'live' : 'fixture';
     if (visualSource === 'live') await visualTab.click();
