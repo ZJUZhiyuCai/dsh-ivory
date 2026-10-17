@@ -114,13 +114,20 @@ try {
         root.className = 'o3BgMG_root';
         root.dataset.variant = variant;
         root.dataset.state = 'ok';
+        // The 0.2.x disclosure row owns the aria-expanded state that hides the
+        // host SVG; without it the fixture would test a shape the host never
+        // renders.
+        const row = document.createElement('div');
+        row.className = 'o3BgMG_row';
+        row.setAttribute('aria-expanded', 'false');
         const leading = document.createElement('span');
         leading.className = 'o3BgMG_leading';
         const idle = document.createElement('span');
         idle.className = '_iconIdle_qa';
         idle.appendChild(svg());
         leading.appendChild(idle);
-        root.appendChild(leading);
+        row.appendChild(leading);
+        root.appendChild(row);
         fixture.appendChild(root);
         return { leading, idle };
       };
@@ -140,10 +147,17 @@ try {
       placeholder.className = 'uV2eYG_placeholder';
       fixture.append(input, placeholder);
 
-      const turnStatus = document.createElement('span');
-      turnStatus.className = 'EvIC1a_turnStatus';
-      turnStatus.textContent = 'Deep diving…';
-      fixture.appendChild(turnStatus);
+      // 0.2.1 renders the running state with TextShimmer; the deep-diving
+      // alias tokens carry the colour and Ivory adds the clay glow on the text.
+      const runningRow = document.createElement('div');
+      runningRow.className = 'EvIC1a_running';
+      const runningText = document.createElement('span');
+      runningText.className = 'EvIC1a_runningText';
+      runningText.textContent = 'Deep diving…';
+      runningRow.appendChild(runningText);
+      const chrysProbe = document.createElement('span');
+      chrysProbe.style.color = 'var(--cl-chrys)';
+      fixture.append(runningRow, chrysProbe);
       document.body.appendChild(fixture);
 
       const pseudo = (element, name) => getComputedStyle(element, name);
@@ -156,7 +170,9 @@ try {
       }));
       const folderBefore = pseudo(folder, '::before');
       const fontFamilies = [input, placeholder].map((element) => getComputedStyle(element).fontFamily);
-      const statusStyle = getComputedStyle(turnStatus);
+      const statusStyle = getComputedStyle(runningText);
+      const bodyStyle = getComputedStyle(document.body);
+      const chrysColor = getComputedStyle(chrysProbe).color;
       const result = {
         tools: toolMetrics,
         folder: {
@@ -166,9 +182,12 @@ try {
         },
         fontFamilies,
         status: {
-          backgroundImage: statusStyle.backgroundImage,
+          color: statusStyle.color,
+          chrysColor,
           filter: statusStyle.filter,
-          animationName: statusStyle.animationName,
+          baseToken: bodyStyle.getPropertyValue('--dsw-alias-label-deep-diving').trim(),
+          chrysToken: bodyStyle.getPropertyValue('--cl-chrys').trim(),
+          shimmerToken: bodyStyle.getPropertyValue('--dsw-alias-label-deep-diving-shimmer').trim(),
         },
       };
       fixture.remove();
@@ -190,9 +209,10 @@ try {
       iconSet.fontFamilies.every((family) => family === iconSet.fontFamilies[0] && family.includes('PingFang SC')),
       iconSet.fontFamilies);
     check(`${tag}-turn-status-chrysanthemum`,
-      iconSet.status.backgroundImage.includes('linear-gradient')
-        && iconSet.status.filter.includes('drop-shadow')
-        && iconSet.status.animationName.includes('turn-shimmer'),
+      iconSet.status.baseToken === iconSet.status.chrysToken
+        && iconSet.status.color === iconSet.status.chrysColor
+        && iconSet.status.shimmerToken.includes('color-mix')
+        && iconSet.status.filter.includes('drop-shadow'),
       iconSet.status);
     await page.screenshot({ path: `${OUT}/${tag}-terminal.png` });
     await page.close();

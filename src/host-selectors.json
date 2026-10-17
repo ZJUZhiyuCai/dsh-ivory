@@ -1,8 +1,8 @@
 {
-  "description": "CSS-module aliases verified against DSH web 0.1.5-rc.1 and desktop 0.2.0-rc.2. Each web prefix records its package and CSS module identity; derivation resolves that exact module and local member on the desktop host.",
+  "description": "CSS-module aliases verified against DSH web 0.2.1-rc.1 and desktop 0.2.1-rc.2. Each web prefix records its package and CSS module identity; derivation resolves that exact module and local member on the desktop host.",
   "hosts": {
-    "web": "0.1.5-rc.1",
-    "desktop": "0.2.0-rc.2"
+    "web": "0.2.1-rc.1",
+    "desktop": "0.2.1-rc.2"
   },
   "modules": {
     "_7KE1Ra": {
@@ -56,6 +56,10 @@
     "VOzbGW": {
       "package": "@deepseek-ai/dsh-client-ui-settings-general",
       "module": "SettingsRoot.module.css"
+    },
+    "yHnPSG": {
+      "package": "@deepseek-ai/dsh-client-ui-settings-account",
+      "module": "AccountMenu.module.css"
     },
     "hHd-Xa": {
       "package": "@deepseek-ai/dsh-client-ui-sidebar",
@@ -158,6 +162,7 @@
     "pI_x6G_frame": "_6Qf49G_frame",
     "pI_x6G_sidebarCol": "_6Qf49G_sidebarCol",
     "VOzbGW_trigger": "Dws9Sa_trigger",
+    "yHnPSG_trigger": "ZogL4G_trigger",
     "hHd-Xa_brand": "_3WPZCG_brand",
     "hHd-Xa_footArea": "_3WPZCG_footArea",
     "hHd-Xa_iconButton": "_3WPZCG_iconButton",
@@ -174,6 +179,7 @@
     "EvIC1a_callRow": "icaHSq_callRow",
     "EvIC1a_column": "icaHSq_column",
     "EvIC1a_flowItem": "icaHSq_flowItem",
+    "EvIC1a_runningText": "icaHSq_runningText",
     "lcKema_leading": "HiSsxa_leading",
     "lcKema_root": "HiSsxa_root",
     "lcKema_row": "HiSsxa_row",
@@ -187,6 +193,8 @@
     "hHd-Xa_panelRow": "_3WPZCG_panelRow",
     "hHd-Xa_panelGlyph": "_3WPZCG_panelGlyph",
     "hHd-Xa_panelTitle": "_3WPZCG_panelTitle",
-    "hHd-Xa_panelList": "_3WPZCG_panelList"
+    "hHd-Xa_panelList": "_3WPZCG_panelList",
+    "hHd-Xa_topStrip": "_3WPZCG_topStrip",
+    "hHd-Xa_newSessionContent": "_3WPZCG_newSessionContent"
   }
 }

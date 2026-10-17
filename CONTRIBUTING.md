@@ -33,7 +33,7 @@ DSH_QA_TOKEN='<token from the dsh web URL>' npm run qa:r2
 DSH_QA_TOKEN='<token from the dsh web URL>' DSH_QA_FIXTURE_ONLY=1 npm run qa:activity
 ```
 
-The live browser suite targets DSH Web 0.1.5-rc.1 at
+The live browser suite targets DSH Web 0.2.1-rc.1 at
 `http://127.0.0.1:3080`. Pass the per-run URL token through `DSH_QA_TOKEN`; set
 `DSH_QA_CHROMIUM` when Chrome or Chromium is not installed in a standard path.
 

@@ -2,7 +2,7 @@
 // streaming guards, toggle storms, resize storms, degraded-mode cost, and
 // corrupted storage. Requires a running DSH instance at http://127.0.0.1:3080.
 import fs from 'node:fs';
-import { launch, openPage, expandSidebar, setTheme, HOME } from './qa-lib.mjs';
+import { launch, openPage, expandSidebar, setTheme, openSettings, HOME } from './qa-lib.mjs';
 
 const OUT = 'output/playwright/adversarial-20260818';
 fs.mkdirSync(OUT, { recursive: true });
@@ -255,8 +255,7 @@ try {
       marks: document.querySelectorAll('.dshcs-turn-mark').length,
       copyControls: document.querySelectorAll('.dshcs-copy-button').length,
     }));
-    await page.locator('.VOzbGW_trigger').last().click();
-    await page.waitForTimeout(800);
+    await openSettings(page);
     await page.getByRole('button', { name: 'Ivory 主题', exact: true }).click();
     const enabledSwitch = page.getByRole('switch', { name: '启用 Ivory 主题', exact: true });
     for (let round = 0; round < 12; round++) {

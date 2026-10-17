@@ -113,6 +113,12 @@ body.dsh-ivory[data-ds-dark-theme] {
   --dsw-alias-label-tertiary: var(--cl-muted);
   --dsw-alias-label-caption: var(--cl-muted);
   --dsw-alias-label-dimmed: var(--cl-muted);
+  /* DSH 0.2.1 paints the running indicator through TextShimmer and the
+   * deep-diving alias pair (the old .EvIC1a_turnStatus class is gone). Map
+   * both tokens onto Ivory's chrysanthemum family so the working state keeps
+   * its warm clay pulse instead of the host's DeepSeek blue. */
+  --dsw-alias-label-deep-diving: var(--cl-chrys);
+  --dsw-alias-label-deep-diving-shimmer: color-mix(in srgb, var(--cl-chrys) 55%, var(--cl-ink));
 
   --dsw-alias-border-l1: var(--cl-border);
   --dsw-alias-border-l2: var(--cl-border);
@@ -385,25 +391,19 @@ body.dsh-ivory:not(.dshcs-contract-mismatch) .bhn1Oq_iconButton:hover {
 }
 
 /* bottom settings row — Claude user-menu-like footer.
- * R1: host moved the settings entry into BUTTON.VOzbGW_trigger inside
- * .hHd-Xa_footArea; the old .fThDlq_entryRow no longer renders (kept in case
- * of rollback). The scoped trigger rules below re-apply the same treatment. */
-body.dsh-ivory:not(.dshcs-contract-mismatch) .fThDlq_entryRow {
-  height: 64px !important;
-  min-height: 64px !important;
-  border-top: 0.5px solid var(--cl-border) !important;
-  font-family: var(--cl-sans) !important;
-  font-size: 14px !important;
-  line-height: 20px !important;
-  color: var(--cl-ink-strong) !important;
-}
+ * DSH 0.1.5 rendered the settings entry as BUTTON.VOzbGW_trigger inside
+ * .hHd-Xa_footArea. DSH 0.2.1 keeps the same footer but routes it through the
+ * account menu (BUTTON.yHnPSG_trigger), so both triggers share one treatment;
+ * the pre-0.1.5 .fThDlq_entryRow is retired with the class. */
 body.dsh-ivory:not(.dshcs-contract-mismatch) .hHd-Xa_footArea {
   border-top: 0.5px solid var(--cl-border) !important;
   padding: 8px 12px !important;
 }
-/* Scoped to the sidebar footer only: VOzbGW_trigger is also the theme-cube
- * trigger elsewhere in the top bar, which must keep its own geometry. */
-body.dsh-ivory:not(.dshcs-contract-mismatch) .hHd-Xa_footArea .VOzbGW_trigger {
+/* Scoped to the sidebar footer only: the settings trigger is also the
+ * theme-cube trigger elsewhere in the top bar, which must keep its own
+ * geometry. */
+body.dsh-ivory:not(.dshcs-contract-mismatch) .hHd-Xa_footArea .VOzbGW_trigger,
+body.dsh-ivory:not(.dshcs-contract-mismatch) .hHd-Xa_footArea .yHnPSG_trigger {
   min-height: 32px !important;
   border-radius: 9px !important;
   font-family: var(--cl-sans) !important;
@@ -412,7 +412,8 @@ body.dsh-ivory:not(.dshcs-contract-mismatch) .hHd-Xa_footArea .VOzbGW_trigger {
   color: var(--cl-ink-strong) !important;
   background: transparent !important;
 }
-body.dsh-ivory:not(.dshcs-contract-mismatch) .hHd-Xa_footArea .VOzbGW_trigger:hover {
+body.dsh-ivory:not(.dshcs-contract-mismatch) .hHd-Xa_footArea .VOzbGW_trigger:hover,
+body.dsh-ivory:not(.dshcs-contract-mismatch) .hHd-Xa_footArea .yHnPSG_trigger:hover {
   background: var(--cl-hover) !important;
 }
 
@@ -496,6 +497,8 @@ body.dsh-ivory:not(.dshcs-contract-mismatch) .wSkVaW_composerHero .uV2eYG_root {
 }
 body.dsh-ivory:not(.dshcs-contract-mismatch) .wSkVaW_composerHero > .wSkVaW_heroWorkspaceRow {
   order: 2 !important;
+  /* Include the host's inline padding in the available hero width. */
+  box-sizing: border-box !important;
   width: min(672px, 100%) !important;
   margin: 8px auto 0 !important;
 }
@@ -509,7 +512,6 @@ body.dsh-ivory:not(.dshcs-contract-mismatch) .pXSMma_headline {
   height: 48px !important;
   justify-content: center !important;
 }
-body.dsh-ivory:not(.dshcs-contract-mismatch) .pXSMma_headlineText,
 body.dsh-ivory:not(.dshcs-contract-mismatch) .pXSMma_titleGroup > span:first-child {
   font-family: var(--cl-serif) !important;
   font-size: 38px !important;
@@ -650,9 +652,12 @@ body.dsh-ivory:not(.dshcs-contract-mismatch) .EvIC1a_column {
   margin: 0 auto !important;
 }
 /* "Deep diving…" turn status: the host paints a DSH-blue text shimmer.
- * R2.0: Ivory replaces it with a chrysanthemum/clay sheen — Claude's original
- * clay family — that runs from a dimmed clay into the full chrysanthemum and
- * back, with a faint clay glow so the working state never reads as background. */
+ * R2.0 replaced it with a chrysanthemum/clay sheen. DSH 0.2.1 implements the
+ * running row with TextShimmer and the --dsw-alias-label-deep-diving* tokens,
+ * so the color pair is remapped in the token block above and this rule keeps
+ * the faint clay glow on the text the host now renders. Web 0.1.x still paints
+ * the bare .EvIC1a_turnStatus node, so the original gradient stays for that
+ * generation and one build covers the supported host range. */
 @keyframes dshcs-turn-shimmer {
   0% { background-position: 160% 0; }
   100% { background-position: -60% 0; }
@@ -666,6 +671,9 @@ body.dsh-ivory:not(.dshcs-contract-mismatch) .EvIC1a_turnStatus {
     color-mix(in srgb, var(--cl-chrys) 58%, var(--cl-page)) 100%) !important;
   background-size: 250% 100% !important;
   animation: dshcs-turn-shimmer 2.2s cubic-bezier(0.4, 0, 0.2, 1) infinite !important;
+  filter: drop-shadow(0 0 6px color-mix(in srgb, var(--cl-chrys) 32%, transparent));
+}
+body.dsh-ivory:not(.dshcs-contract-mismatch) .EvIC1a_runningText {
   filter: drop-shadow(0 0 6px color-mix(in srgb, var(--cl-chrys) 32%, transparent));
 }
 /* user message: right-aligned neutral bubble, 12px radius, 15/20 sans */
@@ -1507,7 +1515,6 @@ body.dsh-ivory .uV2eYG_input:focus-visible {
     gap: 6px !important;
     flex-wrap: nowrap !important;
   }
-  body.dsh-ivory:not(.dshcs-contract-mismatch) .pXSMma_headlineText,
   body.dsh-ivory:not(.dshcs-contract-mismatch) .pXSMma_titleGroup > span:first-child {
     min-width: 0 !important;
     font-size: 30px !important;
@@ -1539,13 +1546,21 @@ body.dsh-ivory .uV2eYG_input:focus-visible {
   body.dsh-ivory :is(button, a, input, textarea, select):focus-visible {
     outline: 2px solid CanvasText !important;
   }
-  /* Background-clip text shimmers can become invisible when background images
-   * are stripped: hand the status text back a solid system color. */
+  /* Text shimmers can become invisible when forced colors strip their paint:
+   * hand the running state a solid system color and drop the clay glow. */
+  body.dsh-ivory:not([data-ds-dark-theme]),
+  body.dsh-ivory[data-ds-dark-theme] {
+    --dsw-alias-label-deep-diving: CanvasText;
+    --dsw-alias-label-deep-diving-shimmer: CanvasText;
+  }
   body.dsh-ivory .EvIC1a_turnStatus {
     background-image: none !important;
     -webkit-text-fill-color: CanvasText !important;
     color: CanvasText !important;
     animation: none !important;
+    filter: none !important;
+  }
+  body.dsh-ivory .EvIC1a_runningText {
     filter: none !important;
   }
 }
@@ -2352,7 +2367,7 @@ html[data-platform="darwin"] body.dsh-ivory:not(.dshcs-contract-mismatch) .wSkVa
 html[data-platform="darwin"] body.dsh-ivory:not(.dshcs-contract-mismatch) .wSkVaW_titleRow {
   padding-inline-start: max(0px, calc(var(--dsh-frame-leading-clearance, 0px) - 20px)) !important;
 }
-html[data-platform="darwin"] body.dsh-ivory:not(.dshcs-contract-mismatch) ._3WPZCG_topStrip {
+html[data-platform="darwin"] body.dsh-ivory:not(.dshcs-contract-mismatch) .hHd-Xa_topStrip {
   height: 48px;
   margin: 0;
   padding: 0 12px;
@@ -2375,7 +2390,7 @@ html[data-platform="darwin"] body.dsh-ivory {
 }
 /* 0.1.7 wraps the New Chat label in a full-width shortcut mask. Align that
  * inner row too, otherwise the outer button's left alignment has no effect. */
-html[data-platform="darwin"] body.dsh-ivory:not(.dshcs-contract-mismatch) ._3WPZCG_newSessionContent {
+html[data-platform="darwin"] body.dsh-ivory:not(.dshcs-contract-mismatch) .hHd-Xa_newSessionContent {
   justify-content: flex-start;
   width: 100%;
   gap: 12px;

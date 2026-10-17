@@ -77,15 +77,17 @@ export async function openPage(browser, { w = 1440, h = 900, enabled = true, foc
   }, [BASE, enabled, focus]);
   await page.goto(HOME, { waitUntil: 'domcontentloaded' });
   await page.waitForTimeout(4500);
-  // A disposable DSH_HOME shows the rc.1 preview notice and provider setup on
-  // every fresh browser context. Dismiss only their explicit non-destructive
-  // actions so browser QA can reach the app without storing credentials.
+  // Fresh profiles may show the legacy preview/provider setup or the 0.2.1
+  // credential dialog. Close only the named initial credential prompt; other
+  // dialogs must remain visible so QA does not hide an unexpected failure.
   for (let step = 0; step < 3; step++) {
     const dialog = page.getByRole('dialog');
     if (!(await dialog.count())) break;
     const next = dialog.getByRole('button', { name: /^(?:继续|Continue)$/i });
     const later = dialog.getByRole('button', { name: /^(?:稍后配置|Set up later)$/i });
-    const button = await next.count() ? next : await later.count() ? later : null;
+    const close = page.getByRole('dialog', { name: /^(?:开始使用|Get started)$/i })
+      .getByRole('button', { name: /^(?:关闭|Close)$/i });
+    const button = await next.count() ? next : await later.count() ? later : await close.count() ? close : null;
     if (button === null) break;
     await button.click();
     await page.waitForTimeout(800);
@@ -112,10 +114,31 @@ export async function newChat(page) {
   await page.waitForTimeout(1500);
 }
 
+// Open the settings dialog. DSH 0.1.x rendered a direct footer trigger
+// (.VOzbGW_trigger); DSH 0.2.1 moves the entry behind the account menu
+// (.yHnPSG_trigger -> 设置). Support both so one suite covers the host range.
+export async function openSettings(page) {
+  const legacy = page.locator('.VOzbGW_trigger').last();
+  if (await legacy.count() && await legacy.isVisible().catch(() => false)) {
+    await legacy.click();
+  } else {
+    const account = page.locator('.yHnPSG_trigger, .ZogL4G_trigger').last();
+    await account.click({ timeout: 10000 });
+    await page.waitForTimeout(600);
+    await page.getByRole('menuitem', { name: /设置|Settings/ }).first().click({ timeout: 10000 });
+  }
+  await page.waitForTimeout(1200);
+}
+
 // real theme switch via settings modal
 export async function setTheme(page, label /* 浅色|深色 */) {
-  await page.locator('.VOzbGW_trigger').last().click();
-  await page.waitForTimeout(1200);
+  await openSettings(page);
+  // 0.2.1 keeps appearance under 通用设置 instead of the first settings page.
+  const general = page.getByRole('button', { name: /^(?:通用设置|General)$/ });
+  if (await general.count()) {
+    await general.first().click();
+    await page.waitForTimeout(800);
+  }
   const cube = page.locator(`._8HJdBW_themeCube`, { hasText: label });
   await cube.click();
   await page.waitForTimeout(800);
@@ -216,7 +239,7 @@ export async function probeGeometry(page) {
       sidebarCol: pick('.pI_x6G_sidebarCol'),
       newSession: pick('.hHd-Xa_newSession'),
       heroCard: pick('.wSkVaW_composerHero .uV2eYG_card'),
-      headline: pick('.pXSMma_headlineText'),
+      headline: pick('.pXSMma_titleGroup > span:first-child') ?? pick('.pXSMma_headline'),
       msgColumn: pick('.EvIC1a_column'),
       userBubble: pick('.Sixlwa_bubble'),
       composerCard: (() => {

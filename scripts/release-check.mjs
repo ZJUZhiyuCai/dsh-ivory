@@ -50,7 +50,7 @@ const hostSelectors = JSON.parse(hostSelectorsText);
 
 check('package metadata', () => {
   assert.equal(pkg.name, 'dsh-ivory');
-  assert.equal(pkg.version, '0.2.14');
+  assert.equal(pkg.version, '0.2.15');
   assert.equal(pkg.private, undefined);
   assert.equal(pkg.license, 'MIT');
   assert.equal(pkg.publishConfig?.access, 'public');
@@ -107,8 +107,8 @@ check('supported host version is inside the peer range', () => {
 });
 
 check('host selector table tracks the supported desktop build', () => {
-  assert.equal(hostSelectors.hosts.web, '0.1.5-rc.1');
-  assert.equal(hostSelectors.hosts.desktop, '0.2.0-rc.2');
+  assert.equal(hostSelectors.hosts.web, '0.2.1-rc.1');
+  assert.equal(hostSelectors.hosts.desktop, '0.2.1-rc.2');
   assertSelectorTable(hostSelectors);
 });
 
@@ -318,6 +318,9 @@ check('deep-diving chrysanthemum contrast and icon set', () => {
   assert.match(css, /\.o3BgMG_root\[data-variant="search"\] \.o3BgMG_leading/);
   assert.match(css, /\.YDXeBa_folder::before/);
   assert.match(css, /\.EvIC1a_turnStatus[\s\S]*?--cl-chrys/);
+  assert.match(css, /--dsw-alias-label-deep-diving:\s*var\(--cl-chrys\)/);
+  assert.match(css, /--dsw-alias-label-deep-diving-shimmer:\s*color-mix\(/);
+  assert.match(css, /\.EvIC1a_runningText\s*\{[\s\S]*?drop-shadow\([\s\S]*?--cl-chrys/);
 });
 
 check('motion vocabulary stays on the two-step scale', () => {
