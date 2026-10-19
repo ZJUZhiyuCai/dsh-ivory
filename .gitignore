@@ -25,6 +25,9 @@ scripts/*
 !scripts/host-contract.mjs
 !scripts/test-host-contract.mjs
 !scripts/test-disclosure.mjs
+!scripts/test-conversation.mjs
+!scripts/test-overlays.mjs
+!scripts/test-files.mjs
 !scripts/derive-host-selectors.mjs
 !scripts/test-desktop.mjs
 !scripts/qa-lib.mjs

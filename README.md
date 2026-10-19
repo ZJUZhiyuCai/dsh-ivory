@@ -62,8 +62,9 @@ dsh plugin --profile web remove dsh-ivory
 
 | Area | What Ivory changes |
 | --- | --- |
-| **Appearance** | A complete warm-neutral palette for light and dark mode, with restrained shadows, corners, and editorial typography. |
-| **Responsive layout** | Host-adaptive, drag-resizable conversation geometry tested at 375, 768, 1,440, and 1,920 pixels. |
+| **Appearance** | Layered neutral navigation, softer reading ink and a lightly outlined composer, with consistent spacing and interaction in both themes. |
+| **Files and attachments** | Consistent preview tabs, readable file cards and responsive file toolbars; document scrolling, code wrapping and image zoom stay native. |
+| **Responsive layout** | The home adapts to window height and available writing space; conversations retain host-adaptive sizing and width dragging across narrow, split and short windows. |
 | **Reading and copying** | Independent controls for prose, user bubbles, and code blocks, plus a small end-of-response marker. |
 | **Markdown documents** | A bounded, DOM-built preview for `.md` output with source view always available and HTTP(S)-only links. |
 | **Accessibility** | Keyboard focus, reduced-motion behavior, forced-colors fallbacks, and WCAG AA muted text contrast. |
@@ -122,7 +123,7 @@ using styles read from the installed app (no account or model calls).
 ```sh
 npm ci
 npm test          # renderer/host-contract unit tests, build, release gates, publint, and package checks
-npm run test:desktop  # 94 checks with installed desktop and Web styles
+npm run test:desktop  # 404 checks with installed desktop and Web styles
 npm run qa:r2     # browser regressions; missing optional-plugin targets report skips
 npm run qa:adversarial  # 34 stress checks: reconciliation safety, toggle/resize storms, degraded mode
 npm run qa:activity     # 26 checks for thinking/tool-call rows, icons, and terminal polish

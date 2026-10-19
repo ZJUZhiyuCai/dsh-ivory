@@ -155,8 +155,88 @@ isolated browser with controlled module-loader, React-hook and clipboard boundar
 it complements installed-host CSS tests and live-host QA, not their replacement.
 
 Native sidebar panels and injected task-board entries share the expanded
-navigation geometry (20px icon, 12px gap, 32px row, 8px outer gutter). Native
-panel rules exclude the collapsed rail. The macOS chrome uses the existing
-surface palette and a lighter composer shadow; it does not change host layout
-animations, window controls, or plugin navigation behavior. `test:desktop`
-checks alignment at multiple sidebar widths and both selected-state palettes.
+navigation geometry (20px icon, 12px gap, 32px row, 8px outer gutter), including
+the wrapped New Chat label on both hosts. Native panel rules exclude the
+collapsed rail. Navigation uses the lower neutral surface; the composer uses
+a single border and a soft shadow in both themes. The macOS chrome preserves
+host layout animations, window controls and plugin navigation behavior.
+
+The center column provides an inline-size query container for the home
+greeting. Its spacing follows viewport height, while narrow-pane typography
+responds to the space actually left after sidebars. Conversation width and
+content font-size remain host-owned. `test:desktop` checks the real shared
+composer-stack/home classes and display-contents slot at short, narrow and
+desktop sizes, plus focus stability, navigation alignment and reduced motion.
+
+
+### Conversation typography and activity details
+
+Assistant prose and the plugin-owned Markdown preview share semantic heading,
+paragraph, list, quote and inline-code rules. Main/secondary font sizes still
+come from the host preference axes. Native `.md-code-block` and
+`data-code-block-banner` anchors receive a single frame and matching 16px
+insets; no overflow clipping is applied to the outer block, preserving its
+sticky header. Wrapping, numbered-line layout and syntax colors remain owned
+by the host. Native file-reference controls receive the link accent within
+the Markdown scope only.
+
+Reasoning, Bash and generic tool rows use the same 28px base rhythm. The
+collapsed reasoning root's size containment receives the matching height;
+expanded details align with the 22px title column, dropping that inset on
+small screens. Terminal font variables and IO labels retain the secondary
+font-size preference. Expanded Bash shows its chevron alone in the 16px icon
+column. New module members are recorded in the verified selector alias table.
+
+`test-conversation.mjs`, called by `test:desktop`, builds synthetic conversations
+with each installed host's actual Markdown, code, disclosure and terminal
+styles. It exercises native code wrapping, overflow, enlarged fonts, focus,
+reduced motion and forced colors in both themes. Optional screenshots/HTML are
+written only under the local QA output directory; no real messages are used.
+
+## Settings and overlay surfaces
+
+The settings shell, appearance choices and font stepper resolve through the
+verified Web/desktop module table. General setting text and selectors are
+scoped to `settings.general.item`. On windows up to 600px, navigation becomes
+a scrollable horizontal row; content keeps its own scroll area and the close
+button stays outside it. Font-size arrows keep native increment handlers.
+
+Menus use `data-menu-material` and menu-item roles for paint and spacing.
+The host still owns anchors, portals, submenu bridges and keyboard handling;
+Ivory never clips the outer menu. Shared modal classes are matched by their
+local member names within dialog roles. Specialized dialog sizes and scrolling
+remain native. Shortcut search shows its focus ring on the whole search field.
+
+The always-available `SETTINGS_CSS` uses host-token fallbacks when Ivory is off,
+and has independent reduced-motion/forced-colors rules. `test-overlays.mjs`
+loads actual host CSS into disposable fixtures and checks narrow geometry,
+submenus, focus frames, disabled controls and theme-off switch visibility.
+
+
+## File previews and attachments
+
+Right-sidebar chrome is scoped to `data-sidebar-right-panel` and Dockkit's
+published tab/strip attributes. Ivory does not change dock placement, drag
+handlers, width, floating geometry or macOS traffic-light clearance. Viewer,
+attachment and deliverable modules resolve through the same verified alias
+table (213 members across 37 module identities).
+
+Native Markdown and the supported side-panel plugin share the conversation
+heading, paragraph and embedded-code scale. Full-file code is scoped separately
+so its scrollport and wrap preference remain native. Image transforms and
+intrinsic dimensions are untouched. Preview toolbars keep paths readable; the
+side-panel plugin moves the path to its own row below 400px and file search
+below 340px. CodeMirror's virtualized line metrics are not modified.
+
+Attachment names always reserve space for a 24px remove button. Upload progress
+retains native proportions; failure borders and retry labels remain distinct.
+Delivered files keep their independent open-in-app actions above the preview
+hit area. The file-library plugin expands on a complete composer-dock row,
+with sibling status controls allowed to wrap instead of collapsing vertically.
+
+`test-files.mjs` uses installed host CSS for native components and a small
+observed CSS layout fixture for the file-library plugin. It checks independent
+scrolling, 320px panes, keyboard targets, filename stability, upload states,
+image aspect ratio/zoom, code wrapping, font preferences and accessibility.
+Live Web checks cover the installed side-panel and file-library integrations;
+no file upload or provider invocation is required for this verification.

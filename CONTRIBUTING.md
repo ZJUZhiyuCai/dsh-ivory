@@ -71,7 +71,7 @@ Then check, in this order:
 - `npm run snapshot:host -- --write` — extract verified module exports for both
   declared host versions. Commit the snapshot with the alias table; future CI
   checks the actual table against it without needing a locally installed DSH.
-- `npm run build && npm run test:desktop` — 94 checks using the installed
+- `npm run build && npm run test:desktop` — 404 checks using the installed
   desktop and Web styles separately, including shared primitives and both themes.
   All aliases must resolve to the recorded package and module identity.
   `DSH_WEB_PACKAGE_DIR` selects the installed CLI package; extracted desktop
