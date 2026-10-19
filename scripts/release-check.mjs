@@ -285,15 +285,23 @@ check('conversation aliases and global-panel contract', () => {
   }
 });
 
-check('light theme text contrast meets WCAG AA', () => {
-  const light = css.slice(css.indexOf('body.dsh-ivory {'), css.indexOf('body.dsh-ivory[data-ds-dark-theme]'));
-  const token = (name) => {
-    const match = light.match(new RegExp(`--${name}:\\s*(#[0-9a-f]{6})`));
-    assert.ok(match, `missing light token --${name}`);
-    return match[1];
+check('both themes retain AA text contrast on every neutral surface', () => {
+  const sections = {
+    light: css.slice(css.indexOf('body.dsh-ivory {'), css.indexOf('body.dsh-ivory[data-ds-dark-theme]')),
+    dark: css.slice(css.indexOf('body.dsh-ivory[data-ds-dark-theme]'), css.indexOf('/* ---------- map Claude palette')),
   };
-  assert.ok(contrastRatio(token('cl-muted'), token('cl-page')) >= 4.5, '--cl-muted vs --cl-page below 4.5:1');
-  assert.ok(contrastRatio(token('cl-ink'), token('cl-page')) >= 4.5, '--cl-ink vs --cl-page below 4.5:1');
+  for (const [theme, section] of Object.entries(sections)) {
+    const token = (name) => {
+      const match = section.match(new RegExp(`--${name}:\\s*(#[0-9a-f]{6})`));
+      assert.ok(match, `missing ${theme} token --${name}`);
+      return match[1];
+    };
+    for (const surface of ['cl-page', 'cl-surface-0', 'cl-surface', 'cl-active', 'cl-well', 'cl-card']) {
+      for (const ink of ['cl-ink', 'cl-muted']) {
+        assert.ok(contrastRatio(token(ink), token(surface)) >= 4.5, `${theme}: --${ink} vs --${surface} below 4.5:1`);
+      }
+    }
+  }
 });
 
 check('deep-diving chrysanthemum contrast and icon set', () => {

@@ -92,6 +92,66 @@
     "TS9iAW": {
       "package": "@deepseek-ai/dsh-client-ui-chat",
       "module": "TurnTailNodeView.module.css"
+    },
+    "_8HJdBW": {
+      "package": "@deepseek-ai/dsh-client-ui-theme",
+      "module": "AppearanceRow.module.css"
+    },
+    "bVCLcG": {
+      "package": "@deepseek-ai/dsh-client-ui-theme",
+      "module": "FontSizeRow.module.css"
+    },
+    "JVDQca": {
+      "package": "@deepseek-ai/dsh-client-ui-attachment",
+      "module": "AttachmentRail.module.css"
+    },
+    "BInVoG": {
+      "package": "@deepseek-ai/dsh-client-ui-attachment",
+      "module": "DropOverlay.module.css"
+    },
+    "gSkjMW": {
+      "package": "@deepseek-ai/dsh-client-ui-attachment",
+      "module": "FileCard.module.css"
+    },
+    "_54WpYG": {
+      "package": "@deepseek-ai/dsh-client-ui-attachment",
+      "module": "ComposerAttachments.module.css"
+    },
+    "R_Yw7q": {
+      "package": "@deepseek-ai/dsh-client-ui-attachment",
+      "module": "MessageImage.module.css"
+    },
+    "nyYjTG": {
+      "package": "@deepseek-ai/dsh-client-ui-deliverables",
+      "module": "Deliverables.module.css"
+    },
+    "dhJKeW": {
+      "package": "@deepseek-ai/dsh-client-ui-sidebar-documentpreview",
+      "module": "TextPreview.module.css"
+    },
+    "_0RKuNG": {
+      "package": "@deepseek-ai/dsh-client-ui-sidebar-documentpreview",
+      "module": "MarkdownBody.module.css"
+    },
+    "lyqg2a": {
+      "package": "@deepseek-ai/dsh-client-ui-sidebar-documentpreview",
+      "module": "ZoomControls.module.css"
+    },
+    "JFRUHG": {
+      "package": "@deepseek-ai/dsh-client-ui-sidebar-documentpreview",
+      "module": "ImageBody.module.css"
+    },
+    "Java6a": {
+      "package": "@deepseek-ai/dsh-client-ui-sidebar-documentpreview",
+      "module": "CodeBody.module.css"
+    },
+    "k-1LKG": {
+      "package": "@deepseek-ai/dsh-client-ui-sidebar-files",
+      "module": "FilesBody.module.css"
+    },
+    "geFEbW": {
+      "package": "@deepseek-ai/dsh-client-ui-sidebar-right",
+      "module": "GuideBody.module.css"
     }
   },
   "aliases": {
@@ -195,6 +255,118 @@
     "hHd-Xa_panelTitle": "_3WPZCG_panelTitle",
     "hHd-Xa_panelList": "_3WPZCG_panelList",
     "hHd-Xa_topStrip": "_3WPZCG_topStrip",
-    "hHd-Xa_newSessionContent": "_3WPZCG_newSessionContent"
+    "hHd-Xa_newSessionContent": "_3WPZCG_newSessionContent",
+    "o3BgMG_bodyWrap": "Q2dzhW_bodyWrap",
+    "o3BgMG_codeBody": "Q2dzhW_codeBody",
+    "o3BgMG_diffBody": "Q2dzhW_diffBody",
+    "o3BgMG_errorSummary": "Q2dzhW_errorSummary",
+    "o3BgMG_inspectButton": "Q2dzhW_inspectButton",
+    "o3BgMG_ioCard": "Q2dzhW_ioCard",
+    "o3BgMG_ioLabel": "Q2dzhW_ioLabel",
+    "o3BgMG_ioSection": "Q2dzhW_ioSection",
+    "o3BgMG_readBody": "Q2dzhW_readBody",
+    "o3BgMG_searchBody": "Q2dzhW_searchBody",
+    "o3BgMG_sep": "Q2dzhW_sep",
+    "o3BgMG_summary": "Q2dzhW_summary",
+    "o3BgMG_summarySuffix": "Q2dzhW_summarySuffix",
+    "o3BgMG_terminalBody": "Q2dzhW_terminalBody",
+    "o3BgMG_title": "Q2dzhW_title",
+    "o3BgMG_webBody": "Q2dzhW_webBody",
+    "CY-8Ka_errorSummary": "-gRAhq_errorSummary",
+    "CY-8Ka_inspectButton": "-gRAhq_inspectButton",
+    "CY-8Ka_ioCard": "-gRAhq_ioCard",
+    "CY-8Ka_ioLabel": "-gRAhq_ioLabel",
+    "CY-8Ka_ioSection": "-gRAhq_ioSection",
+    "CY-8Ka_terminal": "-gRAhq_terminal",
+    "lcKema_separator": "HiSsxa_separator",
+    "lcKema_summary": "HiSsxa_summary",
+    "CY-8Ka_ioText": "-gRAhq_ioText",
+    "o3BgMG_ioText": "Q2dzhW_ioText",
+    "VOzbGW_panel": "Dws9Sa_panel",
+    "VOzbGW_nav": "Dws9Sa_nav",
+    "VOzbGW_navTitle": "Dws9Sa_navTitle",
+    "VOzbGW_navList": "Dws9Sa_navList",
+    "VOzbGW_navCell": "Dws9Sa_navCell",
+    "VOzbGW_active": "Dws9Sa_active",
+    "VOzbGW_navIcon": "Dws9Sa_navIcon",
+    "VOzbGW_navLabel": "Dws9Sa_navLabel",
+    "VOzbGW_content": "Dws9Sa_content",
+    "VOzbGW_header": "Dws9Sa_header",
+    "VOzbGW_actions": "Dws9Sa_actions",
+    "VOzbGW_close": "Dws9Sa_close",
+    "VOzbGW_options": "Dws9Sa_options",
+    "_8HJdBW_group": "-I09Na_group",
+    "_8HJdBW_cubeRow": "-I09Na_cubeRow",
+    "_8HJdBW_themeCube": "-I09Na_themeCube",
+    "_8HJdBW_selected": "-I09Na_selected",
+    "bVCLcG_control": "DwKIAW_control",
+    "bVCLcG_stepper": "DwKIAW_stepper",
+    "bVCLcG_arrows": "DwKIAW_arrows",
+    "bVCLcG_arrow": "DwKIAW_arrow",
+    "bVCLcG_value": "DwKIAW_value",
+    "bVCLcG_expander": "DwKIAW_expander",
+    "JVDQca_arrow": "hKoVwa_arrow",
+    "JVDQca_rail": "hKoVwa_rail",
+    "JVDQca_remove": "hKoVwa_remove",
+    "JVDQca_thumbnail": "hKoVwa_thumbnail",
+    "BInVoG_desc": "jbq9pW_desc",
+    "BInVoG_wrap": "jbq9pW_wrap",
+    "gSkjMW_card": "OnRn_q_card",
+    "gSkjMW_failed": "OnRn_q_failed",
+    "gSkjMW_meta": "OnRn_q_meta",
+    "gSkjMW_metaFailed": "OnRn_q_metaFailed",
+    "gSkjMW_name": "OnRn_q_name",
+    "gSkjMW_progressBar": "OnRn_q_progressBar",
+    "gSkjMW_progressTrack": "OnRn_q_progressTrack",
+    "gSkjMW_remove": "OnRn_q_remove",
+    "gSkjMW_removeFailed": "OnRn_q_removeFailed",
+    "gSkjMW_retry": "OnRn_q_retry",
+    "_54WpYG_remove": "dVdiKa_remove",
+    "_54WpYG_thumbnail": "dVdiKa_thumbnail",
+    "R_Yw7q_error": "jsZg2G_error",
+    "R_Yw7q_frame": "jsZg2G_frame",
+    "EvIC1a_running": "icaHSq_running",
+    "xzv4MW_action": "ppByMG_action",
+    "nyYjTG_cardPreview": "dwRWCG_cardPreview",
+    "nyYjTG_description": "dwRWCG_description",
+    "nyYjTG_file": "dwRWCG_file",
+    "nyYjTG_fileIcon": "dwRWCG_fileIcon",
+    "nyYjTG_fileName": "dwRWCG_fileName",
+    "nyYjTG_presented": "dwRWCG_presented",
+    "nyYjTG_root": "dwRWCG_root",
+    "nyYjTG_toggle": "dwRWCG_toggle",
+    "dhJKeW_body": "AhTMVW_body",
+    "dhJKeW_changed": "AhTMVW_changed",
+    "dhJKeW_empty": "AhTMVW_empty",
+    "dhJKeW_emptyIcon": "AhTMVW_emptyIcon",
+    "dhJKeW_header": "AhTMVW_header",
+    "dhJKeW_path": "AhTMVW_path",
+    "dhJKeW_preview": "AhTMVW_preview",
+    "dhJKeW_retry": "AhTMVW_retry",
+    "dhJKeW_status": "AhTMVW_status",
+    "dhJKeW_textDocument": "AhTMVW_textDocument",
+    "dhJKeW_tool": "AhTMVW_tool",
+    "dhJKeW_viewerTool": "AhTMVW_viewerTool",
+    "_0RKuNG_document": "uJrsqW_document",
+    "_0RKuNG_frontmatter": "uJrsqW_frontmatter",
+    "lyqg2a_panel": "VycKVq_panel",
+    "lyqg2a_percent": "VycKVq_percent",
+    "lyqg2a_zoomButton": "VycKVq_zoomButton",
+    "JFRUHG_frame": "Guo7Kq_frame",
+    "JFRUHG_image": "Guo7Kq_image",
+    "JFRUHG_status": "Guo7Kq_status",
+    "Java6a_code": "UgCwSW_code",
+    "Java6a_renderer": "UgCwSW_renderer",
+    "k-1LKG_body": "AmqDYq_body",
+    "k-1LKG_header": "AmqDYq_header",
+    "k-1LKG_note": "AmqDYq_note",
+    "k-1LKG_root": "AmqDYq_root",
+    "k-1LKG_row": "AmqDYq_row",
+    "k-1LKG_status": "AmqDYq_status",
+    "k-1LKG_tool": "AmqDYq_tool",
+    "geFEbW_entry": "-w4Aka_entry",
+    "geFEbW_entryDescription": "-w4Aka_entryDescription",
+    "bhn1Oq_search": "_7514NG_search",
+    "uV2eYG_dock": "yhfFVG_dock"
   }
 }

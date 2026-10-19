@@ -23,6 +23,55 @@
           "seatIcon": "cubgiG_seatIcon",
           "seatLabel": "cubgiG_seatLabel"
         },
+        "@deepseek-ai/dsh-client-ui-attachment/AttachmentRail.module.css": {
+          "arrow": "JVDQca_arrow",
+          "arrowLeft": "JVDQca_arrowLeft",
+          "arrowRight": "JVDQca_arrowRight",
+          "item": "JVDQca_item",
+          "rail": "JVDQca_rail",
+          "remove": "JVDQca_remove",
+          "root": "JVDQca_root",
+          "thumbnail": "JVDQca_thumbnail"
+        },
+        "@deepseek-ai/dsh-client-ui-attachment/ComposerAttachments.module.css": {
+          "imageItem": "_54WpYG_imageItem",
+          "rail": "_54WpYG_rail",
+          "remove": "_54WpYG_remove",
+          "thumbnail": "_54WpYG_thumbnail"
+        },
+        "@deepseek-ai/dsh-client-ui-attachment/DropOverlay.module.css": {
+          "desc": "BInVoG_desc",
+          "fade-in": "BInVoG_fade-in",
+          "illustration": "BInVoG_illustration",
+          "mask": "BInVoG_mask",
+          "title": "BInVoG_title",
+          "wrap": "BInVoG_wrap"
+        },
+        "@deepseek-ai/dsh-client-ui-attachment/FileCard.module.css": {
+          "body": "gSkjMW_body",
+          "card": "gSkjMW_card",
+          "failed": "gSkjMW_failed",
+          "file-card-progress": "gSkjMW_file-card-progress",
+          "file-card-spin": "gSkjMW_file-card-spin",
+          "icon": "gSkjMW_icon",
+          "meta": "gSkjMW_meta",
+          "metaFailed": "gSkjMW_metaFailed",
+          "name": "gSkjMW_name",
+          "progressBar": "gSkjMW_progressBar",
+          "progressTrack": "gSkjMW_progressTrack",
+          "remove": "gSkjMW_remove",
+          "removeFailed": "gSkjMW_removeFailed",
+          "retry": "gSkjMW_retry",
+          "spinner": "gSkjMW_spinner"
+        },
+        "@deepseek-ai/dsh-client-ui-attachment/MessageImage.module.css": {
+          "error": "R_Yw7q_error",
+          "frame": "R_Yw7q_frame",
+          "gallery": "R_Yw7q_gallery",
+          "loading": "R_Yw7q_loading",
+          "spinner": "R_Yw7q_spinner",
+          "spinner-rotate": "R_Yw7q_spinner-rotate"
+        },
         "@deepseek-ai/dsh-client-ui-chat/AssistantMarkdown.module.css": {
           "actions": "hWmORq_actions",
           "body": "hWmORq_body",
@@ -195,6 +244,23 @@
           "trailing": "uV2eYG_trailing",
           "trailingActive": "uV2eYG_trailingActive"
         },
+        "@deepseek-ai/dsh-client-ui-deliverables/Deliverables.module.css": {
+          "actions": "nyYjTG_actions",
+          "cardPreview": "nyYjTG_cardPreview",
+          "description": "nyYjTG_description",
+          "details": "nyYjTG_details",
+          "file": "nyYjTG_file",
+          "fileBody": "nyYjTG_fileBody",
+          "fileIcon": "nyYjTG_fileIcon",
+          "fileName": "nyYjTG_fileName",
+          "hostStatus": "nyYjTG_hostStatus",
+          "presented": "nyYjTG_presented",
+          "previewHint": "nyYjTG_previewHint",
+          "root": "nyYjTG_root",
+          "secondaryText": "nyYjTG_secondaryText",
+          "success-fade": "nyYjTG_success-fade",
+          "toggle": "nyYjTG_toggle"
+        },
         "@deepseek-ai/dsh-client-ui-layout/AppFrame.module.css": {
           "bottomRow": "pI_x6G_bottomRow",
           "centerCol": "pI_x6G_centerCol",
@@ -267,6 +333,82 @@
           "triggerLabel": "VOzbGW_triggerLabel",
           "triggerRow": "VOzbGW_triggerRow"
         },
+        "@deepseek-ai/dsh-client-ui-sidebar-documentpreview/CodeBody.module.css": {
+          "code": "Java6a_code",
+          "renderer": "Java6a_renderer"
+        },
+        "@deepseek-ai/dsh-client-ui-sidebar-documentpreview/ImageBody.module.css": {
+          "frame": "JFRUHG_frame",
+          "image": "JFRUHG_image",
+          "status": "JFRUHG_status",
+          "surface": "JFRUHG_surface"
+        },
+        "@deepseek-ai/dsh-client-ui-sidebar-documentpreview/MarkdownBody.module.css": {
+          "document": "_0RKuNG_document",
+          "frontmatter": "_0RKuNG_frontmatter",
+          "frontmatterSource": "_0RKuNG_frontmatterSource"
+        },
+        "@deepseek-ai/dsh-client-ui-sidebar-documentpreview/TextPreview.module.css": {
+          "action": "dhJKeW_action",
+          "body": "dhJKeW_body",
+          "changed": "dhJKeW_changed",
+          "empty": "dhJKeW_empty",
+          "emptyIcon": "dhJKeW_emptyIcon",
+          "emptyLine": "dhJKeW_emptyLine",
+          "header": "dhJKeW_header",
+          "line": "dhJKeW_line",
+          "lineTarget": "dhJKeW_lineTarget",
+          "more": "dhJKeW_more",
+          "page": "dhJKeW_page",
+          "path": "dhJKeW_path",
+          "preview": "dhJKeW_preview",
+          "retry": "dhJKeW_retry",
+          "status": "dhJKeW_status",
+          "statusLine": "dhJKeW_statusLine",
+          "textDocument": "dhJKeW_textDocument",
+          "titleIcon": "dhJKeW_titleIcon",
+          "tool": "dhJKeW_tool",
+          "viewerTool": "dhJKeW_viewerTool",
+          "wrap": "dhJKeW_wrap"
+        },
+        "@deepseek-ai/dsh-client-ui-sidebar-documentpreview/ZoomControls.module.css": {
+          "controlAnchor": "lyqg2a_controlAnchor",
+          "panel": "lyqg2a_panel",
+          "percent": "lyqg2a_percent",
+          "visible": "lyqg2a_visible",
+          "zoomButton": "lyqg2a_zoomButton",
+          "zoomMenu": "lyqg2a_zoomMenu"
+        },
+        "@deepseek-ai/dsh-client-ui-sidebar-files/FilesBody.module.css": {
+          "body": "k-1LKG_body",
+          "fileIcon": "k-1LKG_fileIcon",
+          "header": "k-1LKG_header",
+          "icon": "k-1LKG_icon",
+          "item": "k-1LKG_item",
+          "level": "k-1LKG_level",
+          "name": "k-1LKG_name",
+          "note": "k-1LKG_note",
+          "other": "k-1LKG_other",
+          "path": "k-1LKG_path",
+          "root": "k-1LKG_root",
+          "row": "k-1LKG_row",
+          "status": "k-1LKG_status",
+          "statusLine": "k-1LKG_statusLine",
+          "titleIcon": "k-1LKG_titleIcon",
+          "tool": "k-1LKG_tool"
+        },
+        "@deepseek-ai/dsh-client-ui-sidebar-right/GuideBody.module.css": {
+          "entry": "geFEbW_entry",
+          "entryCell": "geFEbW_entryCell",
+          "entryDescription": "geFEbW_entryDescription",
+          "entryIcon": "geFEbW_entryIcon",
+          "entryText": "geFEbW_entryText",
+          "entryTitle": "geFEbW_entryTitle",
+          "guide": "geFEbW_guide",
+          "hero": "geFEbW_hero",
+          "placeholderInk": "geFEbW_placeholderInk",
+          "titleIcon": "geFEbW_titleIcon"
+        },
         "@deepseek-ai/dsh-client-ui-sidebar/SidebarRoot.module.css": {
           "brand": "hHd-Xa_brand",
           "brandIdentity": "hHd-Xa_brandIdentity",
@@ -305,6 +447,26 @@
           "topStrip": "hHd-Xa_topStrip",
           "wide": "hHd-Xa_wide",
           "wide-in": "hHd-Xa_wide-in"
+        },
+        "@deepseek-ai/dsh-client-ui-theme/AppearanceRow.module.css": {
+          "cubeRow": "_8HJdBW_cubeRow",
+          "group": "_8HJdBW_group",
+          "selected": "_8HJdBW_selected",
+          "themeCube": "_8HJdBW_themeCube",
+          "title": "_8HJdBW_title"
+        },
+        "@deepseek-ai/dsh-client-ui-theme/FontSizeRow.module.css": {
+          "arrow": "bVCLcG_arrow",
+          "arrows": "bVCLcG_arrows",
+          "control": "bVCLcG_control",
+          "desc": "bVCLcG_desc",
+          "expander": "bVCLcG_expander",
+          "row": "bVCLcG_row",
+          "rowText": "bVCLcG_rowText",
+          "stepper": "bVCLcG_stepper",
+          "title": "bVCLcG_title",
+          "unit": "bVCLcG_unit",
+          "value": "bVCLcG_value"
         },
         "@deepseek-ai/dsh-client-ui-tool/ToolCallTree.module.css": {
           "callRow": "ztWv_q_callRow",
@@ -475,6 +637,55 @@
           "seat-icon-in": "m0vb0q_seat-icon-in",
           "seatIcon": "m0vb0q_seatIcon",
           "seatLabel": "m0vb0q_seatLabel"
+        },
+        "@deepseek-ai/dsh-client-ui-attachment/AttachmentRail.module.css": {
+          "arrow": "hKoVwa_arrow",
+          "arrowLeft": "hKoVwa_arrowLeft",
+          "arrowRight": "hKoVwa_arrowRight",
+          "item": "hKoVwa_item",
+          "rail": "hKoVwa_rail",
+          "remove": "hKoVwa_remove",
+          "root": "hKoVwa_root",
+          "thumbnail": "hKoVwa_thumbnail"
+        },
+        "@deepseek-ai/dsh-client-ui-attachment/ComposerAttachments.module.css": {
+          "imageItem": "dVdiKa_imageItem",
+          "rail": "dVdiKa_rail",
+          "remove": "dVdiKa_remove",
+          "thumbnail": "dVdiKa_thumbnail"
+        },
+        "@deepseek-ai/dsh-client-ui-attachment/DropOverlay.module.css": {
+          "desc": "jbq9pW_desc",
+          "fade-in": "jbq9pW_fade-in",
+          "illustration": "jbq9pW_illustration",
+          "mask": "jbq9pW_mask",
+          "title": "jbq9pW_title",
+          "wrap": "jbq9pW_wrap"
+        },
+        "@deepseek-ai/dsh-client-ui-attachment/FileCard.module.css": {
+          "body": "OnRn_q_body",
+          "card": "OnRn_q_card",
+          "failed": "OnRn_q_failed",
+          "file-card-progress": "OnRn_q_file-card-progress",
+          "file-card-spin": "OnRn_q_file-card-spin",
+          "icon": "OnRn_q_icon",
+          "meta": "OnRn_q_meta",
+          "metaFailed": "OnRn_q_metaFailed",
+          "name": "OnRn_q_name",
+          "progressBar": "OnRn_q_progressBar",
+          "progressTrack": "OnRn_q_progressTrack",
+          "remove": "OnRn_q_remove",
+          "removeFailed": "OnRn_q_removeFailed",
+          "retry": "OnRn_q_retry",
+          "spinner": "OnRn_q_spinner"
+        },
+        "@deepseek-ai/dsh-client-ui-attachment/MessageImage.module.css": {
+          "error": "jsZg2G_error",
+          "frame": "jsZg2G_frame",
+          "gallery": "jsZg2G_gallery",
+          "loading": "jsZg2G_loading",
+          "spinner": "jsZg2G_spinner",
+          "spinner-rotate": "jsZg2G_spinner-rotate"
         },
         "@deepseek-ai/dsh-client-ui-chat/AssistantMarkdown.module.css": {
           "actions": "gKv1-q_actions",
@@ -648,6 +859,23 @@
           "trailing": "yhfFVG_trailing",
           "trailingActive": "yhfFVG_trailingActive"
         },
+        "@deepseek-ai/dsh-client-ui-deliverables/Deliverables.module.css": {
+          "actions": "dwRWCG_actions",
+          "cardPreview": "dwRWCG_cardPreview",
+          "description": "dwRWCG_description",
+          "details": "dwRWCG_details",
+          "file": "dwRWCG_file",
+          "fileBody": "dwRWCG_fileBody",
+          "fileIcon": "dwRWCG_fileIcon",
+          "fileName": "dwRWCG_fileName",
+          "hostStatus": "dwRWCG_hostStatus",
+          "presented": "dwRWCG_presented",
+          "previewHint": "dwRWCG_previewHint",
+          "root": "dwRWCG_root",
+          "secondaryText": "dwRWCG_secondaryText",
+          "success-fade": "dwRWCG_success-fade",
+          "toggle": "dwRWCG_toggle"
+        },
         "@deepseek-ai/dsh-client-ui-layout/AppFrame.module.css": {
           "bottomRow": "_6Qf49G_bottomRow",
           "centerCol": "_6Qf49G_centerCol",
@@ -720,6 +948,82 @@
           "triggerLabel": "Dws9Sa_triggerLabel",
           "triggerRow": "Dws9Sa_triggerRow"
         },
+        "@deepseek-ai/dsh-client-ui-sidebar-documentpreview/CodeBody.module.css": {
+          "code": "UgCwSW_code",
+          "renderer": "UgCwSW_renderer"
+        },
+        "@deepseek-ai/dsh-client-ui-sidebar-documentpreview/ImageBody.module.css": {
+          "frame": "Guo7Kq_frame",
+          "image": "Guo7Kq_image",
+          "status": "Guo7Kq_status",
+          "surface": "Guo7Kq_surface"
+        },
+        "@deepseek-ai/dsh-client-ui-sidebar-documentpreview/MarkdownBody.module.css": {
+          "document": "uJrsqW_document",
+          "frontmatter": "uJrsqW_frontmatter",
+          "frontmatterSource": "uJrsqW_frontmatterSource"
+        },
+        "@deepseek-ai/dsh-client-ui-sidebar-documentpreview/TextPreview.module.css": {
+          "action": "AhTMVW_action",
+          "body": "AhTMVW_body",
+          "changed": "AhTMVW_changed",
+          "empty": "AhTMVW_empty",
+          "emptyIcon": "AhTMVW_emptyIcon",
+          "emptyLine": "AhTMVW_emptyLine",
+          "header": "AhTMVW_header",
+          "line": "AhTMVW_line",
+          "lineTarget": "AhTMVW_lineTarget",
+          "more": "AhTMVW_more",
+          "page": "AhTMVW_page",
+          "path": "AhTMVW_path",
+          "preview": "AhTMVW_preview",
+          "retry": "AhTMVW_retry",
+          "status": "AhTMVW_status",
+          "statusLine": "AhTMVW_statusLine",
+          "textDocument": "AhTMVW_textDocument",
+          "titleIcon": "AhTMVW_titleIcon",
+          "tool": "AhTMVW_tool",
+          "viewerTool": "AhTMVW_viewerTool",
+          "wrap": "AhTMVW_wrap"
+        },
+        "@deepseek-ai/dsh-client-ui-sidebar-documentpreview/ZoomControls.module.css": {
+          "controlAnchor": "VycKVq_controlAnchor",
+          "panel": "VycKVq_panel",
+          "percent": "VycKVq_percent",
+          "visible": "VycKVq_visible",
+          "zoomButton": "VycKVq_zoomButton",
+          "zoomMenu": "VycKVq_zoomMenu"
+        },
+        "@deepseek-ai/dsh-client-ui-sidebar-files/FilesBody.module.css": {
+          "body": "AmqDYq_body",
+          "fileIcon": "AmqDYq_fileIcon",
+          "header": "AmqDYq_header",
+          "icon": "AmqDYq_icon",
+          "item": "AmqDYq_item",
+          "level": "AmqDYq_level",
+          "name": "AmqDYq_name",
+          "note": "AmqDYq_note",
+          "other": "AmqDYq_other",
+          "path": "AmqDYq_path",
+          "root": "AmqDYq_root",
+          "row": "AmqDYq_row",
+          "status": "AmqDYq_status",
+          "statusLine": "AmqDYq_statusLine",
+          "titleIcon": "AmqDYq_titleIcon",
+          "tool": "AmqDYq_tool"
+        },
+        "@deepseek-ai/dsh-client-ui-sidebar-right/GuideBody.module.css": {
+          "entry": "-w4Aka_entry",
+          "entryCell": "-w4Aka_entryCell",
+          "entryDescription": "-w4Aka_entryDescription",
+          "entryIcon": "-w4Aka_entryIcon",
+          "entryText": "-w4Aka_entryText",
+          "entryTitle": "-w4Aka_entryTitle",
+          "guide": "-w4Aka_guide",
+          "hero": "-w4Aka_hero",
+          "placeholderInk": "-w4Aka_placeholderInk",
+          "titleIcon": "-w4Aka_titleIcon"
+        },
         "@deepseek-ai/dsh-client-ui-sidebar/SidebarRoot.module.css": {
           "brand": "_3WPZCG_brand",
           "brandIdentity": "_3WPZCG_brandIdentity",
@@ -758,6 +1062,26 @@
           "topStrip": "_3WPZCG_topStrip",
           "wide": "_3WPZCG_wide",
           "wide-in": "_3WPZCG_wide-in"
+        },
+        "@deepseek-ai/dsh-client-ui-theme/AppearanceRow.module.css": {
+          "cubeRow": "-I09Na_cubeRow",
+          "group": "-I09Na_group",
+          "selected": "-I09Na_selected",
+          "themeCube": "-I09Na_themeCube",
+          "title": "-I09Na_title"
+        },
+        "@deepseek-ai/dsh-client-ui-theme/FontSizeRow.module.css": {
+          "arrow": "DwKIAW_arrow",
+          "arrows": "DwKIAW_arrows",
+          "control": "DwKIAW_control",
+          "desc": "DwKIAW_desc",
+          "expander": "DwKIAW_expander",
+          "row": "DwKIAW_row",
+          "rowText": "DwKIAW_rowText",
+          "stepper": "DwKIAW_stepper",
+          "title": "DwKIAW_title",
+          "unit": "DwKIAW_unit",
+          "value": "DwKIAW_value"
         },
         "@deepseek-ai/dsh-client-ui-tool/ToolCallTree.module.css": {
           "callRow": "baXwkG_callRow",

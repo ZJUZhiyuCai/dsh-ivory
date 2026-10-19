@@ -6,13 +6,15 @@ import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { launch } from './qa-lib.mjs';
 import { readDesktopHost, readWebHost } from './host-bundles.mjs';
-import { assertHostAliases, assertPeerSupport } from './host-contract.mjs';
+import { assertHostAliases, assertPeerSupport, indexHostModules } from './host-contract.mjs';
 import { testDisclosure } from './test-disclosure.mjs';
+import { testConversation } from './test-conversation.mjs';
+import { testOverlays } from './test-overlays.mjs';
+import { testFiles } from './test-files.mjs';
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const bundle = fs.readFileSync(path.join(root, 'lib/client.js'), 'utf8');
 const table = JSON.parse(fs.readFileSync(path.join(root, 'src/host-selectors.json'), 'utf8'));
-const { aliases } = table;
 const pkg = JSON.parse(fs.readFileSync(path.join(root, 'package.json'), 'utf8'));
 const hosts = { desktop: readDesktopHost(), web: readWebHost() };
 const shotsDir = process.env.DSH_DESKTOP_SHOTS;
@@ -39,9 +41,10 @@ const fixture = `
   </div></aside>
   <main class="_6Qf49G_centerCol"><div data-slot="main"><div data-slot="main.conversation"><div class="ST7X_W_root">
     <header class="ST7X_W_header"><div class="ST7X_W_titleRow"><span class="ST7X_W_crumbs">测试标题</span></div></header>
-    <div class="ST7X_W_scrollBody"><div class="ST7X_W_composerHero">
+    <div class="ST7X_W_scrollBody"><div class="ST7X_W_composerStack ST7X_W_composerHero">
       <div class="bocITq_root"><div class="bocITq_stack"><div class="bocITq_headline"><span class="bocITq_titleGroup"><span>探索未至之境</span><span class="bocITq_previewBadge">预览版</span></span></div></div></div>
-      <div class="yhfFVG_root"><div class="yhfFVG_card"><div contenteditable="true" class="yhfFVG_input">中文 English</div><div class="yhfFVG_row"><button class="yhfFVG_primary">发送</button></div></div></div>
+      <div class="ST7X_W_heroWorkspaceRow"><button class="bocITq_workspace">工作区</button><button class="m0vb0q_seat">标准模式</button></div>
+      <div data-slot="conversation.composer.bar" style="display:contents"><div class="yhfFVG_root"><div class="yhfFVG_card"><div class="yhfFVG_scroll"><div class="yhfFVG_grow"><div contenteditable="true" class="yhfFVG_input">中文 English</div><div class="yhfFVG_placeholder">输入消息</div></div></div><div class="yhfFVG_row"><button class="yhfFVG_primary">发送</button></div></div></div></div>
     </div><div data-chat-flow><div class="icaHSq_column">
       <div class="gKv1-q_root"><div class="gKv1-q_body"><p>测试回复</p><pre><code>echo test</code></pre></div><div data-slot="conversation.chat.assistant-actions"></div></div>
       <div class="HiSsxa_root" data-variant="think"><span class="HiSsxa_leading">思考</span></div>
@@ -65,7 +68,15 @@ try {
     page.on('pageerror', (error) => errors.push(error.message));
     let html = fixture;
     if (generation === 'web') {
-      const inverse = Object.fromEntries(Object.entries(aliases).map(([a, b]) => [b, a]));
+      // Fixture-only wrapper classes also need each host's real CSS. Resolve
+      // those by module identity without widening the plugin's alias contract.
+      const desktopModules = indexHostModules(hosts.desktop.sources);
+      const webModules = indexHostModules(hosts.web.sources);
+      const inverse = Object.fromEntries(Object.values(table.modules).flatMap(({ package: pkg, module }) => {
+        const name = `${pkg}/${module}`;
+        const web = webModules.get(name);
+        return Object.entries(desktopModules.get(name)).map(([member, desktop]) => [desktop, web[member]]).filter(([, web]) => web);
+      }));
       html = html.replace(/class="([^"]*)"/g, (_, classes) => `class="${classes.split(' ').map((name) => inverse[name] || name).join(' ')}"`);
       html = html.replace('main.conversation', 'conversation');
     }
@@ -106,6 +117,42 @@ try {
     await page.setViewportSize({ width: 375, height: 800 });
     check(`${generation}: narrow hero title typography`, await heroTitle.evaluate((el) => getComputedStyle(el).fontSize === '30px'));
     await page.setViewportSize({ width: 1200, height: 800 });
+    // Reproduce the real shared composerStack/composerHero node and contents
+    // slot. The old fixture missed both, hiding the full-width hero regression.
+    for (const [width, height] of [[1200, 800], [1200, 540], [800, 700], [375, 667], [375, 480]]) {
+      await page.setViewportSize({ width, height });
+      await page.locator('._6Qf49G_frame,.pI_x6G_frame').evaluate((el, narrow) => {
+        el.style.gridTemplateColumns = `${narrow ? 0 : 264}px minmax(0,1fr) 0px`;
+      }, width < 500);
+      const layout = await page.evaluate(() => {
+        const rect = (selector) => { const r = document.querySelector(selector).getBoundingClientRect(); return { left: r.left, right: r.right, top: r.top, bottom: r.bottom, width: r.width }; };
+        return {
+          center: rect('._6Qf49G_centerCol,.pI_x6G_centerCol'),
+          hero: rect('.ST7X_W_composerHero,.wSkVaW_composerHero'),
+          title: rect('.bocITq_titleGroup,.pXSMma_titleGroup'),
+          card: rect('.yhfFVG_card,.uV2eYG_card'),
+          context: rect('.ST7X_W_heroWorkspaceRow,.wSkVaW_heroWorkspaceRow'),
+        };
+      });
+      check(`${generation} ${width}x${height}: hero stays within writing pane`, layout.hero.width <= 672 && layout.hero.left >= layout.center.left + 11 && layout.hero.right <= layout.center.right - 11);
+      check(`${generation} ${width}x${height}: greeting, composer and context never overlap`, layout.title.bottom + 20 <= layout.card.top && layout.card.bottom + 8 <= layout.context.top);
+      check(`${generation} ${width}x${height}: all home controls fit vertically`, layout.context.bottom < height);
+    }
+    await page.setViewportSize({ width: 1200, height: 800 });
+    await page.locator('._6Qf49G_frame,.pI_x6G_frame').evaluate((el) => el.style.gridTemplateColumns = '264px minmax(0,1fr) 0px');
+    const card = page.locator('.yhfFVG_card,.uV2eYG_card');
+    const beforeFocus = await card.boundingBox();
+    await page.locator('.yhfFVG_input,.uV2eYG_input').focus();
+    check(`${generation}: composer focus does not shift layout`, JSON.stringify(await card.boundingBox()) === JSON.stringify(beforeFocus));
+    check(`${generation}: input and placeholder share their left inset`, await page.evaluate(() => {
+      const input = getComputedStyle(document.querySelector('.yhfFVG_input,.uV2eYG_input'));
+      const placeholder = getComputedStyle(document.querySelector('.yhfFVG_placeholder,.uV2eYG_placeholder'));
+      return input.paddingLeft === placeholder.left;
+    }));
+    check(`${generation}: wrapped new-chat content aligns on both hosts`, await page.locator('._3WPZCG_newSessionContent,.hHd-Xa_newSessionContent').evaluate(el => getComputedStyle(el).justifyContent === 'flex-start'));
+    await page.emulateMedia({ reducedMotion: 'reduce' });
+    check(`${generation}: navigation and composer respect reduced motion`, await page.evaluate(() => ['.yhfFVG_card,.uV2eYG_card', '._3WPZCG_newSession,.hHd-Xa_newSession'].every(s => getComputedStyle(document.querySelector(s)).transitionDuration.split(',').every(d => parseFloat(d) < 0.001))));
+    await page.emulateMedia({ reducedMotion: 'no-preference' });
     if (generation === 'desktop') {
       for (const width of [264, 340, 420]) {
         await page.locator('._6Qf49G_frame').evaluate((el, value) => el.style.gridTemplateColumns = `${value}px minmax(0,1fr) 0px`, width);
@@ -130,8 +177,8 @@ try {
       for (const dark of [false, true]) {
         await page.evaluate((value) => document.body.toggleAttribute('data-ds-dark-theme', value), dark);
         await page.locator('._3WPZCG_panelRow').evaluate((el) => el.setAttribute('aria-current', 'page'));
-        await page.waitForFunction((expected) => getComputedStyle(document.querySelector('._3WPZCG_panelRow')).backgroundColor === expected, dark ? 'rgb(46, 46, 46)' : 'rgb(246, 246, 244)');
-        check(`native selected nav uses ${dark ? 'dark' : 'light'} Ivory surface`, await page.locator('._3WPZCG_panelRow').evaluate((el) => getComputedStyle(el).color === (document.body.hasAttribute('data-ds-dark-theme') ? 'rgb(240, 239, 236)' : 'rgb(11, 11, 11)')));
+        await page.waitForFunction((expected) => getComputedStyle(document.querySelector('._3WPZCG_panelRow')).backgroundColor === expected, dark ? 'rgb(46, 46, 46)' : 'rgb(234, 234, 230)');
+        check(`native selected nav uses ${dark ? 'dark' : 'light'} Ivory surface`, await page.locator('._3WPZCG_panelRow').evaluate((el) => getComputedStyle(el).color === (document.body.hasAttribute('data-ds-dark-theme') ? 'rgb(240, 239, 236)' : 'rgb(36, 36, 34)')));
         if (shotsDir) {
           await page.waitForFunction((expected) => getComputedStyle(document.querySelector('.yhfFVG_card')).backgroundColor === expected, dark ? 'rgb(38, 38, 38)' : 'rgb(255, 255, 255)');
           await page.locator('._6Qf49G_frame').evaluate((el) => el.style.gridTemplateColumns = '264px minmax(0,1fr) 0px');
@@ -181,5 +228,8 @@ try {
     await page.close();
   }
   await testDisclosure(browser, hosts, table, check, shotsDir);
+  await testConversation(browser, hosts, table, check, shotsDir);
+  await testOverlays(browser, hosts, check, shotsDir);
+  await testFiles(browser, hosts, check, shotsDir);
 } finally { await browser.close(); }
 console.log(`desktop regression: ${checks} checks passed using separate installed desktop/Web styles`);

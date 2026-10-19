@@ -102,23 +102,22 @@ window.__ModuleLoader__.load({
     // design asset: DSH whale (lib/assets/icons/whale.svg), inlined by the build
     const WHALE_SVG = /*__WHALE_SVG__*/;
     const SETTINGS_CSS = `
-.dshcs-settings{display:flex;flex-direction:column;gap:14px;width:100%;color:var(--dsw-alias-label-primary)}
-.dshcs-head{display:flex;flex-direction:column;gap:4px}
-.dshcs-title{font-size:15px;line-height:22px;font-weight:600}
+.dshcs-settings{display:flex;flex-direction:column;width:100%;color:var(--dsw-alias-label-primary)}
+.dshcs-head{display:flex;flex-direction:column;gap:8px;padding:8px 0 24px}
+.dshcs-title{font-size:14px;line-height:22px;font-weight:500}
+.dshcs-head .dshcs-title{font-size:18px;line-height:26px;font-weight:600;letter-spacing:-.2px}
 .dshcs-desc{color:var(--dsw-alias-label-secondary);font-size:13px;line-height:20px}
-.dshcs-row{display:flex;align-items:center;justify-content:space-between;gap:16px;padding:12px 14px;border:1px solid var(--dsw-alias-border-l1);border-radius:12px;background:var(--dsw-alias-bg-layer-1)}
-.dshcs-row.dshcs-disabled{opacity:.55}
-.dshcs-text{display:flex;flex-direction:column;gap:2px;min-width:0}
-.dshcs-switch{position:relative;flex:none;width:40px;height:22px;border:0;border-radius:11px;background:var(--dsw-alias-interactive-bg-hover);cursor:pointer;padding:0;transition:background .22s cubic-bezier(.2,.8,.2,1)}
+.dshcs-row{display:flex;align-items:center;justify-content:space-between;gap:24px;padding:20px 0;border-top:.5px solid var(--dsw-alias-border-l1)}
+.dshcs-row.dshcs-disabled .dshcs-title{color:var(--dsw-alias-label-secondary)}
+.dshcs-text{display:flex;flex-direction:column;gap:4px;min-width:0;overflow-wrap:anywhere}
+.dshcs-switch{position:relative;flex:none;box-sizing:border-box;width:42px;height:24px;border:1px solid var(--dsw-alias-border-l1);border-radius:999px;background:var(--cl-active,var(--dsw-alias-interactive-bg-hover));cursor:pointer;padding:0;transition:background-color 120ms ease,border-color 120ms ease}
 .dshcs-switch:focus-visible{outline:2px solid var(--dsw-alias-label-primary);outline-offset:2px}
-.dshcs-switch:disabled{cursor:not-allowed}
-.dshcs-switch:active{transform:scale(.96)}
-.dshcs-switch.dshcs-on{background:var(--cl-ink)}
-.dshcs-knob{position:absolute;top:2px;left:2px;width:18px;height:18px;border-radius:50%;background:#fff;transition:left .22s cubic-bezier(.2,.8,.2,1),width .18s cubic-bezier(.2,.8,.2,1)}
-.dshcs-switch:active .dshcs-knob{width:21px}
-.dshcs-switch:active.dshcs-on .dshcs-knob{left:17px}
-body[data-ds-dark-theme] .dshcs-knob{background:var(--cl-ink)}
-.dshcs-switch.dshcs-on .dshcs-knob{left:20px;background:var(--cl-page)}`;
+.dshcs-switch:disabled{cursor:not-allowed;opacity:.5}
+.dshcs-switch.dshcs-on{background:var(--cl-ink,var(--dsw-alias-label-primary));border-color:transparent}
+.dshcs-knob{position:absolute;top:2px;left:2px;width:18px;height:18px;border-radius:50%;background:var(--cl-muted,var(--dsw-alias-label-primary));box-shadow:0 1px 2px rgb(0 0 0 / 14%);transition:transform 150ms ease}
+.dshcs-switch.dshcs-on .dshcs-knob{transform:translateX(18px);background:var(--cl-page,var(--dsw-alias-bg-layer-2))}
+@media(prefers-reduced-motion:reduce){.dshcs-switch,.dshcs-knob{transition:none!important}}
+@media(forced-colors:active){.dshcs-switch{forced-color-adjust:none;background:Canvas;border-color:ButtonText}.dshcs-switch.dshcs-on{background:Highlight;border-color:Highlight}.dshcs-knob{background:ButtonText;box-shadow:none}.dshcs-switch.dshcs-on .dshcs-knob{background:HighlightText}}`;
 
     function readFlag(key, fallback, unavailable = fallback) {
       try {

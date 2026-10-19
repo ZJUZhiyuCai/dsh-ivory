@@ -5,6 +5,61 @@ All notable changes to Ivory are documented here. The project follows
 
 ## [Unreleased]
 
+### Changed
+
+- Unify file previews, attachment cards and right-sidebar tabs with the same
+  neutral surfaces, typography, control sizes and keyboard focus. Markdown
+  previews share the conversation type scale; full-file code keeps a continuous
+  reading surface, native wrapping, syntax colors and scrolling.
+- Make file/search toolbars adapt to narrow panes. Keep long attachment names
+  stable on hover and reserve room for permanent 24px remove controls.
+- Let the expanded file library occupy a complete composer-dock row so sibling
+  usage/status controls remain readable. Preserve image zoom and dock resizing.
+- Add 120 isolated file-area checks using separate installed Web/desktop CSS,
+  covering progress, errors, focus, narrow layouts, image zoom and accessibility.
+
+- Refine the workspace against the installed Claude desktop interface: softer
+  light-mode ink, a distinct navigation surface, clearer selected rows and
+  lighter composer shadows in both themes. Muted text meets AA contrast on
+  every neutral surface, including selected rows.
+- Give the composer more breathing room, align its placeholder with typed
+  text, and present workspace/preset choices as quiet controls. Preserve the
+  host's font-size and conversation-width preferences.
+- Adapt the home greeting to available window height and writing-pane width;
+  narrow split views no longer crowd the greeting against the composer.
+
+- Refine assistant prose and Markdown previews with a shared heading scale,
+  paragraph rhythm, nested lists, inline code and understated links. Native
+  file references now use the same theme accent.
+- Give code blocks a consistent toolbar/content inset and a single quiet
+  frame without clipping their sticky banner or changing native wrapping,
+  syntax colors and line numbers.
+- Align reasoning, generic tools and Bash on 28px rows; improve expanded
+  terminal/IO readability, keyboard/touch targets and error hierarchy.
+- Unify settings, menus and dialogs with neutral surfaces, restrained frames,
+  clearer navigation and a consistent control rhythm. Settings navigation
+  scrolls horizontally in narrow windows; the close button stays accessible.
+- Simplify Ivory's own settings into divided rows, with larger switches that
+  remain legible when the theme is disabled and honor reduced motion.
+
+### Fixed
+
+- Remove the duplicate focus frame inside shortcut search. Give modal text
+  fields and menu items clear keyboard focus without clipping their outlines.
+- Make both font-size arrows permanently available with separate 24px targets.
+- Add installed-host overlay regressions for nested menus, small dialogs,
+  narrow settings, theme-off switches and accessibility in both themes.
+- Keep expanded Bash chevrons in the original icon column, removing the extra
+  decorative glyph that shifted the title.
+- Replace the obsolete Markdown link selector with current semantic scopes;
+  resolve new tool classes by verified module identity on both hosts.
+- Add privacy-safe conversation regressions with both installed renderers,
+  covering narrow panes, long code, font preferences and accessibility.
+- Prevent the shared composer-stack rule from overriding the home width cap.
+- Align the wrapped New Chat label in Web as well as macOS.
+- Exercise the real home slot structure in installed-host regression checks,
+  including short windows, split views, focus geometry and reduced motion.
+
 ## [0.2.15] - 2026-10-17
 
 ### Fixed
