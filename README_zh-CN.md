@@ -44,7 +44,7 @@ dsh web
 绕过 npm，安装确切的 GitHub 标签版本。
 
 ```sh
-dsh plugin --profile web add github:ZJUZhiyuCai/dsh-ivory#v0.2.15
+dsh plugin --profile web add github:ZJUZhiyuCai/dsh-ivory#v0.2.16
 ```
 
 移除 Ivory，恢复 DSH 原生界面。
@@ -100,7 +100,7 @@ npm 包固定为八个白名单文件，每次 CI 都会检查。完整边界可
 
 > [!NOTE]
 > DeepSeek Harness 仍处于开发者预览阶段，UI 可能发生破坏性变化。
-> Ivory 0.2.15 已针对 DSH Web 0.2.1-rc.1 和桌面版 0.2.1-rc.2 完成验证；
+> Ivory 0.2.16 已针对 DSH Web 0.2.1-rc.1 和桌面版 0.2.1-rc.2 完成验证；
 > 其他宿主版本可能仅保留 token 级主题。
 > 无法确认当前结构契约时，Ivory 会保留 token 级主题，并把布局控制权交还给 DSH。
 

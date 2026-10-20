@@ -5,6 +5,8 @@ All notable changes to Ivory are documented here. The project follows
 
 ## [Unreleased]
 
+## [0.2.16] - 2026-10-20
+
 ### Changed
 
 - Unify file previews, attachment cards and right-sidebar tabs with the same
@@ -548,7 +550,8 @@ All notable changes to Ivory are documented here. The project follows
 - Explicit npm file allowlist, MIT license, third-party notices, and bilingual
   documentation.
 
-[Unreleased]: https://github.com/ZJUZhiyuCai/dsh-ivory/compare/v0.2.15...HEAD
+[Unreleased]: https://github.com/ZJUZhiyuCai/dsh-ivory/compare/v0.2.16...HEAD
+[0.2.16]: https://github.com/ZJUZhiyuCai/dsh-ivory/compare/v0.2.12...v0.2.16
 [0.2.15]: https://github.com/ZJUZhiyuCai/dsh-ivory/compare/v0.2.14...v0.2.15
 [0.2.13]: https://github.com/ZJUZhiyuCai/dsh-ivory/compare/v0.2.12...v0.2.13
 [0.2.12]: https://github.com/ZJUZhiyuCai/dsh-ivory/compare/v0.2.11...v0.2.12
