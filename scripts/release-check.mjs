@@ -50,7 +50,7 @@ const hostSelectors = JSON.parse(hostSelectorsText);
 
 check('package metadata', () => {
   assert.equal(pkg.name, 'dsh-ivory');
-  assert.equal(pkg.version, '0.2.15');
+  assert.equal(pkg.version, '0.2.16');
   assert.equal(pkg.private, undefined);
   assert.equal(pkg.license, 'MIT');
   assert.equal(pkg.publishConfig?.access, 'public');
