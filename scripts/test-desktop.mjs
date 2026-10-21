@@ -11,6 +11,7 @@ import { testDisclosure } from './test-disclosure.mjs';
 import { testConversation } from './test-conversation.mjs';
 import { testOverlays } from './test-overlays.mjs';
 import { testFiles } from './test-files.mjs';
+import { testManager } from './test-manager.mjs';
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const bundle = fs.readFileSync(path.join(root, 'lib/client.js'), 'utf8');
@@ -231,5 +232,6 @@ try {
   await testConversation(browser, hosts, table, check, shotsDir);
   await testOverlays(browser, hosts, check, shotsDir);
   await testFiles(browser, hosts, check, shotsDir);
+  await testManager(browser, hosts, check, shotsDir);
 } finally { await browser.close(); }
 console.log(`desktop regression: ${checks} checks passed using separate installed desktop/Web styles`);
