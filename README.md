@@ -41,13 +41,17 @@ Hard-refresh the page with `Cmd/Ctrl + Shift + R`, then open
 **Settings → Ivory Theme**. The main theme is enabled by default; the optional
 focus mode stays off until you choose it.
 
+On macOS desktop, install `dsh-ivory` from **Plugins → Add plugin**.
+Upgrades preserve the saved theme preference; if the interface still looks
+unchanged, check **Settings → Ivory Theme → Enable Ivory theme**.
+
 <details>
 <summary><strong>Pin a release or uninstall</strong></summary>
 
 Install the exact GitHub release without using npm.
 
 ```sh
-dsh plugin --profile web add github:ZJUZhiyuCai/dsh-ivory#v0.2.16
+dsh plugin --profile web add github:ZJUZhiyuCai/dsh-ivory#v0.2.17
 ```
 
 Remove Ivory and return to the native DSH interface.
@@ -64,6 +68,7 @@ dsh plugin --profile web remove dsh-ivory
 | --- | --- |
 | **Appearance** | Layered neutral navigation, softer reading ink and a lightly outlined composer, with consistent spacing and interaction in both themes. |
 | **Files and attachments** | Consistent preview tabs, readable file cards and responsive file toolbars; document scrolling, code wrapping and image zoom stay native. |
+| **Plugin management** | Compact divided lists, readable component descriptions, clear switches and responsive package/source details, with matching install fields. |
 | **Responsive layout** | The home adapts to window height and available writing space; conversations retain host-adaptive sizing and width dragging across narrow, split and short windows. |
 | **Reading and copying** | Independent controls for prose, user bubbles, and code blocks, plus a small end-of-response marker. |
 | **Markdown documents** | A bounded, DOM-built preview for `.md` output with source view always available and HTTP(S)-only links. |
@@ -82,6 +87,14 @@ dsh plugin --profile web remove dsh-ivory
     <td align="center"><sub>390 px mobile layout</sub></td>
   </tr>
 </table>
+
+<details>
+<summary>Plugin management in both themes (synthetic package data)</summary>
+
+![Light plugin manager](https://raw.githubusercontent.com/ZJUZhiyuCai/dsh-ivory/main/assets/manager-light.png)
+![Dark plugin manager](https://raw.githubusercontent.com/ZJUZhiyuCai/dsh-ivory/main/assets/manager-dark.png)
+
+</details>
 
 ## Quiet by design
 
@@ -104,7 +117,7 @@ and [third-party notices](https://github.com/ZJUZhiyuCai/dsh-ivory/blob/main/THI
 
 > [!NOTE]
 > DeepSeek Harness is in developer preview and may make breaking UI changes.
-> Ivory 0.2.16 is verified against DSH Web 0.2.1-rc.1 and desktop
+> Ivory 0.2.17 is verified against DSH Web 0.2.1-rc.1 and desktop
 > 0.2.1-rc.2. Other host builds may use token-level fallback. When Ivory cannot prove the current structural
 > contract, it keeps token-level theming and releases the host layout back to DSH.
 
@@ -123,7 +136,7 @@ using styles read from the installed app (no account or model calls).
 ```sh
 npm ci
 npm test          # renderer/host-contract unit tests, build, release gates, publint, and package checks
-npm run test:desktop  # 404 checks with installed desktop and Web styles
+npm run test:desktop  # 512 checks with installed desktop and Web styles
 npm run qa:r2     # browser regressions; missing optional-plugin targets report skips
 npm run qa:adversarial  # 34 stress checks: reconciliation safety, toggle/resize storms, degraded mode
 npm run qa:activity     # 26 checks for thinking/tool-call rows, icons, and terminal polish

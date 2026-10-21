@@ -152,6 +152,10 @@
     "geFEbW": {
       "package": "@deepseek-ai/dsh-client-ui-sidebar-right",
       "module": "GuideBody.module.css"
+    },
+    "X_2TxG": {
+      "package": "@deepseek-ai/dsh-client-ui-plugin-manager",
+      "module": "PluginManagerPage.module.css"
     }
   },
   "aliases": {
@@ -367,6 +371,48 @@
     "geFEbW_entry": "-w4Aka_entry",
     "geFEbW_entryDescription": "-w4Aka_entryDescription",
     "bhn1Oq_search": "_7514NG_search",
-    "uV2eYG_dock": "yhfFVG_dock"
+    "uV2eYG_dock": "yhfFVG_dock",
+    "X_2TxG_page": "ZVcBiW_page",
+    "X_2TxG_pageTitle": "ZVcBiW_pageTitle",
+    "X_2TxG_pageIntro": "ZVcBiW_pageIntro",
+    "X_2TxG_toolbar": "ZVcBiW_toolbar",
+    "X_2TxG_infoButton": "ZVcBiW_infoButton",
+    "X_2TxG_crumb": "ZVcBiW_crumb",
+    "X_2TxG_guideToggle": "ZVcBiW_guideToggle",
+    "X_2TxG_detailsToggle": "ZVcBiW_detailsToggle",
+    "X_2TxG_groupTitle": "ZVcBiW_groupTitle",
+    "X_2TxG_sectionTitle": "ZVcBiW_sectionTitle",
+    "X_2TxG_cards": "ZVcBiW_cards",
+    "X_2TxG_card": "ZVcBiW_card",
+    "X_2TxG_cardHead": "ZVcBiW_cardHead",
+    "X_2TxG_cardIcon": "ZVcBiW_cardIcon",
+    "X_2TxG_rowIcon": "ZVcBiW_rowIcon",
+    "X_2TxG_cardMain": "ZVcBiW_cardMain",
+    "X_2TxG_cardDesc": "ZVcBiW_cardDesc",
+    "X_2TxG_cardOpen": "ZVcBiW_cardOpen",
+    "X_2TxG_detailHead": "ZVcBiW_detailHead",
+    "X_2TxG_detailActions": "ZVcBiW_detailActions",
+    "X_2TxG_detailTitle": "ZVcBiW_detailTitle",
+    "X_2TxG_detailDesc": "ZVcBiW_detailDesc",
+    "X_2TxG_detailSections": "ZVcBiW_detailSections",
+    "X_2TxG_sectionHead": "ZVcBiW_sectionHead",
+    "X_2TxG_sectionCount": "ZVcBiW_sectionCount",
+    "X_2TxG_rowLine": "ZVcBiW_rowLine",
+    "X_2TxG_rowModule": "ZVcBiW_rowModule",
+    "X_2TxG_detailName": "ZVcBiW_detailName",
+    "X_2TxG_facts": "ZVcBiW_facts",
+    "X_2TxG_rowFailure": "ZVcBiW_rowFailure",
+    "X_2TxG_failure": "ZVcBiW_failure",
+    "X_2TxG_reason": "ZVcBiW_reason",
+    "X_2TxG_inputError": "ZVcBiW_inputError",
+    "X_2TxG_danger": "ZVcBiW_danger",
+    "X_2TxG_rowState": "ZVcBiW_rowState",
+    "X_2TxG_installBody": "ZVcBiW_installBody",
+    "X_2TxG_installField": "ZVcBiW_installField",
+    "X_2TxG_registryCustomField": "ZVcBiW_registryCustomField",
+    "X_2TxG_registry": "ZVcBiW_registry",
+    "X_2TxG_registryToggle": "ZVcBiW_registryToggle",
+    "X_2TxG_guide": "ZVcBiW_guide",
+    "X_2TxG_cardEnd": "ZVcBiW_cardEnd"
   }
 }

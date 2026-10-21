@@ -38,13 +38,17 @@ dsh web
 安装后使用 `Cmd/Ctrl + Shift + R` 硬刷新页面，再打开
 **设置 → Ivory 主题**。主题默认开启，专注模式默认关闭，按需要选择即可。
 
+macOS 桌面端可在 **插件 → 添加插件** 中安装 `dsh-ivory`。
+升级会保留已有的主题偏好；如果界面没有变化，请检查
+**设置 → Ivory 主题 → 启用 Ivory 主题**。
+
 <details>
 <summary><strong>固定版本与卸载</strong></summary>
 
 绕过 npm，安装确切的 GitHub 标签版本。
 
 ```sh
-dsh plugin --profile web add github:ZJUZhiyuCai/dsh-ivory#v0.2.16
+dsh plugin --profile web add github:ZJUZhiyuCai/dsh-ivory#v0.2.17
 ```
 
 移除 Ivory，恢复 DSH 原生界面。
@@ -61,6 +65,7 @@ dsh plugin --profile web remove dsh-ivory
 | --- | --- |
 | **界面外观** | 分层中性侧栏、更柔和的正文墨色、轻边线输入框；明暗主题保持一致的留白和交互节奏。 |
 | **文件与附件** | 统一预览标签、文件卡片和窄面板工具栏，保留文档滚动、代码换行与图片缩放；附件库展开后独占一行。 |
+| **插件管理** | 紧凑的分隔列表、易读的组件说明和清晰开关；长包名与来源信息适应窄面板，安装输入框保持一致风格。 |
 | **响应式布局** | 首页随窗口高度和内容区宽度调整；会话区保留宿主自适应与宽度拖拽，覆盖窄屏、分屏与短窗口。 |
 | **阅读与复制** | 正文、用户气泡和代码块都有独立复制按钮，回复结尾带有轻量鲸鱼标记。 |
 | **Markdown 文档** | `.md` 输出可在安全预览与源码之间切换，只允许 HTTP(S) 链接，并限制极端输入规模。 |
@@ -79,6 +84,14 @@ dsh plugin --profile web remove dsh-ivory
     <td align="center"><sub>390 像素移动端布局</sub></td>
   </tr>
 </table>
+
+<details>
+<summary>插件管理页的明暗效果（使用合成示例数据）</summary>
+
+![浅色插件管理页](https://raw.githubusercontent.com/ZJUZhiyuCai/dsh-ivory/main/assets/manager-light.png)
+![深色插件管理页](https://raw.githubusercontent.com/ZJUZhiyuCai/dsh-ivory/main/assets/manager-dark.png)
+
+</details>
 
 ## 安静，也有边界
 
@@ -100,7 +113,7 @@ npm 包固定为八个白名单文件，每次 CI 都会检查。完整边界可
 
 > [!NOTE]
 > DeepSeek Harness 仍处于开发者预览阶段，UI 可能发生破坏性变化。
-> Ivory 0.2.16 已针对 DSH Web 0.2.1-rc.1 和桌面版 0.2.1-rc.2 完成验证；
+> Ivory 0.2.17 已针对 DSH Web 0.2.1-rc.1 和桌面版 0.2.1-rc.2 完成验证；
 > 其他宿主版本可能仅保留 token 级主题。
 > 无法确认当前结构契约时，Ivory 会保留 token 级主题，并把布局控制权交还给 DSH。
 
@@ -117,7 +130,7 @@ npm 包固定为八个白名单文件，每次 CI 都会检查。完整边界可
 
 ```sh
 npm ci
-npm run test:desktop  # 404 项检查，分别加载已安装桌面/Web 的真实样式
+npm run test:desktop  # 512 项检查，分别加载已安装桌面/Web 的真实样式
 npm test          # 渲染器/宿主契约单元测试、构建、发布门禁、publint 与包检查
 npm run qa:r2     # 实例浏览器回归，可选插件目标未挂载时明确报告跳过
 npm run qa:adversarial  # 34 项压测：宿主协调安全、开关/resize 风暴、降级模式

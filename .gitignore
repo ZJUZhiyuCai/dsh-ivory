@@ -28,6 +28,7 @@ scripts/*
 !scripts/test-conversation.mjs
 !scripts/test-overlays.mjs
 !scripts/test-files.mjs
+!scripts/test-manager.mjs
 !scripts/derive-host-selectors.mjs
 !scripts/test-desktop.mjs
 !scripts/qa-lib.mjs

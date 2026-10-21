@@ -5,6 +5,30 @@ All notable changes to Ivory are documented here. The project follows
 
 ## [Unreleased]
 
+## [0.2.17] - 2026-10-21
+
+### Changed
+
+- Refine the native plugin manager after comparing the installed Claude desktop:
+  compact artwork frames, lightly divided rows, a clearer heading hierarchy,
+  24px switches and consistent install-field focus in both themes.
+- Let plugin details respond to the available panel width. Component status
+  moves below the description in narrow panes; package identifiers and source
+  values wrap without crowding controls or overflowing their cells.
+
+### Fixed
+
+- Render component descriptions in the interface font while keeping technical
+  identifiers monospaced. Long descriptions no longer collapse into a thin
+  column beside the status and switch.
+- Keep source-code backgrounds within their cell when long package strings
+  wrap, and retain a distinct error border on focused install fields.
+- Limit native switch styling to manager-owned controls, preserving embedded
+  plugin configuration controls and the existing selector-drift fallback.
+- Add installed-host regressions for 320/375/520px panes, switch contrast,
+  keyboard focus, reduced motion and forced colors. Document the separate
+  theme preference that persists across plugin upgrades.
+
 ## [0.2.16] - 2026-10-20
 
 ### Changed
@@ -550,7 +574,8 @@ All notable changes to Ivory are documented here. The project follows
 - Explicit npm file allowlist, MIT license, third-party notices, and bilingual
   documentation.
 
-[Unreleased]: https://github.com/ZJUZhiyuCai/dsh-ivory/compare/v0.2.16...HEAD
+[Unreleased]: https://github.com/ZJUZhiyuCai/dsh-ivory/compare/v0.2.17...HEAD
+[0.2.17]: https://github.com/ZJUZhiyuCai/dsh-ivory/compare/v0.2.16...v0.2.17
 [0.2.16]: https://github.com/ZJUZhiyuCai/dsh-ivory/compare/v0.2.12...v0.2.16
 [0.2.15]: https://github.com/ZJUZhiyuCai/dsh-ivory/compare/v0.2.14...v0.2.15
 [0.2.13]: https://github.com/ZJUZhiyuCai/dsh-ivory/compare/v0.2.12...v0.2.13

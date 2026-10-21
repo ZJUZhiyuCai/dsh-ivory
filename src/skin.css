@@ -1127,6 +1127,252 @@ body.dsh-ivory:not(.dshcs-contract-mismatch) .uV2eYG_cardWorkspaceTrigger::after
   }
 }
 
+/* ---------- native plugin manager ----------
+ * List, detail and install surfaces share the workspace's reading rhythm.
+ * Exact module aliases keep these rules out of third-party configuration
+ * canvases. Keep native artwork, row hit areas, switches and install warnings. */
+body.dsh-ivory:not(.dshcs-contract-mismatch) .X_2TxG_page {
+  container: ivory-plugins / inline-size;
+  gap: 28px !important;
+  padding-inline: clamp(16px, 3vw, 40px) !important;
+  background: var(--cl-page) !important;
+  font-family: var(--cl-sans) !important;
+}
+body.dsh-ivory:not(.dshcs-contract-mismatch) .X_2TxG_page > * {
+  max-width: 880px !important;
+  min-width: 0 !important;
+  flex-shrink: 0;
+}
+body.dsh-ivory:not(.dshcs-contract-mismatch) .X_2TxG_pageTitle {
+  font: 400 28px/36px var(--cl-serif) !important;
+  color: var(--cl-ink) !important;
+}
+body.dsh-ivory:not(.dshcs-contract-mismatch) .X_2TxG_pageIntro {
+  gap: 6px !important;
+  margin-top: 6px !important;
+  color: var(--cl-muted) !important;
+}
+body.dsh-ivory:not(.dshcs-contract-mismatch) .X_2TxG_toolbar {
+  gap: 12px !important;
+  min-height: 36px;
+}
+body.dsh-ivory:not(.dshcs-contract-mismatch) :is(.X_2TxG_infoButton, .X_2TxG_crumb, .X_2TxG_guideToggle, .X_2TxG_detailsToggle) {
+  min-width: 24px;
+  min-height: 24px;
+}
+body.dsh-ivory:not(.dshcs-contract-mismatch) :is(.X_2TxG_groupTitle, .X_2TxG_sectionTitle) {
+  font: 500 14px/22px var(--cl-sans) !important;
+  color: var(--cl-ink-strong) !important;
+}
+body.dsh-ivory:not(.dshcs-contract-mismatch) .X_2TxG_cards {
+  gap: 0 !important;
+}
+body.dsh-ivory:not(.dshcs-contract-mismatch) .X_2TxG_card {
+  position: relative;
+  margin: 0 !important;
+  border-radius: 8px !important;
+}
+body.dsh-ivory:not(.dshcs-contract-mismatch) .X_2TxG_card + .X_2TxG_card::before {
+  content: '';
+  position: absolute;
+  inset: 0 10px auto 58px;
+  border-top: 1px solid var(--cl-border);
+  pointer-events: none;
+}
+body.dsh-ivory:not(.dshcs-contract-mismatch) .X_2TxG_cardHead {
+  gap: 12px !important;
+  padding: 12px 10px !important;
+}
+body.dsh-ivory:not(.dshcs-contract-mismatch) .X_2TxG_cardHead .X_2TxG_cardIcon,
+body.dsh-ivory:not(.dshcs-contract-mismatch) .X_2TxG_rowIcon {
+  box-sizing: border-box;
+  width: 36px !important;
+  height: 36px !important;
+  border: 1px solid var(--cl-border) !important;
+  border-radius: 9px !important;
+  background: var(--cl-surface-0) !important;
+}
+body.dsh-ivory:not(.dshcs-contract-mismatch) .X_2TxG_cardHead .X_2TxG_cardIcon > :is(svg, img),
+body.dsh-ivory:not(.dshcs-contract-mismatch) .X_2TxG_rowIcon > :is(svg, img) {
+  width: 30px !important;
+  height: 30px !important;
+  object-fit: contain;
+}
+body.dsh-ivory:not(.dshcs-contract-mismatch) .X_2TxG_cardMain {
+  gap: 3px !important;
+}
+body.dsh-ivory:not(.dshcs-contract-mismatch) .X_2TxG_cardDesc {
+  color: var(--cl-muted) !important;
+  font: 400 13px/20px var(--cl-sans) !important;
+  overflow-wrap: anywhere;
+}
+body.dsh-ivory:not(.dshcs-contract-mismatch) .X_2TxG_cardOpen::after {
+  border-radius: 8px !important;
+}
+body.dsh-ivory:not(.dshcs-contract-mismatch) .X_2TxG_cardOpen:focus-visible {
+  outline: none !important;
+  box-shadow: none !important;
+}
+body.dsh-ivory:not(.dshcs-contract-mismatch) .X_2TxG_cardOpen:focus-visible::after {
+  outline: 2px solid var(--cl-ink-strong) !important;
+  outline-offset: -2px !important;
+}
+body.dsh-ivory:not(.dshcs-contract-mismatch) .X_2TxG_detailHead {
+  margin-top: 24px !important;
+  flex-wrap: wrap;
+}
+body.dsh-ivory:not(.dshcs-contract-mismatch) .X_2TxG_detailActions {
+  flex-wrap: wrap;
+  gap: 12px !important;
+  max-width: 100%;
+}
+body.dsh-ivory:not(.dshcs-contract-mismatch) .X_2TxG_detailTitle {
+  font: 500 22px/30px var(--cl-sans) !important;
+  overflow-wrap: anywhere;
+  min-width: 0;
+}
+body.dsh-ivory:not(.dshcs-contract-mismatch) .X_2TxG_detailDesc {
+  max-width: 68ch;
+  overflow-wrap: anywhere;
+  font: 400 14px/23px var(--cl-sans) !important;
+}
+body.dsh-ivory:not(.dshcs-contract-mismatch) .X_2TxG_detailSections {
+  gap: 28px !important;
+  margin-top: 28px !important;
+}
+body.dsh-ivory:not(.dshcs-contract-mismatch) .X_2TxG_sectionHead {
+  flex-wrap: wrap;
+  gap: 4px 12px !important;
+}
+body.dsh-ivory:not(.dshcs-contract-mismatch) .X_2TxG_sectionCount {
+  color: var(--cl-muted) !important;
+}
+body.dsh-ivory:not(.dshcs-contract-mismatch) .X_2TxG_rowLine {
+  gap: 12px !important;
+}
+/* The host uses rowModule for both prose (span) and identifiers (code). */
+body.dsh-ivory:not(.dshcs-contract-mismatch) span.X_2TxG_rowModule {
+  font: 400 13px/20px var(--cl-sans) !important;
+  color: var(--cl-muted) !important;
+}
+body.dsh-ivory:not(.dshcs-contract-mismatch) code.X_2TxG_rowModule,
+body.dsh-ivory:not(.dshcs-contract-mismatch) .X_2TxG_detailName code,
+body.dsh-ivory:not(.dshcs-contract-mismatch) .X_2TxG_facts code {
+  font-family: var(--cl-mono) !important;
+}
+body.dsh-ivory:not(.dshcs-contract-mismatch) .X_2TxG_rowFailure {
+  margin-inline-start: 48px !important;
+}
+body.dsh-ivory:not(.dshcs-contract-mismatch) :is(.X_2TxG_failure, .X_2TxG_reason, .X_2TxG_rowFailure, .X_2TxG_inputError, .X_2TxG_danger),
+body.dsh-ivory:not(.dshcs-contract-mismatch) [data-state="failed"] > .X_2TxG_rowLine .X_2TxG_rowState {
+  color: var(--cl-danger) !important;
+}
+body.dsh-ivory:not(.dshcs-contract-mismatch) .X_2TxG_danger {
+  border-color: color-mix(in srgb, var(--cl-danger) 30%, transparent) !important;
+}
+body.dsh-ivory:not(.dshcs-contract-mismatch) .X_2TxG_facts > div {
+  min-height: 44px !important;
+  box-sizing: border-box;
+  border-color: var(--cl-border) !important;
+}
+body.dsh-ivory:not(.dshcs-contract-mismatch) .X_2TxG_facts code {
+  display: inline-block;
+  box-sizing: border-box;
+  max-width: 100%;
+  vertical-align: top;
+  overflow-wrap: anywhere;
+}
+/* A 24px track keeps the 16px native thumb travel and gives the switch a
+ * usable target. State, focus management and event handlers remain native. */
+body.dsh-ivory:not(.dshcs-contract-mismatch) :is(.X_2TxG_cardEnd, .X_2TxG_rowLine, .X_2TxG_detailActions) > button[role="switch"] {
+  width: 40px !important;
+  height: 24px !important;
+  padding: 4px !important;
+  background: var(--cl-well) !important;
+  box-shadow: inset 0 0 0 1px var(--cl-border-strong);
+}
+body.dsh-ivory:not(.dshcs-contract-mismatch) :is(.X_2TxG_cardEnd, .X_2TxG_rowLine, .X_2TxG_detailActions) > button[role="switch"] > span {
+  background: var(--cl-muted) !important;
+}
+body.dsh-ivory:not(.dshcs-contract-mismatch) :is(.X_2TxG_cardEnd, .X_2TxG_rowLine, .X_2TxG_detailActions) > button[role="switch"][aria-checked="true"] {
+  background: var(--cl-ink) !important;
+}
+body.dsh-ivory:not(.dshcs-contract-mismatch) :is(.X_2TxG_cardEnd, .X_2TxG_rowLine, .X_2TxG_detailActions) > button[role="switch"][aria-checked="true"] > span {
+  background: var(--cl-page) !important;
+}
+body.dsh-ivory:not(.dshcs-contract-mismatch) .X_2TxG_installBody {
+  gap: 16px !important;
+}
+body.dsh-ivory:not(.dshcs-contract-mismatch) .X_2TxG_installField input[type="text"],
+body.dsh-ivory:not(.dshcs-contract-mismatch) .X_2TxG_registryCustomField {
+  box-sizing: border-box;
+  min-width: 0;
+  border: 1px solid var(--cl-border-strong) !important;
+  border-radius: 8px !important;
+  color: var(--cl-ink) !important;
+  background: var(--cl-surface) !important;
+}
+body.dsh-ivory:not(.dshcs-contract-mismatch) .X_2TxG_installField input[type="text"]:focus,
+body.dsh-ivory:not(.dshcs-contract-mismatch) .X_2TxG_registryCustomField:focus {
+  outline: 1px solid var(--cl-ink-strong) !important;
+  outline-offset: 0 !important;
+  box-shadow: none !important;
+}
+body.dsh-ivory:not(.dshcs-contract-mismatch) .X_2TxG_installField input[aria-invalid="true"],
+body.dsh-ivory:not(.dshcs-contract-mismatch) .X_2TxG_registryCustomField[aria-invalid="true"] {
+  border-color: var(--cl-danger) !important;
+}
+body.dsh-ivory:not(.dshcs-contract-mismatch) .X_2TxG_registry {
+  border: 1px solid var(--cl-border) !important;
+  border-radius: 12px !important;
+  background: var(--cl-surface) !important;
+  box-shadow: var(--cl-shadow-lg) !important;
+}
+body.dsh-ivory:not(.dshcs-contract-mismatch) :is(.X_2TxG_registryToggle, .X_2TxG_guide) {
+  border-color: var(--cl-border) !important;
+  border-radius: 8px !important;
+  background: var(--cl-surface-0) !important;
+}
+@container ivory-plugins (max-width: 560px) {
+  body.dsh-ivory:not(.dshcs-contract-mismatch) .X_2TxG_cardHead {
+    gap: 10px !important;
+    padding-inline: 0 !important;
+  }
+  body.dsh-ivory:not(.dshcs-contract-mismatch) .X_2TxG_card + .X_2TxG_card::before {
+    inset-inline: 46px 0;
+  }
+  body.dsh-ivory:not(.dshcs-contract-mismatch) .X_2TxG_cardDesc {
+    -webkit-line-clamp: 2 !important;
+  }
+  body.dsh-ivory:not(.dshcs-contract-mismatch) .X_2TxG_rowLine {
+    display: grid !important;
+    grid-template-columns: 36px minmax(0, 1fr) auto;
+    align-items: start !important;
+    gap: 8px 10px !important;
+  }
+  body.dsh-ivory:not(.dshcs-contract-mismatch) .X_2TxG_rowState {
+    grid-column: 2;
+    grid-row: 2;
+  }
+  body.dsh-ivory:not(.dshcs-contract-mismatch) .X_2TxG_rowLine > button[role="switch"] {
+    grid-column: 3;
+    grid-row: 1 / span 2;
+  }
+  body.dsh-ivory:not(.dshcs-contract-mismatch) .X_2TxG_rowFailure {
+    margin-inline-start: 46px !important;
+  }
+  body.dsh-ivory:not(.dshcs-contract-mismatch) .X_2TxG_facts > div {
+    align-items: flex-start !important;
+    flex-direction: column;
+    gap: 4px !important;
+    padding-block: 12px !important;
+  }
+  body.dsh-ivory:not(.dshcs-contract-mismatch) .X_2TxG_facts dd {
+    max-width: 100%;
+    text-align: start !important;
+  }
+}
+
 /* Plugin panels: inherit typography at the component root, then adapt semantic
  * controls/roles. Avoid styling every descendant div/span: that leaked into
  * third-party canvases and made future plugin upgrades brittle. */
