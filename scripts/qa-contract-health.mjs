@@ -70,7 +70,7 @@ const families = await page.evaluate(() => {
     'reasoning.root': ['.lcKema_root'],
     'bash.root': ['.CY-8Ka_root'],
     'assistantActions.root': ['.hWmORq_root'],
-    'userBubble': ['.Sixlwa_bubble'],
+    'userBubble': ['[data-message-bubble]'],
     'hero.root': ['.pXSMma_root'],
     'hero.headline': ['.pXSMma_headline'],
     'hero.headlineText': ['.pXSMma_titleGroup > span:first-child'],

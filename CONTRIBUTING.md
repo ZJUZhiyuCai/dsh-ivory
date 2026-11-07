@@ -33,7 +33,7 @@ DSH_QA_TOKEN='<token from the dsh web URL>' npm run qa:r2
 DSH_QA_TOKEN='<token from the dsh web URL>' DSH_QA_FIXTURE_ONLY=1 npm run qa:activity
 ```
 
-The live browser suite targets DSH Web 0.2.1-rc.1 at
+The live browser suite targets DSH Web 0.2.2-rc.1 at
 `http://127.0.0.1:3080`. Pass the per-run URL token through `DSH_QA_TOKEN`; set
 `DSH_QA_CHROMIUM` when Chrome or Chromium is not installed in a standard path.
 
@@ -71,7 +71,7 @@ Then check, in this order:
 - `npm run snapshot:host -- --write` — extract verified module exports for both
   declared host versions. Commit the snapshot with the alias table; future CI
   checks the actual table against it without needing a locally installed DSH.
-- `npm run build && npm run test:desktop` — 512 checks using the installed
+- `npm run build && npm run test:desktop` — 602 checks using the installed
   desktop and Web styles separately, including shared primitives and both themes.
   All aliases must resolve to the recorded package and module identity.
   `DSH_WEB_PACKAGE_DIR` selects the installed CLI package; extracted desktop

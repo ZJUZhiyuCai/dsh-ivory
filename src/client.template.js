@@ -24,7 +24,7 @@ window.__ModuleLoader__.load({
       '.dvt-tool pre',
     ].join(',');
     const TEXT_COPY_SELECTOR = [
-      '.Sixlwa_bubble',
+      '[data-message-bubble]',
       '.gdEzaW_bubble',
       '.dshcs-md p',
       '.nArs4W_editorMd p',
@@ -347,7 +347,7 @@ window.__ModuleLoader__.load({
       { name: 'composer.input', when: '.uV2eYG_root', selectors: ['.uV2eYG_input', '.uV2eYG_placeholder'] },
       { name: 'composer.card', when: '.uV2eYG_root', selectors: ['.uV2eYG_card'] },
       { name: 'composer.row', when: '.uV2eYG_root', selectors: ['.uV2eYG_row'] },
-      { name: 'sidebar.tree', when: '.hHd-Xa_root', selectors: ['.YDXeBa_sessionRow', '.bhn1Oq_list'] },
+      { name: 'sidebar.tree', when: '.hHd-Xa_root', selectors: ['.YDXeBa_sessionRow', '.bhn1Oq_list', '.Lgz0XW_row'] },
       { name: 'sidebar.footer', when: '.hHd-Xa_root', selectors: ['.hHd-Xa_footArea'] },
     ];
     let driftSeenProbes = new WeakMap();

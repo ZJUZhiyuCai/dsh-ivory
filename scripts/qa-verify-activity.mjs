@@ -285,7 +285,7 @@ try {
         };
       });
     }
-    // A quiet Claude-like cue: an evenly lit ring that only breathes in
+    // Tool calls keep an evenly lit ring that only breathes in
     // opacity. Explicitly rejects the old boomerang — one opaque border side
     // (the rest transparent) driven by a rotation animation — and requires the
     // pulse to stay slow (low-noise), with the icon breathe layer intact.
@@ -298,14 +298,15 @@ try {
         && Number.parseFloat(anim.ringAnimDuration) >= 1.5
         && anim.iconAnim.includes('breathe'), anim);
 
-    // Expanded thinking while still running: the stage belongs to the body
-    // text, so the ring must settle to a static evenly lit state cue.
+    // Expanded thinking yields to the native arrow. A separate collapsed
+    // fixture exercises the spark without relying on a live model response.
     const expanded = await page.evaluate(() => {
       const root = document.createElement('div');
       root.dataset.dshcsActivityFixture = 'expanded-think';
       root.className = 'lcKema_root';
       root.dataset.variant = 'think';
       root.dataset.state = 'running';
+      root.dataset.expanded = '';
       const inner = document.createElement('div');
       const row = document.createElement('div');
       row.className = 'lcKema_row';
@@ -313,9 +314,6 @@ try {
       row.setAttribute('aria-expanded', 'true');
       const leading = document.createElement('span');
       leading.className = 'lcKema_leading';
-      const iconIdle = document.createElement('span');
-      iconIdle.className = '_iconIdle_qa';
-      leading.appendChild(iconIdle);
       const chevron = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
       chevron.classList.add('lcKema_chevron');
       chevron.setAttribute('viewBox', '0 0 14 14');
@@ -330,34 +328,51 @@ try {
       inner.append(row, thinkBody);
       root.appendChild(inner);
       document.body.appendChild(root);
+      const collapsed = root.cloneNode(true);
+      collapsed.dataset.dshcsActivityFixture = 'collapsed-think';
+      delete collapsed.dataset.expanded;
+      collapsed.querySelector('.lcKema_row').setAttribute('aria-expanded', 'false');
+      collapsed.querySelector('.lcKema_thinkBody').remove();
+      const iconIdle = document.createElement('span');
+      iconIdle.className = '_iconIdle_qa';
+      collapsed.querySelector('.lcKema_leading').prepend(iconIdle);
+      collapsed.querySelector('svg').classList.add('_chevronHover_qa');
+      document.body.appendChild(collapsed);
       const before = getComputedStyle(leading, '::before');
       const bodyStyle = getComputedStyle(thinkBody);
       return {
         ringAnim: before.animationName,
-        ringBorders: [before.borderTopColor, before.borderRightColor, before.borderBottomColor, before.borderLeftColor],
+        ringContent: before.content,
+        iconContent: getComputedStyle(leading, '::after').content,
+        arrowVisible: getComputedStyle(chevron).visibility === 'visible',
         bodyFont: bodyStyle.font.slice(0, 40),
         bodyColor: bodyStyle.color,
         bodyWhitespace: bodyStyle.whiteSpace,
       };
     });
-    check('think-expanded-ring-static-and-even',
+    check('think-expanded-arrow-without-halo',
       expanded.ringAnim === 'none'
-        && uniformRing(expanded.ringBorders)
+        && expanded.ringContent === 'none' && expanded.iconContent === 'none' && expanded.arrowVisible
         && /13px/.test(expanded.bodyFont) && /sans/i.test(expanded.bodyFont)
         && expanded.bodyWhitespace === 'pre-wrap', expanded);
     const thinkRunning = await page.evaluate(() => {
-      const row = document.querySelector('.lcKema_root[data-state="running"]');
+      const row = document.querySelector('[data-dshcs-activity-fixture="collapsed-think"]');
       if (!row) return null;
       const host = row.querySelector('[class*="_iconIdle_"]') ?? row.querySelector('.lcKema_leading');
       const after = host ? getComputedStyle(host, '::after') : null;
       return {
         mask: after?.maskImage?.slice(0, 30) || after?.webkitMaskImage?.slice(0, 30),
         anim: after?.animationName,
+        duration: after?.animationDuration,
+        color: after?.backgroundColor,
+        opacity: after?.opacity,
         titleFont: getComputedStyle(row.querySelector('.lcKema_title') ?? row).font.slice(0, 40),
       };
     });
     if (thinkRunning) {
-      check('think-running-sparkle', Boolean(thinkRunning.mask?.includes('image/svg')) && thinkRunning.anim?.includes('breathe'), thinkRunning);
+      check('think-running-sparkle', Boolean(thinkRunning.mask?.includes('image/svg'))
+        && thinkRunning.anim === 'dshcs-spark-pulse' && thinkRunning.duration === '0.81s'
+        && thinkRunning.color === 'rgb(217, 119, 87)' && thinkRunning.opacity === '1', thinkRunning);
     }
     await page.screenshot({ path: `${OUT}/running-row.png` });
     // Wait for a live completion when requested; fixture-only mode already has
@@ -388,16 +403,20 @@ try {
       const before = leading ? getComputedStyle(leading, '::before') : null;
       const expandedLeading = document.querySelector('[data-dshcs-activity-fixture="expanded-think"] .lcKema_leading');
       const expandedBefore = expandedLeading ? getComputedStyle(expandedLeading, '::before') : null;
+      const spark = document.querySelector('[data-dshcs-activity-fixture="collapsed-think"] [class*="_iconIdle_"]');
+      const sparkStyle = spark ? getComputedStyle(spark, '::after') : null;
       return {
         ringDuration: before?.animationDuration,
         expandedAnim: expandedBefore?.animationName,
+        sparkAnim: sparkStyle?.animationName,
+        sparkTransform: sparkStyle?.transform,
       };
     });
     const nearZero = (value) => value === undefined
       || String(value).split(',').every((v) => v.trim() === '0s' || Number.parseFloat(v) < 0.01);
     check('running-reduced-motion-near-zero', nearZero(reduced.ringDuration), reduced);
-    check('expanded-ring-still-static-reduced-motion',
-      reduced.expandedAnim === undefined || reduced.expandedAnim === 'none', reduced);
+    check('thinking-static-reduced-motion',
+      reduced.expandedAnim === 'none' && reduced.sparkAnim === 'none' && reduced.sparkTransform === 'none', reduced);
     await page.close();
   }
 } finally {

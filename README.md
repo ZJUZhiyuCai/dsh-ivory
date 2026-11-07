@@ -30,6 +30,9 @@ long responses, and the conversation stays usable from a narrow phone window
 to a wide desktop. DeepSeek branding and every native DSH capability remain in
 place.
 
+The thinking spark uses a clay color and a compact, stepped pulse inspired by
+Claude. It settles when thinking finishes and stays still with reduced motion.
+
 ## Quick start
 
 ```sh
@@ -51,7 +54,7 @@ unchanged, check **Settings → Ivory Theme → Enable Ivory theme**.
 Install the exact GitHub release without using npm.
 
 ```sh
-dsh plugin --profile web add github:ZJUZhiyuCai/dsh-ivory#v0.2.17
+dsh plugin --profile web add github:ZJUZhiyuCai/dsh-ivory#v0.2.18
 ```
 
 Remove Ivory and return to the native DSH interface.
@@ -117,13 +120,15 @@ and [third-party notices](https://github.com/ZJUZhiyuCai/dsh-ivory/blob/main/THI
 
 > [!NOTE]
 > DeepSeek Harness is in developer preview and may make breaking UI changes.
-> Ivory 0.2.17 is verified against DSH Web 0.2.1-rc.1 and desktop
-> 0.2.1-rc.2. Other host builds may use token-level fallback. When Ivory cannot prove the current structural
+> Ivory 0.2.18 is verified against DSH Web 0.2.2-rc.1 and desktop
+> 0.2.2-rc.1. Other host builds may use token-level fallback. When Ivory cannot prove the current structural
 > contract, it keeps token-level theming and releases the host layout back to DSH.
 
-The 0.2.1 port re-verified every aliased CSS-module class, added the account-menu
-settings trigger and the running-state text seam, and retinted the host's new
-deep-diving alias tokens; see `src/host-selectors.json` for the verified map. Run
+The 0.2.2-rc.1 port re-derived all 347 class aliases across 39 named modules,
+refreshed both export snapshots, and followed the rebuilt message, file-browser,
+zoom, attachment and plugin-manager surfaces. The native view-overflow menu
+keeps a 24px touch target on both hosts. See `src/host-selectors.json` for the
+verified map. Run
 `npm run build && npm run test:desktop` for isolated regressions
 using styles read from the installed app (no account or model calls).
 `DSH_DESKTOP_CLIENT_DIR` can point to extracted client bundles plus the frontend
@@ -136,7 +141,7 @@ using styles read from the installed app (no account or model calls).
 ```sh
 npm ci
 npm test          # renderer/host-contract unit tests, build, release gates, publint, and package checks
-npm run test:desktop  # 512 checks with installed desktop and Web styles
+npm run test:desktop  # 602 checks with installed desktop and Web styles
 npm run qa:r2     # browser regressions; missing optional-plugin targets report skips
 npm run qa:adversarial  # 34 stress checks: reconciliation safety, toggle/resize storms, degraded mode
 npm run qa:activity     # 26 checks for thinking/tool-call rows, icons, and terminal polish

@@ -116,7 +116,7 @@ boundary and should receive explicit security and documentation review.
 ## Desktop compatibility
 
 `src/host-selectors.json` records class aliases verified against matching CSS
-modules in DSH web 0.2.1-rc.1 and official desktop 0.2.1-rc.2. The build expands
+modules in DSH web 0.2.2-rc.1 and official desktop 0.2.2-rc.1. The build expands
 exact class selectors to `:is(web, desktop)` in both the stylesheet and DOM
 probes, retaining specificity without adding classes to host nodes. Unknown
 classes are not guessed. Global main panels do not require a conversation or
@@ -129,8 +129,16 @@ prefix. Desktop aliases are resolved by that identity and member, never by the
 existence of a similarly named `root` or `label`. `derive:host` previews changes;
 `--check` rejects drift and `--write` saves only a complete resolution.
 
-DSH 0.2.1 keeps the same 21 CSS-module hashes but changes members and adds new
-surfaces. Three seams were added for it: the account-menu trigger
+DSH 0.2.2-rc.1 rebuilds all 39 aliased CSS-module prefixes. All 347 aliases are
+re-derived from exact module/member identities, and retired desktop hashes are
+rejected. The rebuilt `FilesBody`/`FileTree` pair replaces the old file rows;
+`MessageItem` delegates user bubbles to the primitive's semantic
+`data-message-bubble` attribute; and image zoom now binds through
+`data-document-zoom-controls` instead of the removed `ZoomControls` module.
+The view-overflow menu is exposed as a real `viewsMore` member on both hosts,
+so its 24px target no longer depends on a Web-only semantic approximation.
+
+The earlier 0.2.1 port added three seams: the account-menu trigger
 (`AccountMenu.module.css`) that now owns the footer settings entry, the
 `ChatView` running-state text that replaced `turnStatus`, and the sidebar
 `topStrip`/`newSessionContent` members the macOS rules already expected. The
