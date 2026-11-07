@@ -3,6 +3,7 @@ import { chromium } from 'playwright-core';
 import os from 'node:os';
 import fs from 'node:fs';
 import path from 'node:path';
+import { expandHostSelectors } from './host-selectors.mjs';
 
 function findChromium() {
   const candidates = [];
@@ -122,7 +123,7 @@ export async function openSettings(page) {
   if (await legacy.count() && await legacy.isVisible().catch(() => false)) {
     await legacy.click();
   } else {
-    const account = page.locator('.yHnPSG_trigger, .ZogL4G_trigger').last();
+    const account = page.locator(expandHostSelectors('.yHnPSG_trigger')).last();
     await account.click({ timeout: 10000 });
     await page.waitForTimeout(600);
     await page.getByRole('menuitem', { name: /设置|Settings/ }).first().click({ timeout: 10000 });
@@ -241,7 +242,7 @@ export async function probeGeometry(page) {
       heroCard: pick('.wSkVaW_composerHero .uV2eYG_card'),
       headline: pick('.pXSMma_titleGroup > span:first-child') ?? pick('.pXSMma_headline'),
       msgColumn: pick('.EvIC1a_column'),
-      userBubble: pick('.Sixlwa_bubble'),
+      userBubble: pick('[data-message-bubble]'),
       composerCard: (() => {
         const cards = [...document.querySelectorAll('.uV2eYG_card')];
         const el = cards.find((c) => c.getBoundingClientRect().y > 600) ?? cards.at(-1);

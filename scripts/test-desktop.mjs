@@ -8,7 +8,7 @@ import { launch } from './qa-lib.mjs';
 import { readDesktopHost, readWebHost } from './host-bundles.mjs';
 import { assertHostAliases, assertPeerSupport, indexHostModules } from './host-contract.mjs';
 import { testDisclosure } from './test-disclosure.mjs';
-import { testConversation } from './test-conversation.mjs';
+import { testConversation, testViewOverflow } from './test-conversation.mjs';
 import { testOverlays } from './test-overlays.mjs';
 import { testFiles } from './test-files.mjs';
 import { testManager } from './test-manager.mjs';
@@ -30,27 +30,28 @@ if (hosts.desktop.versions) {
   assertPeerSupport(pkg, Object.values(hosts.desktop.versions));
 }
 const fixture = `
-<div id="root"><div data-slot="root"><div class="_6Qf49G_frame" style="grid-template-columns:264px minmax(0,1fr) 0px">
-  <aside class="_6Qf49G_sidebarCol"><div class="_3WPZCG_root">
-    <div class="_3WPZCG_topStrip"><button>Collapse</button></div>
-    <div class="_3WPZCG_logoRow"><span class="_3WPZCG_brand">DeepSeek</span></div>
-    <button class="_3WPZCG_newSession"><span class="_3WPZCG_newSessionLabelMask"><span class="_3WPZCG_newSessionContent"><svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="10" cy="10" r="7"/><path d="M6 10h8M10 6v8"/></svg><span class="_3WPZCG_newSessionLabel">新会话</span></span></span></button>
+<div id="root"><div data-slot="root"><div class="PIRFFq_frame" style="grid-template-columns:264px minmax(0,1fr) 0px">
+  <aside class="PIRFFq_sidebarCol"><div class="kB3qhq_root">
+    <div class="kB3qhq_topStrip"><button>Collapse</button></div>
+    <div class="kB3qhq_logoRow"><span class="kB3qhq_brand">DeepSeek</span></div>
+    <button class="kB3qhq_newSession"><span class="kB3qhq_newSessionLabelMask"><span class="kB3qhq_newSessionContent"><svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="10" cy="10" r="7"/><path d="M6 10h8M10 6v8"/></svg><span class="kB3qhq_newSessionLabel">新会话</span></span></span></button>
     <button class="_7D6uKa_entry" data-nav="taskboard"><span class="_7D6uKa_entryIcon"><svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="3" y="3" width="14" height="14" rx="2"/><path d="M3 8h14M8 8v9"/></svg></span><span class="_7D6uKa_entryLabel">任务看板</span></button>
-    <div class="_3WPZCG_panelList"><button class="_3WPZCG_panelRow" aria-label="插件"><span class="_3WPZCG_panelGlyph"><svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M7 3v3H4v4h3v3h3v4h4v-4h3V9h-3V6h-3V3Z"/></svg></span><span class="_3WPZCG_panelTitle">插件</span></button></div>
-    <div class="_7514NG_root"><div class="_7514NG_list"><div class="jJkEga_sessionRow">测试会话</div></div></div>
-    <div class="_3WPZCG_footArea">设置</div>
+    <div class="kB3qhq_panelList"><button class="kB3qhq_panelRow" aria-label="插件"><span class="kB3qhq_panelGlyph"><svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M7 3v3H4v4h3v3h3v4h4v-4h3V9h-3V6h-3V3Z"/></svg></span><span class="kB3qhq_panelTitle">插件</span></button></div>
+    <div class="Kjh-qa_root"><div class="Kjh-qa_list"><div class="JoiKIa_sessionRow">测试会话</div></div></div>
+    <div class="kB3qhq_footArea">设置</div>
   </div></aside>
-  <main class="_6Qf49G_centerCol"><div data-slot="main"><div data-slot="main.conversation"><div class="ST7X_W_root">
-    <header class="ST7X_W_header"><div class="ST7X_W_titleRow"><span class="ST7X_W_crumbs">测试标题</span></div></header>
-    <div class="ST7X_W_scrollBody"><div class="ST7X_W_composerStack ST7X_W_composerHero">
-      <div class="bocITq_root"><div class="bocITq_stack"><div class="bocITq_headline"><span class="bocITq_titleGroup"><span>探索未至之境</span><span class="bocITq_previewBadge">预览版</span></span></div></div></div>
-      <div class="ST7X_W_heroWorkspaceRow"><button class="bocITq_workspace">工作区</button><button class="m0vb0q_seat">标准模式</button></div>
-      <div data-slot="conversation.composer.bar" style="display:contents"><div class="yhfFVG_root"><div class="yhfFVG_card"><div class="yhfFVG_scroll"><div class="yhfFVG_grow"><div contenteditable="true" class="yhfFVG_input">中文 English</div><div class="yhfFVG_placeholder">输入消息</div></div></div><div class="yhfFVG_row"><button class="yhfFVG_primary">发送</button></div></div></div></div>
-    </div><div data-chat-flow><div class="icaHSq_column">
-      <div class="gKv1-q_root"><div class="gKv1-q_body"><p>测试回复</p><pre><code>echo test</code></pre></div><div data-slot="conversation.chat.assistant-actions"></div></div>
-      <div class="HiSsxa_root" data-variant="think"><span class="HiSsxa_leading">思考</span></div>
-      <div class="-gRAhq_root" data-sample="bash"><span class="-gRAhq_leading">终端</span></div>
-      <div class="Q2dzhW_root" data-tool="read_file" data-variant="read"><span class="Q2dzhW_leading">读取文件</span></div>
+  <main class="PIRFFq_centerCol"><div data-slot="main"><div data-slot="main.conversation"><div class="kiGsTW_root">
+    <header class="kiGsTW_header"><div class="kiGsTW_titleRow"><span class="kiGsTW_crumbs">测试标题</span></div></header>
+    <div class="kiGsTW_scrollBody"><div class="kiGsTW_composerStack kiGsTW_composerHero">
+      <div class="_8tPydW_root"><div class="_8tPydW_stack"><div class="_8tPydW_headline"><span class="_8tPydW_titleGroup"><span>探索未至之境</span><span class="_8tPydW_previewBadge">预览版</span></span></div></div></div>
+      <div class="kiGsTW_heroWorkspaceRow"><button class="_8tPydW_workspace">工作区</button><button class="ufIuna_seat">标准模式</button></div>
+      <div data-slot="conversation.composer.bar" style="display:contents"><div class="JZLxKW_root"><div class="JZLxKW_card"><div class="JZLxKW_scroll"><div class="JZLxKW_grow"><div contenteditable="true" class="JZLxKW_input">中文 English</div><div class="JZLxKW_placeholder">输入消息</div></div></div><div class="JZLxKW_row"><button class="JZLxKW_primary">发送</button></div></div></div></div>
+    </div><div data-chat-flow><div class="tnXGgG_column">
+      <div class="AkCqbG_userRow"><div class="AkCqbG_userStack"><div data-message-bubble>这是一条用户消息，用于验证气泡样式与复制目标。</div></div></div>
+      <div class="XNZzAa_root"><div class="XNZzAa_body"><p>测试回复</p><pre><code>echo test</code></pre></div><div data-slot="conversation.chat.assistant-actions"></div></div>
+      <div class="ijfCxa_root" data-variant="think"><span class="ijfCxa_leading">思考</span></div>
+      <div class="BFlR-G_root" data-sample="bash"><span class="BFlR-G_leading">终端</span></div>
+      <div class="UHhYua_root" data-tool="read_file" data-variant="read"><span class="UHhYua_leading">读取文件</span></div>
     </div></div></div>
   </div></div></div></main>
 </div></div></div>`;
@@ -101,19 +102,20 @@ try {
     await page.waitForFunction(() => document.body.dataset.dshcsCompat === 'ok');
     check(`${generation}: healthy contract`, await page.evaluate(() => !document.body.dataset.dshcsDrift));
     check(`${generation}: copy and turn mark enhancements`, await page.locator('.dshcs-copy-code').count() === 1 && await page.locator('.dshcs-turn-mark').count() === 1);
+    check(`${generation}: user bubble follows the semantic message anchor`, await page.locator('[data-message-bubble]').evaluate(el => getComputedStyle(el).borderRadius === '12px' && getComputedStyle(el).padding === '12px 16px' && !!el.querySelector(':scope > .dshcs-copy-text')));
     for (const dark of [false, true]) {
       await page.evaluate((value) => document.body.toggleAttribute('data-ds-dark-theme', value), dark);
-      await page.waitForFunction((expected) => getComputedStyle(document.querySelector('.yhfFVG_card,.uV2eYG_card')).backgroundColor === expected,
+      await page.waitForFunction((expected) => getComputedStyle(document.querySelector('.JZLxKW_card,.uV2eYG_card')).backgroundColor === expected,
         dark ? 'rgb(38, 38, 38)' : 'rgb(255, 255, 255)');
       const paint = await page.evaluate(() => {
-        const card = document.querySelector('.yhfFVG_card,.uV2eYG_card');
-        const input = document.querySelector('.yhfFVG_input,.uV2eYG_input');
+        const card = document.querySelector('.JZLxKW_card,.uV2eYG_card');
+        const input = document.querySelector('.JZLxKW_input,.uV2eYG_input');
         return { bg: getComputedStyle(card).backgroundColor, radius: getComputedStyle(card).borderRadius, font: getComputedStyle(input).fontFamily };
       });
       check(`${generation}: ${dark ? 'dark' : 'light'} card paint`, paint.bg === (dark ? 'rgb(38, 38, 38)' : 'rgb(255, 255, 255)') && paint.radius === '20px');
       check(`${generation}: composer CJK font`, paint.font.includes('PingFang SC'));
     }
-    const heroTitle = page.locator('.bocITq_titleGroup > span:first-child, .pXSMma_titleGroup > span:first-child');
+    const heroTitle = page.locator('._8tPydW_titleGroup > span:first-child, .pXSMma_titleGroup > span:first-child');
     check(`${generation}: current hero title typography`, await heroTitle.evaluate((el) => getComputedStyle(el).fontSize === '38px'));
     await page.setViewportSize({ width: 375, height: 800 });
     check(`${generation}: narrow hero title typography`, await heroTitle.evaluate((el) => getComputedStyle(el).fontSize === '30px'));
@@ -122,17 +124,17 @@ try {
     // slot. The old fixture missed both, hiding the full-width hero regression.
     for (const [width, height] of [[1200, 800], [1200, 540], [800, 700], [375, 667], [375, 480]]) {
       await page.setViewportSize({ width, height });
-      await page.locator('._6Qf49G_frame,.pI_x6G_frame').evaluate((el, narrow) => {
+      await page.locator('.PIRFFq_frame,.pI_x6G_frame').evaluate((el, narrow) => {
         el.style.gridTemplateColumns = `${narrow ? 0 : 264}px minmax(0,1fr) 0px`;
       }, width < 500);
       const layout = await page.evaluate(() => {
         const rect = (selector) => { const r = document.querySelector(selector).getBoundingClientRect(); return { left: r.left, right: r.right, top: r.top, bottom: r.bottom, width: r.width }; };
         return {
-          center: rect('._6Qf49G_centerCol,.pI_x6G_centerCol'),
-          hero: rect('.ST7X_W_composerHero,.wSkVaW_composerHero'),
-          title: rect('.bocITq_titleGroup,.pXSMma_titleGroup'),
-          card: rect('.yhfFVG_card,.uV2eYG_card'),
-          context: rect('.ST7X_W_heroWorkspaceRow,.wSkVaW_heroWorkspaceRow'),
+          center: rect('.PIRFFq_centerCol,.pI_x6G_centerCol'),
+          hero: rect('.kiGsTW_composerHero,.wSkVaW_composerHero'),
+          title: rect('._8tPydW_titleGroup,.pXSMma_titleGroup'),
+          card: rect('.JZLxKW_card,.uV2eYG_card'),
+          context: rect('.kiGsTW_heroWorkspaceRow,.wSkVaW_heroWorkspaceRow'),
         };
       });
       check(`${generation} ${width}x${height}: hero stays within writing pane`, layout.hero.width <= 672 && layout.hero.left >= layout.center.left + 11 && layout.hero.right <= layout.center.right - 11);
@@ -140,35 +142,35 @@ try {
       check(`${generation} ${width}x${height}: all home controls fit vertically`, layout.context.bottom < height);
     }
     await page.setViewportSize({ width: 1200, height: 800 });
-    await page.locator('._6Qf49G_frame,.pI_x6G_frame').evaluate((el) => el.style.gridTemplateColumns = '264px minmax(0,1fr) 0px');
-    const card = page.locator('.yhfFVG_card,.uV2eYG_card');
+    await page.locator('.PIRFFq_frame,.pI_x6G_frame').evaluate((el) => el.style.gridTemplateColumns = '264px minmax(0,1fr) 0px');
+    const card = page.locator('.JZLxKW_card,.uV2eYG_card');
     const beforeFocus = await card.boundingBox();
-    await page.locator('.yhfFVG_input,.uV2eYG_input').focus();
+    await page.locator('.JZLxKW_input,.uV2eYG_input').focus();
     check(`${generation}: composer focus does not shift layout`, JSON.stringify(await card.boundingBox()) === JSON.stringify(beforeFocus));
     check(`${generation}: input and placeholder share their left inset`, await page.evaluate(() => {
-      const input = getComputedStyle(document.querySelector('.yhfFVG_input,.uV2eYG_input'));
-      const placeholder = getComputedStyle(document.querySelector('.yhfFVG_placeholder,.uV2eYG_placeholder'));
+      const input = getComputedStyle(document.querySelector('.JZLxKW_input,.uV2eYG_input'));
+      const placeholder = getComputedStyle(document.querySelector('.JZLxKW_placeholder,.uV2eYG_placeholder'));
       return input.paddingLeft === placeholder.left;
     }));
-    check(`${generation}: wrapped new-chat content aligns on both hosts`, await page.locator('._3WPZCG_newSessionContent,.hHd-Xa_newSessionContent').evaluate(el => getComputedStyle(el).justifyContent === 'flex-start'));
+    check(`${generation}: wrapped new-chat content aligns on both hosts`, await page.locator('.kB3qhq_newSessionContent,.hHd-Xa_newSessionContent').evaluate(el => getComputedStyle(el).justifyContent === 'flex-start'));
     await page.emulateMedia({ reducedMotion: 'reduce' });
-    check(`${generation}: navigation and composer respect reduced motion`, await page.evaluate(() => ['.yhfFVG_card,.uV2eYG_card', '._3WPZCG_newSession,.hHd-Xa_newSession'].every(s => getComputedStyle(document.querySelector(s)).transitionDuration.split(',').every(d => parseFloat(d) < 0.001))));
+    check(`${generation}: navigation and composer respect reduced motion`, await page.evaluate(() => ['.JZLxKW_card,.uV2eYG_card', '.kB3qhq_newSession,.hHd-Xa_newSession'].every(s => getComputedStyle(document.querySelector(s)).transitionDuration.split(',').every(d => parseFloat(d) < 0.001))));
     await page.emulateMedia({ reducedMotion: 'no-preference' });
     if (generation === 'desktop') {
       for (const width of [264, 340, 420]) {
-        await page.locator('._6Qf49G_frame').evaluate((el, value) => el.style.gridTemplateColumns = `${value}px minmax(0,1fr) 0px`, width);
+        await page.locator('.PIRFFq_frame').evaluate((el, value) => el.style.gridTemplateColumns = `${value}px minmax(0,1fr) 0px`, width);
         check(`new chat fits ${width}px sidebar`, await page.evaluate(() => {
-          const button = document.querySelector('._3WPZCG_newSession').getBoundingClientRect();
-          const sidebar = document.querySelector('._6Qf49G_sidebarCol').getBoundingClientRect();
+          const button = document.querySelector('.kB3qhq_newSession').getBoundingClientRect();
+          const sidebar = document.querySelector('.PIRFFq_sidebarCol').getBoundingClientRect();
           return button.left >= sidebar.left && button.right <= sidebar.right;
         }));
         const navigation = await page.evaluate(() => {
-          const sidebar = document.querySelector('._6Qf49G_sidebarCol').getBoundingClientRect();
-          return ['._3WPZCG_newSession', '._7D6uKa_entry', '._3WPZCG_panelRow'].map((selector) => {
+          const sidebar = document.querySelector('.PIRFFq_sidebarCol').getBoundingClientRect();
+          return ['.kB3qhq_newSession', '._7D6uKa_entry', '.kB3qhq_panelRow'].map((selector) => {
             const el = document.querySelector(selector);
             const rect = el.getBoundingClientRect();
             const icon = el.querySelector('svg').getBoundingClientRect();
-            const label = el.querySelector('._3WPZCG_newSessionLabel,._7D6uKa_entryLabel,._3WPZCG_panelTitle').getBoundingClientRect();
+            const label = el.querySelector('.kB3qhq_newSessionLabel,._7D6uKa_entryLabel,.kB3qhq_panelTitle').getBoundingClientRect();
             return { left: rect.left - sidebar.left, right: sidebar.right - rect.right, height: rect.height, icon: icon.left - sidebar.left, label: label.left - sidebar.left, iconWidth: icon.width };
           });
         });
@@ -177,32 +179,32 @@ try {
       }
       for (const dark of [false, true]) {
         await page.evaluate((value) => document.body.toggleAttribute('data-ds-dark-theme', value), dark);
-        await page.locator('._3WPZCG_panelRow').evaluate((el) => el.setAttribute('aria-current', 'page'));
-        await page.waitForFunction((expected) => getComputedStyle(document.querySelector('._3WPZCG_panelRow')).backgroundColor === expected, dark ? 'rgb(46, 46, 46)' : 'rgb(234, 234, 230)');
-        check(`native selected nav uses ${dark ? 'dark' : 'light'} Ivory surface`, await page.locator('._3WPZCG_panelRow').evaluate((el) => getComputedStyle(el).color === (document.body.hasAttribute('data-ds-dark-theme') ? 'rgb(240, 239, 236)' : 'rgb(36, 36, 34)')));
+        await page.locator('.kB3qhq_panelRow').evaluate((el) => el.setAttribute('aria-current', 'page'));
+        await page.waitForFunction((expected) => getComputedStyle(document.querySelector('.kB3qhq_panelRow')).backgroundColor === expected, dark ? 'rgb(46, 46, 46)' : 'rgb(234, 234, 230)');
+        check(`native selected nav uses ${dark ? 'dark' : 'light'} Ivory surface`, await page.locator('.kB3qhq_panelRow').evaluate((el) => getComputedStyle(el).color === (document.body.hasAttribute('data-ds-dark-theme') ? 'rgb(240, 239, 236)' : 'rgb(36, 36, 34)')));
         if (shotsDir) {
-          await page.waitForFunction((expected) => getComputedStyle(document.querySelector('.yhfFVG_card')).backgroundColor === expected, dark ? 'rgb(38, 38, 38)' : 'rgb(255, 255, 255)');
-          await page.locator('._6Qf49G_frame').evaluate((el) => el.style.gridTemplateColumns = '264px minmax(0,1fr) 0px');
+          await page.waitForFunction((expected) => getComputedStyle(document.querySelector('.JZLxKW_card')).backgroundColor === expected, dark ? 'rgb(38, 38, 38)' : 'rgb(255, 255, 255)');
+          await page.locator('.PIRFFq_frame').evaluate((el) => el.style.gridTemplateColumns = '264px minmax(0,1fr) 0px');
           await page.screenshot({ path: path.join(shotsDir, `desktop-${dark ? 'dark' : 'light'}.png`) });
-          await page.locator('._6Qf49G_sidebarCol').screenshot({ path: path.join(shotsDir, `sidebar-${dark ? 'dark' : 'light'}.png`) });
+          await page.locator('.PIRFFq_sidebarCol').screenshot({ path: path.join(shotsDir, `sidebar-${dark ? 'dark' : 'light'}.png`) });
         }
       }
-      await page.locator('._3WPZCG_panelRow').focus();
-      check('native nav retains keyboard focus ring', await page.locator('._3WPZCG_panelRow').evaluate((el) => getComputedStyle(el).outlineStyle === 'solid' && parseFloat(getComputedStyle(el).outlineWidth) >= 2));
+      await page.locator('.kB3qhq_panelRow').focus();
+      check('native nav retains keyboard focus ring', await page.locator('.kB3qhq_panelRow').evaluate((el) => getComputedStyle(el).outlineStyle === 'solid' && parseFloat(getComputedStyle(el).outlineWidth) >= 2));
       check('macOS wrapped new-chat label aligns with sidebar navigation', await page.evaluate(() => {
-        const button = document.querySelector('._3WPZCG_newSession').getBoundingClientRect();
-        const label = document.querySelector('._3WPZCG_newSessionLabel').getBoundingClientRect();
+        const button = document.querySelector('.kB3qhq_newSession').getBoundingClientRect();
+        const label = document.querySelector('.kB3qhq_newSessionLabel').getBoundingClientRect();
         return label.left - button.left <= 52;
       }));
       await page.evaluate(() => {
-        document.querySelector('._6Qf49G_frame').setAttribute('data-sidebar-collapsed', 'true');
+        document.querySelector('.PIRFFq_frame').setAttribute('data-sidebar-collapsed', 'true');
         localStorage.setItem('dsh-ivory.focus', '1');
         window.dispatchEvent(new StorageEvent('storage', { key: 'dsh-ivory.focus' }));
       });
       await page.waitForFunction(() => document.body.classList.contains('dsh-ivory-focus'));
-      check('macOS hidden sidebar has no web rail', await page.locator('._6Qf49G_sidebarCol').evaluate((el) => el.getBoundingClientRect().width === 0));
-      check('macOS title clears traffic lights', await page.locator('.ST7X_W_titleRow').evaluate((el) => parseFloat(getComputedStyle(el).paddingInlineStart) >= 140));
-      check('macOS title retains host grid', await page.locator('.ST7X_W_header').evaluate((el) => getComputedStyle(el).display === 'grid'));
+      check('macOS hidden sidebar has no web rail', await page.locator('.PIRFFq_sidebarCol').evaluate((el) => el.getBoundingClientRect().width === 0));
+      check('macOS title clears traffic lights', await page.locator('.kiGsTW_titleRow').evaluate((el) => parseFloat(getComputedStyle(el).paddingInlineStart) >= 140));
+      check('macOS title retains host grid', await page.locator('.kiGsTW_header').evaluate((el) => getComputedStyle(el).display === 'grid'));
     }
     // Replace a real conversation with a global panel, wait past the contract
     // throttle, then return. Both directions previously lost the entire skin.
@@ -218,7 +220,7 @@ try {
     check(`${generation}: conversation restores without drift`, await page.evaluate(() => document.body.dataset.dshcsCompat === 'ok' && !document.body.dataset.dshcsDrift));
     // A genuinely unknown composer must still degrade; adding aliases must
     // never turn the compatibility guard into unconditional acceptance.
-    await page.locator('.yhfFVG_root,.uV2eYG_root').evaluate((el) => {
+    await page.locator('.JZLxKW_root,.uV2eYG_root').evaluate((el) => {
       const parent = el.parentElement; el.remove(); el.className = 'unrecognized-composer'; parent.appendChild(el);
     });
     await page.waitForFunction(() => document.body.dataset.dshcsCompat === 'token-only');
@@ -230,6 +232,7 @@ try {
   }
   await testDisclosure(browser, hosts, table, check, shotsDir);
   await testConversation(browser, hosts, table, check, shotsDir);
+  await testViewOverflow(browser, hosts, table, check, shotsDir);
   await testOverlays(browser, hosts, check, shotsDir);
   await testFiles(browser, hosts, check, shotsDir);
   await testManager(browser, hosts, check, shotsDir);

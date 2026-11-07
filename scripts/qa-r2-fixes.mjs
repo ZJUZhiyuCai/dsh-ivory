@@ -139,7 +139,8 @@ try {
       fixture.style.cssText = 'position:fixed;visibility:hidden;pointer-events:none';
       const input = Object.assign(document.createElement('div'), { className: 'uV2eYG_input' });
       const assistant = Object.assign(document.createElement('div'), { className: 'hWmORq_root' });
-      const user = Object.assign(document.createElement('div'), { className: 'Sixlwa_bubble' });
+      const user = Object.assign(document.createElement('div'), { className: 'dshcs-user-bubble-fixture' });
+      user.setAttribute('data-message-bubble', '');
       const tool = Object.assign(document.createElement('div'), { className: 'CY-8Ka_root' });
       const title = Object.assign(document.createElement('span'), { className: 'CY-8Ka_title' });
       const markdown = Object.assign(document.createElement('div'), { className: 'dshcs-md' });
@@ -563,7 +564,8 @@ try {
       fixture.appendChild(body);
 
       const bubble = document.createElement('div');
-      bubble.className = 'Sixlwa_bubble dshcs-copy-fixture-bubble';
+      bubble.className = 'dshcs-copy-fixture-bubble';
+      bubble.setAttribute('data-message-bubble', '');
       bubble.style.cssText = 'position:fixed;left:16px;top:240px;z-index:99999';
       bubble.textContent = '用户文字块';
       document.body.append(fixture, bubble);

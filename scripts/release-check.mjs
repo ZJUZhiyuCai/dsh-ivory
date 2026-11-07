@@ -50,7 +50,7 @@ const hostSelectors = JSON.parse(hostSelectorsText);
 
 check('package metadata', () => {
   assert.equal(pkg.name, 'dsh-ivory');
-  assert.equal(pkg.version, '0.2.17');
+  assert.equal(pkg.version, '0.2.18');
   assert.equal(pkg.private, undefined);
   assert.equal(pkg.license, 'MIT');
   assert.equal(pkg.publishConfig?.access, 'public');
@@ -107,8 +107,12 @@ check('supported host version is inside the peer range', () => {
 });
 
 check('host selector table tracks the supported desktop build', () => {
-  assert.equal(hostSelectors.hosts.web, '0.2.1-rc.1');
-  assert.equal(hostSelectors.hosts.desktop, '0.2.1-rc.2');
+  assert.equal(hostSelectors.hosts.web, '0.2.2-rc.1');
+  assert.equal(hostSelectors.hosts.desktop, '0.2.2-rc.1');
+  assert.equal(Object.keys(hostSelectors.modules).length, 39);
+  assert.equal(Object.keys(hostSelectors.aliases).length, 347);
+  assert.equal(hostSelectors.modules.Lgz0XW?.module, 'FileTree.module.css');
+  assert.equal(hostSelectors.modules.rIfSMq?.module, 'ZoomViewport.module.css');
   assertSelectorTable(hostSelectors);
 });
 
@@ -253,9 +257,10 @@ check('DSH rc.1 selector, width, and degradation contract', () => {
   assert.match(css, /\.EvIC1a_column\s*\{[\s\S]*?max-width:\s*var\(--dsh-chat-content-width\)/);
   assert.match(css, /\.Sixlwa_userRow\s*\{[\s\S]*?max-width:\s*var\(--dsh-chat-content-width\)/);
   assert.match(css, /--dsw-font-markdown-base-font-size:\s*var\(--dsh-content-font-size/);
-  for (const selector of ['uV2eYG_input', 'Sixlwa_bubble', 'hWmORq_root']) {
+  for (const selector of ['uV2eYG_input', 'hWmORq_root']) {
     assert.match(css, new RegExp(`\\.${selector}[^{]*\\{[\\s\\S]*?font-size:\\s*var\\(--dsh-content-font-size`));
   }
+  assert.match(css, /\[data-message-bubble\][^{]*\{[\s\S]*?font-size:\s*var\(--dsh-content-font-size/);
   assert.match(css, /\.CY-8Ka_root[^{]*,[\s\S]*?font-size:\s*var\(--dsh-content-font-size-secondary/);
   assert.doesNotMatch(css, /body\.dsh-ivory:not\(\.dshcs-contract-mismatch\)\s*\{\s*--dsh-scrollbar-width:\s*0px/);
   assertNoRetiredSelectors({
@@ -316,6 +321,9 @@ check('deep-diving chrysanthemum contrast and icon set', () => {
   const darkPage = token(dark, 'cl-page');
   assert.ok(contrastRatio(token(light, 'cl-chrys'), lightPage) >= 4.5, 'light --cl-chrys vs --cl-page below 4.5:1');
   assert.ok(contrastRatio(token(dark, 'cl-chrys'), darkPage) >= 4.5, 'dark --cl-chrys vs --cl-page below 4.5:1');
+  for (const page of [lightPage, darkPage]) {
+    assert.ok(contrastRatio(token(light, 'cl-spark'), page) >= 3, 'thinking spark needs 3:1 non-text contrast in both themes');
+  }
   assert.match(css, /--cl-input: "PingFang SC"/);
   const thinkIcon = css.match(/\.lcKema_leading\s*\{\s*--dshcs-icon:\s*url\("data:image\/svg\+xml,([^"]+)"\)/);
   assert.ok(thinkIcon, 'missing think icon data URL');

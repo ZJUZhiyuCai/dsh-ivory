@@ -48,6 +48,70 @@ export async function testDisclosure(browser, hosts, table, check, shotsDir) {
           });
         }
       }, rows);
+      const spark = page.locator('#reasoning [class*="_iconIdle_"]');
+      check(`${label}: thinking uses Claude clay without a halo`, await spark.evaluate((el) => {
+        const paint = getComputedStyle(el, '::after');
+        return paint.backgroundColor === 'rgb(217, 119, 87)' && paint.opacity === '1'
+          && getComputedStyle(el.parentElement, '::before').content === 'none';
+      }));
+      const motion = await spark.evaluate((el) => {
+        const animation = document.getAnimations().find((a) => a.effect.target === el && a.animationName === 'dshcs-spark-pulse');
+        if (!animation) return null;
+        animation.pause();
+        const frames = [0, 100, 200, 300, 400, 500, 600, 700, 800, 810].map((time) => {
+          animation.currentTime = time;
+          const style = getComputedStyle(el, '::after');
+          const matrix = new DOMMatrixReadOnly(style.transform);
+          return { x: matrix.a, y: matrix.d, opacity: style.opacity, width: el.getBoundingClientRect().width };
+        });
+        animation.currentTime = 300;
+        return { frames, duration: animation.effect.getTiming().duration };
+      });
+      check(`${label}: spark opens and closes without fading or shifting the row`, motion?.duration === 810
+        && motion.frames.every((f) => f.opacity === '1' && f.x >= 0.5 && f.x <= 1.1 && f.width === motion.frames[0].width)
+        && motion.frames[3].x > motion.frames[0].x + 0.4
+        && motion.frames[8].x < motion.frames[3].x - 0.4
+        && motion.frames[0].x === motion.frames[9].x);
+      for (const width of [1440, 375]) {
+        await page.setViewportSize({ width, height: 450 });
+        check(`${label}: spark and title fit ${width}px`, await spark.evaluate((el) => {
+          const row = el.closest('[role="button"]');
+          const icon = el.getBoundingClientRect(), title = row.lastElementChild.getBoundingClientRect();
+          return icon.left >= 0 && icon.right <= title.left && title.right <= innerWidth
+            && document.documentElement.scrollWidth <= innerWidth;
+        }));
+      }
+      await page.setViewportSize({ width: 700, height: 450 });
+      for (const state of ['ok', 'error']) {
+        await page.locator('#reasoning').evaluate((el, value) => { el.parentElement.dataset.state = value; }, state);
+        check(`${label}: ${state} reasoning settles and preserves its state color`, await spark.evaluate((el) => {
+          const style = getComputedStyle(el, '::after');
+          return style.animationName === 'none' && style.transform === 'none' && style.backgroundColor !== 'rgb(217, 119, 87)';
+        }));
+      }
+      await page.locator('#reasoning').evaluate((el) => { el.parentElement.dataset.state = 'running'; });
+      await page.emulateMedia({ reducedMotion: 'reduce' });
+      check(`${label}: reduced motion leaves a full-size static spark`, await spark.evaluate((el) => {
+        const style = getComputedStyle(el, '::after');
+        return style.animationName === 'none' && style.transform === 'none' && style.opacity === '1';
+      }));
+      await page.emulateMedia({ reducedMotion: 'no-preference', forcedColors: 'active' });
+      check(`${label}: forced colors keeps the mask visible`, await spark.evaluate((el) => {
+        const probe = document.createElement('span');
+        probe.style.color = 'CanvasText';
+        el.append(probe);
+        const style = getComputedStyle(el, '::after');
+        const visible = style.backgroundColor === getComputedStyle(probe).color && style.forcedColorAdjust === 'none';
+        probe.remove();
+        return visible;
+      }));
+      await page.emulateMedia({ forcedColors: 'none' });
+      for (const bodyClass of ['', 'dsh-ivory dshcs-contract-mismatch']) {
+        await page.locator('body').evaluate((el, value) => { el.className = value; }, bodyClass);
+        check(`${label}: ${bodyClass ? 'contract fallback' : 'theme off'} restores the host icon`, await spark.evaluate((el) =>
+          getComputedStyle(el, '::after').content === 'none' && getComputedStyle(el.firstElementChild).visibility === 'visible'));
+      }
+      await page.locator('body').evaluate((el) => { el.className = 'dsh-ivory'; });
       for (const { name } of rows) {
         const row = page.locator(`#${name}`);
         check(`${label}: ${name} idle decoration replaced`, await row.locator('[data-test="decorative"]').evaluate((el) => getComputedStyle(el).visibility === 'hidden'));
@@ -72,7 +136,12 @@ export async function testDisclosure(browser, hosts, table, check, shotsDir) {
         const el = document.querySelector(selector);
         return getComputedStyle(el)[el.tagName === 'rect' ? 'fill' : 'stroke'] === expected;
       }), dark ? 'rgb(255, 158, 94)' : 'rgb(138, 74, 21)'));
-      if (shotsDir) await page.screenshot({ path: path.join(shotsDir, `${side}-disclosure-${dark ? 'dark' : 'light'}.png`) });
+      if (shotsDir) {
+        await page.locator('#reasoning').press('Enter');
+        await page.mouse.move(650, 400);
+        await page.waitForFunction(() => getComputedStyle(document.querySelector('#reasoning [class*="_iconIdle_"]')).opacity === '1');
+        await page.screenshot({ path: path.join(shotsDir, `${side}-disclosure-${dark ? 'dark' : 'light'}.png`) });
+      }
       await page.close();
     }
   }

@@ -107,3 +107,50 @@ export async function testConversation(browser, hosts, table, check, shotsDir) {
     }
   }
 }
+
+// 0.2.2 exposes the pinned views in a tablist and puts More in a sibling menu
+// anchor on both hosts. Exercise that installed structure from the real module
+// members instead of relying on a semantic approximation.
+export async function testViewOverflow(browser, hosts, table, check, shotsDir) {
+  const id = table.modules.wSkVaW;
+  for (const [side, host] of Object.entries(hosts)) {
+  const css = indexHostModules(host.sources).get(`${id.package}/${id.module}`);
+  if (!css.viewTabs || !css.viewsMore || !css.tabLabel) throw new Error(`${side} view-menu contract is missing`);
+  const buttonFamily = host.frontendCss.match(/\._button_(\w+)_\d+/)[1];
+  const button = ['button', 'sm'].map(member => host.frontendCss.match(new RegExp(`\\._${member}_${buttonFamily}_\\d+`))[0].slice(1)).join(' ');
+  for (const dark of [false, true]) {
+    const label = `${side} ${dark ? 'dark' : 'light'} view menu`;
+    const page = await browser.newPage();
+    await page.setContent(`<!doctype html><html data-platform="darwin"><style>${host.css}\n${skin}\nhtml,body{margin:0;min-height:100%}</style><body class="dsh-ivory" ${dark ? 'data-ds-dark-theme' : ''}>
+      <header class="${css.header}"><div class="${css.titleRow}"><div class="${css.titleCluster}"><div class="${css.crumbs}"><span class="${css.crumb}">宿主兼容性检查</span></div></div></div>
+        <div class="${css.tabs}"><div class="${css.viewTabs}" role="tablist" data-conversation-tabs>
+          <button id="active-view" class="${css.tab} ${css.tabActive}" role="tab" aria-selected="true"><span class="${css.tabLabel}">对话</span></button>
+          <button class="${css.tab}" role="tab" aria-selected="false"><span id="long-view" class="${css.tabLabel}">具有较长名称的插件视图</span></button>
+        </div><div class="${css.viewsMoreAnchor}"><button id="more-views" class="${button} ${css.viewsMore} ${css.viewsMoreActive}" aria-label="更多视图" aria-haspopup="menu" aria-expanded="false">···</button></div></div>
+      </header></body></html>`);
+    for (const width of [1440, 375]) {
+      await page.setViewportSize({ width, height: 500 });
+      check(`${label} ${width}px: menu target meets the touch minimum`, await page.locator('#more-views').evaluate(el => {
+        const rect = el.getBoundingClientRect(); return rect.width >= 24 && rect.height >= 24;
+      }));
+      check(`${label} ${width}px: tabs and menu stay inside the pane`, await page.evaluate(() => {
+        const menu = document.getElementById('more-views').getBoundingClientRect();
+        const label = document.getElementById('long-view');
+        return menu.left >= 0 && menu.right <= innerWidth && document.documentElement.scrollWidth <= innerWidth
+          && getComputedStyle(label).textOverflow === 'ellipsis' && label.getBoundingClientRect().width <= 88;
+      }));
+      await page.locator('#more-views').focus();
+      check(`${label} ${width}px: keyboard focus and active-tab ink remain visible`, await page.evaluate(() => {
+        const button = document.getElementById('more-views'), tab = document.getElementById('active-view');
+        return getComputedStyle(button).outlineStyle !== 'none'
+          && getComputedStyle(tab).color === getComputedStyle(tab, '::after').backgroundColor;
+      }));
+      await page.locator('body').evaluate(el => el.classList.add('dshcs-contract-mismatch'));
+      check(`${label} ${width}px: fallback releases the new menu sizing`, await page.locator('#more-views').evaluate(el => el.getBoundingClientRect().width === 22));
+      await page.locator('body').evaluate(el => el.classList.remove('dshcs-contract-mismatch'));
+      if (shotsDir) await page.screenshot({ path: path.join(shotsDir, `${side}-view-menu-${dark ? 'dark' : 'light'}-${width}.png`) });
+    }
+    await page.close();
+  }
+  }
+}

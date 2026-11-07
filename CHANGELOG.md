@@ -5,6 +5,36 @@ All notable changes to Ivory are documented here. The project follows
 
 ## [Unreleased]
 
+## [0.2.18] - 2026-11-07
+
+### Fixed
+
+- Restore full theme compatibility with DeepSeek Harness 0.2.2-rc.1 on Web and
+  desktop. Re-derive all 347 aliases across 39 CSS modules, refresh both
+  independently extracted host snapshots, and reject retired desktop hashes so
+  structural styling cannot silently fall back to tokens.
+- Follow the 0.2.2 message surface: the retired `MessageItem.bubble` class is
+  replaced by the host's semantic `data-message-bubble` attribute, keeping the
+  user bubble, whole-message copy target and narrow-screen controls intact.
+- Adapt the rebuilt file browser to `FilesBody`/`FileTree` members, including
+  the new full-page navigator, 32px tree rows and current-file state. Image
+  zoom controls now bind to `data-document-zoom-controls` instead of the
+  removed `ZoomControls` module.
+- Keep the plugin manager's new `pageBar`/`pageBody` shell scrolling correctly,
+  and align the update dialog, version history, attachment progress, sending
+  spinner and model badge with Ivory's surfaces and type scale.
+- Preserve the native view-overflow menu on both hosts and keep its launcher at
+  a 24px target. Check long view labels, keyboard focus, narrow panes and
+  fallback in both themes.
+
+### Changed
+
+- Align the thinking spark with Claude's clay color and short, stepped
+  opening-and-closing rhythm. Keep Ivory's seven-ray glyph at full opacity,
+  remove its halo, and leave tool-call indicators and status text unchanged.
+- Keep the spark static at full size with reduced motion and visible in
+  forced colors; completed reasoning and expanded disclosure arrows stay still.
+
 ## [0.2.17] - 2026-10-21
 
 ### Changed
@@ -574,7 +604,8 @@ All notable changes to Ivory are documented here. The project follows
 - Explicit npm file allowlist, MIT license, third-party notices, and bilingual
   documentation.
 
-[Unreleased]: https://github.com/ZJUZhiyuCai/dsh-ivory/compare/v0.2.17...HEAD
+[Unreleased]: https://github.com/ZJUZhiyuCai/dsh-ivory/compare/v0.2.18...HEAD
+[0.2.18]: https://github.com/ZJUZhiyuCai/dsh-ivory/compare/v0.2.17...v0.2.18
 [0.2.17]: https://github.com/ZJUZhiyuCai/dsh-ivory/compare/v0.2.16...v0.2.17
 [0.2.16]: https://github.com/ZJUZhiyuCai/dsh-ivory/compare/v0.2.12...v0.2.16
 [0.2.15]: https://github.com/ZJUZhiyuCai/dsh-ivory/compare/v0.2.14...v0.2.15
