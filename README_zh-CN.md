@@ -51,7 +51,7 @@ macOS 桌面端可在 **插件 → 添加插件** 中安装 `dsh-ivory`。
 绕过 npm，安装确切的 GitHub 标签版本。
 
 ```sh
-dsh plugin --profile web add github:ZJUZhiyuCai/dsh-ivory#v0.2.18
+dsh plugin --profile web add github:ZJUZhiyuCai/dsh-ivory#v0.2.19
 ```
 
 移除 Ivory，恢复 DSH 原生界面。
@@ -116,13 +116,14 @@ npm 包固定为八个白名单文件，每次 CI 都会检查。完整边界可
 
 > [!NOTE]
 > DeepSeek Harness 仍处于开发者预览阶段，UI 可能发生破坏性变化。
-> Ivory 0.2.18 已针对 DSH Web 0.2.2-rc.1 和桌面版 0.2.2-rc.1 完成验证；
+> Ivory 0.2.19 已针对 DSH Web 0.2.2-rc.1 和桌面版 0.2.2-rc.1 完成验证；
 > 其他宿主版本可能仅保留 token 级主题。
 > 无法确认当前结构契约时，Ivory 会保留 token 级主题，并把布局控制权交还给 DSH。
 
 0.2.2-rc.1 适配按模块身份重新提取了 39 个模块的全部 347 个类名映射，
 同步更新 Web/桌面快照，并跟随宿主重建的消息、文件浏览器、缩放、附件与
-插件管理界面；两端“更多视图”入口均保留 24px 点击区域。
+插件管理界面；两端“更多视图”入口均保留 24px 点击区域。0.2.19 依据
+Claude Desktop 4.23118.0 校准浅色配色，深色主题保持不变。
 映射表见 `src/host-selectors.json`。执行 `npm run build && npm run test:desktop`，
 使用已安装应用的样式进行隔离回归；不访问账户、不调用模型。
 其他系统可用 `DSH_DESKTOP_CLIENT_DIR` 指向包含客户端包和前端 `index-*.css`

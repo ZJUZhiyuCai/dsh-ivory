@@ -345,10 +345,10 @@ try {
       darkAttr: document.body.hasAttribute('data-ds-dark-theme'),
     }));
     check('theme-style-storm-self-heals',
-      baseline.clPage === '#fcfcfb'
+      baseline.clPage === '#ffffff'
         && healed.enabled && !healed.focus
         && healed.tags === 1
-        && healed.clPage === '#fcfcfb'
+        && healed.clPage === '#ffffff'
         && healed.bg === baseline.bg
         && healed.compat === 'ok',
       { baseline, healed });

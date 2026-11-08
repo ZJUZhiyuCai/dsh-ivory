@@ -5,6 +5,17 @@ All notable changes to Ivory are documented here. The project follows
 
 ## [Unreleased]
 
+## [0.2.19] - 2026-11-08
+
+### Changed
+
+- Recalibrate the light palette against the installed Claude Desktop 4.23118.0:
+  use a white main canvas, the gray-20 navigation plane, gray-100 selected rows
+  and gray-900 primary ink, while keeping every neutral text surface at WCAG AA.
+  The dark palette is unchanged.
+- Use primary ink for sidebar and workspace labels so the navigation hierarchy
+  matches current Claude instead of reading one ink step too light.
+
 ## [0.2.18] - 2026-11-07
 
 ### Fixed
@@ -604,7 +615,8 @@ All notable changes to Ivory are documented here. The project follows
 - Explicit npm file allowlist, MIT license, third-party notices, and bilingual
   documentation.
 
-[Unreleased]: https://github.com/ZJUZhiyuCai/dsh-ivory/compare/v0.2.18...HEAD
+[Unreleased]: https://github.com/ZJUZhiyuCai/dsh-ivory/compare/v0.2.19...HEAD
+[0.2.19]: https://github.com/ZJUZhiyuCai/dsh-ivory/compare/v0.2.18...v0.2.19
 [0.2.18]: https://github.com/ZJUZhiyuCai/dsh-ivory/compare/v0.2.17...v0.2.18
 [0.2.17]: https://github.com/ZJUZhiyuCai/dsh-ivory/compare/v0.2.16...v0.2.17
 [0.2.16]: https://github.com/ZJUZhiyuCai/dsh-ivory/compare/v0.2.12...v0.2.16

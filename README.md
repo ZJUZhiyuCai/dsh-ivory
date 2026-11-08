@@ -54,7 +54,7 @@ unchanged, check **Settings → Ivory Theme → Enable Ivory theme**.
 Install the exact GitHub release without using npm.
 
 ```sh
-dsh plugin --profile web add github:ZJUZhiyuCai/dsh-ivory#v0.2.18
+dsh plugin --profile web add github:ZJUZhiyuCai/dsh-ivory#v0.2.19
 ```
 
 Remove Ivory and return to the native DSH interface.
@@ -120,15 +120,16 @@ and [third-party notices](https://github.com/ZJUZhiyuCai/dsh-ivory/blob/main/THI
 
 > [!NOTE]
 > DeepSeek Harness is in developer preview and may make breaking UI changes.
-> Ivory 0.2.18 is verified against DSH Web 0.2.2-rc.1 and desktop
+> Ivory 0.2.19 is verified against DSH Web 0.2.2-rc.1 and desktop
 > 0.2.2-rc.1. Other host builds may use token-level fallback. When Ivory cannot prove the current structural
 > contract, it keeps token-level theming and releases the host layout back to DSH.
 
 The 0.2.2-rc.1 port re-derived all 347 class aliases across 39 named modules,
 refreshed both export snapshots, and followed the rebuilt message, file-browser,
 zoom, attachment and plugin-manager surfaces. The native view-overflow menu
-keeps a 24px touch target on both hosts. See `src/host-selectors.json` for the
-verified map. Run
+keeps a 24px touch target on both hosts. 0.2.19 recalibrates the light palette
+against Claude Desktop 4.23118.0 while keeping Ivory's dark theme unchanged.
+See `src/host-selectors.json` for the verified map. Run
 `npm run build && npm run test:desktop` for isolated regressions
 using styles read from the installed app (no account or model calls).
 `DSH_DESKTOP_CLIENT_DIR` can point to extracted client bundles plus the frontend
