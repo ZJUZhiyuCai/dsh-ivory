@@ -180,8 +180,8 @@ try {
       for (const dark of [false, true]) {
         await page.evaluate((value) => document.body.toggleAttribute('data-ds-dark-theme', value), dark);
         await page.locator('.kB3qhq_panelRow').evaluate((el) => el.setAttribute('aria-current', 'page'));
-        await page.waitForFunction((expected) => getComputedStyle(document.querySelector('.kB3qhq_panelRow')).backgroundColor === expected, dark ? 'rgb(46, 46, 46)' : 'rgb(234, 234, 230)');
-        check(`native selected nav uses ${dark ? 'dark' : 'light'} Ivory surface`, await page.locator('.kB3qhq_panelRow').evaluate((el) => getComputedStyle(el).color === (document.body.hasAttribute('data-ds-dark-theme') ? 'rgb(240, 239, 236)' : 'rgb(36, 36, 34)')));
+        await page.waitForFunction((expected) => getComputedStyle(document.querySelector('.kB3qhq_panelRow')).backgroundColor === expected, dark ? 'rgb(46, 46, 46)' : 'rgb(225, 224, 217)');
+        check(`native selected nav uses ${dark ? 'dark' : 'light'} Ivory surface`, await page.locator('.kB3qhq_panelRow').evaluate((el) => getComputedStyle(el).color === (document.body.hasAttribute('data-ds-dark-theme') ? 'rgb(240, 239, 236)' : 'rgb(11, 11, 11)')));
         if (shotsDir) {
           await page.waitForFunction((expected) => getComputedStyle(document.querySelector('.JZLxKW_card')).backgroundColor === expected, dark ? 'rgb(38, 38, 38)' : 'rgb(255, 255, 255)');
           await page.locator('.PIRFFq_frame').evaluate((el) => el.style.gridTemplateColumns = '264px minmax(0,1fr) 0px');

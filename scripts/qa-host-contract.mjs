@@ -96,7 +96,7 @@ check('no sub-24px composer target', small.length === 0, small.slice(0, 5));
 
 await page.screenshot({ path: `${OUT}/conversation-light.png` });
 check('light theme uses the Ivory page surface', await page.evaluate(() =>
-  !document.body.hasAttribute('data-ds-dark-theme') && getComputedStyle(document.body).backgroundColor === 'rgb(252, 252, 251)'));
+  !document.body.hasAttribute('data-ds-dark-theme') && getComputedStyle(document.body).backgroundColor === 'rgb(255, 255, 255)'));
 
 await setTheme(page, '深色');
 check('dark theme keeps the structural contract and surface', await page.evaluate(() =>

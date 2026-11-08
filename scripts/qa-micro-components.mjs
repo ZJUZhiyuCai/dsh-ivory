@@ -68,7 +68,7 @@ const FIXTURE_HTML = `
       </div>
       <div class="dvt-palette" data-dshcs-fixture="palette">
         <div><i style="background:#2a78d6"></i><span><strong>#2A78D6</strong><small>32.1%</small></span></div>
-        <div><i style="background:#fcfcfb"></i><span><strong>#FCFCFB</strong><small>24.5%</small></span></div>
+        <div><i style="background:#ffffff"></i><span><strong>#FFFFFF</strong><small>—</small></span></div>
         <div><i style="background:#52514e"></i><span><strong>#52514E</strong><small>18.0%</small></span></div>
         <div><i style="background:#b98a4a"></i><span><strong>#B98A4A</strong><small>11.2%</small></span></div>
         <div><i style="background:#4c8759"></i><span><strong>#4C8759</strong><small>8.4%</small></span></div>
